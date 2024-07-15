@@ -100,33 +100,13 @@ class Change {
 
     // --------------------------------------------------------------------------------------------------------------------
 
-        /* Generates a report for a specific change.
-
-        Parameters: Change change. In parameter.
-
-        Return: Does not return anything.
-        */
-        void reportChange(Change change);
-
-    // --------------------------------------------------------------------------------------------------------------------
-
-        /* Generates a report for all changes.
-
-        Parameters: None
-
-        Return: Does not return anything.
-        */
-        void reportAllChanges();
-
-    // --------------------------------------------------------------------------------------------------------------------
-
         /* Exits the Change Operation.
 
         Parameters: None
 
         Return: Does not return anything.
         */
-        void exitChange();
+        static void exitChange();
 
     // --------------------------------------------------------------------------------------------------------------------
 
@@ -160,7 +140,7 @@ class Change {
 
         Return: "Change" object's productName as an character array of maximum size 15.
         */
-        char* getProductName() const;
+        const char* getProductName() const;
 
     // --------------------------------------------------------------------------------------------------------------------
 
@@ -180,7 +160,7 @@ class Change {
 
         Return: "Change" object's description as an character array of maximum size 30.
         */
-        char* getDescription() const;
+        const char* getDescription() const;
 
     // --------------------------------------------------------------------------------------------------------------------
 
@@ -243,7 +223,8 @@ class Change {
         void setDate(const int newDate);
 
     // --------------------------------------------------------------------------------------------------------------------
-
+        static std::fstream changeFile;
+        static const char* changeFileName;
         static const int MAX_PRODUCT_NAME_LENGTH = 15;
         static const int MAX_DESCRIPTION_LENGTH = 30;
 
