@@ -43,6 +43,7 @@ int main() {
             pass = false;
         }
     }
+    Controller.exitRequester();
 
     // Step 3
     // Output result
