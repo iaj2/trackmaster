@@ -42,7 +42,7 @@ class ProductRelease {
 
         Return: Does not return anything.
         */
-        void initProductRelease();
+        static void initProductRelease();
 
     // --------------------------------------------------------------------------------------------------------------------
 
@@ -93,7 +93,7 @@ class ProductRelease {
 
         Return: Does not return anything.
         */
-        void exitProductRelease();
+        static void exitProductRelease();
 
     // --------------------------------------------------------------------------------------------------------------------
 

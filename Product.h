@@ -44,7 +44,7 @@ class Product {
     
         Return: Does not return anything.
         */
-        void initProduct();
+        static void initProduct();
 
     // --------------------------------------------------------------------------------------------------------------------
 
@@ -105,7 +105,7 @@ class Product {
     
         Return: Does not return anything.
         */
-        void exitProduct();
+        static void exitProduct();
 
     // --------------------------------------------------------------------------------------------------------------------
 

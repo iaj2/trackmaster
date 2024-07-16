@@ -9,7 +9,6 @@ using std::ios;
 std::fstream Change::changeFile;
 const char* Change::changeFileName = "changes.dat";
 
-// Parameterized Constructor
 Change::Change(
   const int changeID, Status status, const char* productName, const int anticipatedReleaseID, 
   const char* description, const int date
@@ -24,7 +23,6 @@ Change::Change(
     this->description[MAX_DESCRIPTION_LENGTH] = '\0';
 }
 
-// Static function to initialize the change file
 void Change::initChange() {
     // Open file for input/output in binary mode
     changeFile.open(changeFileName, ios::out | ios::in | ios::binary );
@@ -42,12 +40,10 @@ void Change::initChange() {
 
 }
 
-// Static function to move to the start of the change file
 void Change::startOfChangeFile() {
     changeFile.seekg(0, ios::beg);
 }
 
-// Static function to get the change record currently pointed to in the file
 Change* Change::getChangeRecord() {
     // return nullptr if at end of file
     if (changeFile.eof()) return nullptr;
@@ -67,7 +63,6 @@ Change* Change::getChangeRecord() {
     return change;
 }
 
-// Static function to record a change
 void Change::recordChange(Change newChange) {
     // seek to end of file
     changeFile.seekp(0, ios::end);
@@ -76,7 +71,6 @@ void Change::recordChange(Change newChange) {
     changeFile.write(reinterpret_cast<const char*>(&newChange), sizeof(Change));
 }
 
-// Function to exit the change operation
 void Change::exitChange() {
     if (changeFile.is_open()) {
         changeFile.close();
@@ -115,6 +109,7 @@ char* Change::getDate() const {
 }
 
 // Private functions to set the attributes
+
 void Change::setchangeID(const int newChangeID) { changeID = newChangeID; }
 
 void Change::setStatus(Status newStatus) { status = newStatus; }
