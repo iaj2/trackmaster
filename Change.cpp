@@ -3,11 +3,15 @@
 #include <cstring>
 #include "Change.h"
 
-using std::ios;
+using namespace std;
 
 // Static member variables
 std::fstream Change::changeFile;
-const char* Change::changeFileName = "changes.dat";
+
+// Default Constructor
+Change::Change() : changeID(0), status(Status::Open), productName(""), anticipatedReleaseID(0),
+    description(""), date(0)
+  {}
 
 Change::Change(
   const int changeID, Status status, const char* productName, const int anticipatedReleaseID, 
@@ -24,6 +28,8 @@ Change::Change(
 }
 
 void Change::initChange() {
+    char changeFileName[] = "changes.dat";
+
     // Open file for input/output in binary mode
     changeFile.open(changeFileName, ios::out | ios::in | ios::binary );
 
@@ -49,7 +55,7 @@ Change* Change::getChangeRecord() {
     if (changeFile.eof()) return nullptr;
 
     // create blank change object
-    Change* change = new Change(0, Status::Open, "", 0, "", 0);
+    Change* change = new Change();
 
     // read change record into object
     changeFile.read(reinterpret_cast<char*>(change), sizeof(change));
