@@ -55,7 +55,7 @@ class Product {
     
         Return: Does not return anything.
         */
-        void initProduct();
+        static void initProduct();
 
     // --------------------------------------------------------------------------------------------------------------------
 
@@ -77,7 +77,7 @@ class Product {
         Return: reference to the product record or nullptr if end of file.
     
         */
-        Product* getProductRecord();
+        static Product* getProductRecord();
     // --------------------------------------------------------------------------------------------------------------------
 
         /* Takes in the created "Product" object to write to file.
@@ -86,7 +86,7 @@ class Product {
         
         Return: Does not return anything.
         */
-        void recordProduct(const Product &newProduct);
+        static void recordProduct(const Product &newProduct);
 
     // --------------------------------------------------------------------------------------------------------------------
 
@@ -96,7 +96,7 @@ class Product {
     
         Return: Does not return anything.
         */
-        void reportAllProducts();
+        static void reportAllProducts();
 
     // --------------------------------------------------------------------------------------------------------------------
 
@@ -106,7 +106,7 @@ class Product {
     
         Return: Does not return anything.
         */
-        void exitProduct();
+        static void exitProduct();
 
     // --------------------------------------------------------------------------------------------------------------------
 
@@ -126,7 +126,7 @@ class Product {
 
         Return: "Product" object's productName as an character array of maximum size 15.
         */
-        char* getProductName() const;
+        static char* getProductName() const;
 
     // --------------------------------------------------------------------------------------------------------------------
 

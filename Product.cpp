@@ -13,7 +13,7 @@ static std::fstream productFile;
 Product::Product() { }
 
 // Initialize the product file
-void Product::initProduct() {
+static void Product::initProduct() {
     // open the binary file 
     productFile.open("product.bat", std::ios::binary);
     if (!productFile) {
@@ -29,7 +29,7 @@ void Product::initProduct() {
 }
 
 // Move the file pointer to the start of the file
-void Product::startOfProductFile() {
+static void Product::startOfProductFile() {
     // make sure the file is open 
     if (productFile.is_open()) {
         productFile.seekp(0, std::ios::beg); // Use seekg for reading positions
@@ -40,7 +40,7 @@ void Product::startOfProductFile() {
 }
 
 // Function to get a product record from the file
-Product* Product::getProductRecord() {
+static Product* Product::getProductRecord() {
     // check if the file is open 
     if (productFile.is_open()) {
 
@@ -68,7 +68,7 @@ Product* Product::getProductRecord() {
 }
 
 // Record a new product at the end of the file
-void Product::recordProduct(const Product &newProduct) {
+static void Product::recordProduct(const Product &newProduct) {
     // make sure the file is open 
     if (productFile.is_open()) {
         // seek to the end 
@@ -84,7 +84,7 @@ void Product::recordProduct(const Product &newProduct) {
 }
 
 // Report all products in the file
-void Product::reportAllProducts() {
+static void Product::reportAllProducts() {
     // make a count for display 
     int ProductCount = 1; 
     // make sure the file is open 
@@ -105,7 +105,7 @@ void Product::reportAllProducts() {
 }
 
 // Close the product file
-void Product::exitProduct() {
+static void Product::exitProduct() {
     // only close if the file is open 
     if (productFile.is_open()) {
         productFile.close();
@@ -118,7 +118,7 @@ Product::Product(const char* newProductName) {
 }
 
 // Get the product name
-char* Product::getProductName() const {
+static char* Product::getProductName() const {
     return const_cast<char*>(this->productName);
 }
 
