@@ -15,12 +15,12 @@ Product::Product() { }
 // Initialize the product file
 void Product::initProduct() {
     // open the binary file 
-    productFile.open("product.bin", std::ios::binary);
+    productFile.open("product.bat", std::ios::binary);
     if (!productFile) {
         // If the file does not exist, create it
-        std::fstream { "product.bin" };
+        std::fstream { "product.bat" };
         // Open for reading and writing
-        productFile.open("product.bin", std::ios::binary);
+        productFile.open("product.bat", std::ios::binary);
     }
     // if open does not work then throw an exception 
     if (!productFile) {
