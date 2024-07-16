@@ -37,6 +37,10 @@ enum class Status {Open, Assessed, In_Progress, Done, Canceled};
 class Change {
 
     public:
+    // --------------------------------------------------------------------------------------------------------------------
+        /* Default constructor to create an unanitialized "Change" object
+        */
+        Change();
 
     // --------------------------------------------------------------------------------------------------------------------
 
@@ -223,8 +227,7 @@ class Change {
         void setDate(const int newDate);
 
     // --------------------------------------------------------------------------------------------------------------------
-        static std::fstream changeFile;
-        static const char* changeFileName;
+        static fstream changeFile;
         static const int MAX_PRODUCT_NAME_LENGTH = 15;
         static const int MAX_DESCRIPTION_LENGTH = 30;
 
