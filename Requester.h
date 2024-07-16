@@ -99,6 +99,16 @@ class Requester {
 
     // --------------------------------------------------------------------------------------------------------------------
 
+        /* Default Constructor to create a "Requester" Object.
+
+        Parameters: None
+
+        Return: Does not return anything.
+        */
+        Requester();
+
+    // --------------------------------------------------------------------------------------------------------------------
+
         /* Parameterized Constructor to create a "Requester" Object. This requires the input of all private data attributes of the "Requester" class.
     
         Parameter 1 (const char* requesterEmail): In parameter.

@@ -7,10 +7,12 @@
 
 using namespace std;
 
+fstream Requester::requester_file;
+
 // Opens the necessary files relevant for "Requester" records.
 void Requester::initRequester() {
     string filename = "Requesters.bin";
-    requester_file.open(filename, ios::binary);
+    requester_file.open(filename, ios::in | ios::out | ios::binary);
     if (!requester_file.is_open()) {
         throw FileOpenFailedException("File open failed");
     }
@@ -28,20 +30,21 @@ void Requester::startOfRequesterFile() {
 
 // Gets requester record currently pointed to in file.
 Requester* Requester::getRequesterRecord() {
-    char email[MAX_EMAIL_LENGTH + 1];
-    char name[MAX_NAME_LENGTH + 1];
-    int phone;
-    char department[MAX_DEPARTMENT_LENGTH + 1];
-    if (requester_file >> email >> name >> phone >> department) {
-        return new Requester(email, name, phone, department);
+    if (requester_file.is_open()) {
+        Requester* currentRequester = new Requester();
+        requester_file.read(reinterpret_cast<char*>(&currentRequester), sizeof(Requester));
+        return currentRequester;
     }
-    return nullptr;
+    else {
+        throw FileNotOpenException("File not open");
+    }
+    return nullptr; // if end of file
 }
 
 // Takes in the created "Requester" object to write to file.
 void Requester::recordRequester(Requester newRequester) {
     if (requester_file.is_open()) {
-        requester_file << newRequester.getRequesterEmail() << " " << newRequester.getName() << " " << newRequester.getPhone() << " " << newRequester.getDepartment() << endl;
+       requester_file.write(reinterpret_cast<char*>(&newRequester), sizeof(Requester));
     }
     else {
         throw FileNotOpenException("File not open");
@@ -72,6 +75,15 @@ void Requester::exitRequester() {
     else {
         throw FileNotOpenException("File not open");
     }
+}
+
+// Default Constructor to create a "Requester" Object.
+Requester::Requester() {
+    this->requesterEmail[0] = '\0';
+    this->name[0] = '\0';
+    this->phone = 0;
+    this->department[0] = '\0';
+
 }
 
 // Parameterized Constructor to create a "Requester" Object. This requires the input of all private data attributes of the "Requester" class.
