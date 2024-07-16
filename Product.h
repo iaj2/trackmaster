@@ -1,5 +1,3 @@
-
-
 /*
 
 Product.h
@@ -7,6 +5,7 @@ Product.h
 
 Revision History:
 Rev. 1 - 2024/06/29 Original by Bowen Jin and Isaac James
+Rev. 2 - 2024/07/16 Added function implementations 
 
 --------------------------------------------------------------------------------------------------------------------
 
@@ -31,10 +30,22 @@ The class restricts direct access to the private "productName" attribute, ensuri
 #ifndef PRODUCT_H
 #define PRODUCT_H
 
+#include "FileNotOpenException.h"
+#include "FileOpenFailedException.h"
+#include "RecordNotFoundException.h"
 
 class Product {
 
     public:
+    // -------------------------------------------------------------------------------------------------------------------
+
+        /* Default constructor for Product Object 
+
+        Parameters: None
+    
+        Return: Pointer to product Object.
+        */
+        Product();
 
     // --------------------------------------------------------------------------------------------------------------------
 
@@ -44,7 +55,7 @@ class Product {
     
         Return: Does not return anything.
         */
-        static void initProduct();
+        void initProduct();
 
     // --------------------------------------------------------------------------------------------------------------------
 
@@ -66,8 +77,8 @@ class Product {
         Return: reference to the product record or nullptr if end of file.
     
         */
-        static Product* getProductRecord();
-// --------------------------------------------------------------------------------------------------------------------
+        Product* getProductRecord();
+    // --------------------------------------------------------------------------------------------------------------------
 
         /* Takes in the created "Product" object to write to file.
         
@@ -75,17 +86,7 @@ class Product {
         
         Return: Does not return anything.
         */
-        static void recordProduct(Product newProduct);
-
-    // --------------------------------------------------------------------------------------------------------------------
-
-        /* Generates a report for a specific product.
-    
-        Parameters: None
-    
-        Return: Does not return anything.
-        */
-        void reportProduct();
+        void recordProduct(const Product &newProduct);
 
     // --------------------------------------------------------------------------------------------------------------------
 
@@ -105,7 +106,7 @@ class Product {
     
         Return: Does not return anything.
         */
-        static void exitProduct();
+        void exitProduct();
 
     // --------------------------------------------------------------------------------------------------------------------
 
@@ -116,10 +117,6 @@ class Product {
         Return: Does not return anything.
         */
         Product(const char* productName);
-
-    // --------------------------------------------------------------------------------------------------------------------
-
-    private:
 
     // --------------------------------------------------------------------------------------------------------------------
 
@@ -143,7 +140,10 @@ class Product {
 
     // --------------------------------------------------------------------------------------------------------------------
 
+     
 
+    private:
+    
         static const int MAX_PRODUCT_NAME_LENGTH = 15;
         char productName[MAX_PRODUCT_NAME_LENGTH + 1];
 
