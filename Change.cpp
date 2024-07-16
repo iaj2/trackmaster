@@ -7,11 +7,16 @@
 
 using namespace std;
 
-// Default Constructor
+// ------------------------------------------------------------------------------------------------
+// Default constructor
+// ------------------------------------------------------------------------------------------------
 Change::Change() : changeID(0), status(Status::Open), productName(""), anticipatedReleaseID(0),
     description(""), date(0)
   {}
 
+// ------------------------------------------------------------------------------------------------
+// Parameterized Constructor
+// ------------------------------------------------------------------------------------------------
 Change::Change(
   const int changeID, Status status, const char* productName, const int anticipatedReleaseID, 
   const char* description, const int date
@@ -26,6 +31,10 @@ Change::Change(
     this->description[MAX_DESCRIPTION_LENGTH] = '\0';
 }
 
+// ------------------------------------------------------------------------------------------------
+// Initialize the change file
+// Opens the change file or creates it if it doesn't exist.
+// ------------------------------------------------------------------------------------------------
 void Change::initChange() {
     char changeFileName[] = "changes.dat";
 
@@ -44,6 +53,9 @@ void Change::initChange() {
     }
 }
 
+// ------------------------------------------------------------------------------------------------
+// Move the change file pointer to the start
+// -----------------------------------------------------------------------------------------------
 void Change::startOfChangeFile() {
     if (changeFile.is_open()) {
         changeFile.seekp(0, std::ios::beg);
@@ -53,6 +65,9 @@ void Change::startOfChangeFile() {
     }
 }
 
+// ------------------------------------------------------------------------------------------------
+// Move the change file pointer to an offset from the start
+// -----------------------------------------------------------------------------------------------
 void Change::seekChangeFile(int records_offset) {
     if (changeFile.is_open()) {
         changeFile.seekg(sizeof(Change)*records_offset, ios::beg);
@@ -62,6 +77,10 @@ void Change::seekChangeFile(int records_offset) {
     }
 }
 
+// ------------------------------------------------------------------------------------------------
+// Method to get a change record from the file
+// Reads a change record from the currrent file pointer position.
+// -----------------------------------------------------------------------------------------------
 Change* Change::getChangeRecord() {
     // check if the file is open 
     if (changeFile.is_open()) {
@@ -89,7 +108,10 @@ Change* Change::getChangeRecord() {
     }
 }
 
-void Change::recordChange(Change newChange) {
+// ------------------------------------------------------------------------------------------------
+// Record a new change to the end of the file
+// -----------------------------------------------------------------------------------------------
+const void Change::recordChange(Change newChange) {
     // make sure the file is open 
     if (changeFile.is_open()) {
         // seek to the end 
@@ -103,27 +125,47 @@ void Change::recordChange(Change newChange) {
     }
 }
 
+// ------------------------------------------------------------------------------------------------
+// Close the change file
+// -----------------------------------------------------------------------------------------------
 void Change::exitChange() {
     if (changeFile.is_open()) {
         changeFile.close();
     }
 }
 
-// Private functions to retrieve the attributes
+// ------------------------------------------------------------------------------------------------
+// Get change ID
+// -----------------------------------------------------------------------------------------------
 int Change::getchangeID() const { return changeID; }
 
+// ------------------------------------------------------------------------------------------------
+// Get change status
+// -----------------------------------------------------------------------------------------------
 Status Change::getStatus() const { return status; }
 
+// ------------------------------------------------------------------------------------------------
+// Get product name of the change
+// -----------------------------------------------------------------------------------------------
 const char* Change::getProductName() const { 
     return productName; 
 }
 
+// ------------------------------------------------------------------------------------------------
+// Move the Anticipated release ID of the change
+// -----------------------------------------------------------------------------------------------
 int Change::getAnticipatedReleaseID() const { return anticipatedReleaseID; }
 
+// ------------------------------------------------------------------------------------------------
+// Get the description of the change
+// -----------------------------------------------------------------------------------------------
 const char* Change::getDescription() const { 
     return description;
 }
 
+// ------------------------------------------------------------------------------------------------
+// Get the date of the change
+// -----------------------------------------------------------------------------------------------
 char* Change::getDate() const { 
     // Buffer to hold the formatted date (YYYY/MM/DD + null terminator)
     char *formattedDate = new char[11]; // YYYY/MM/DD + null terminator
@@ -142,16 +184,32 @@ char* Change::getDate() const {
 
 // Private functions to set the attributes
 
+// ------------------------------------------------------------------------------------------------
+// Set the change ID
+// -----------------------------------------------------------------------------------------------
 void Change::setchangeID(const int newChangeID) { changeID = newChangeID; }
 
+// ------------------------------------------------------------------------------------------------
+// Set the status
+// -----------------------------------------------------------------------------------------------
 void Change::setStatus(Status newStatus) { status = newStatus; }
 
+// ------------------------------------------------------------------------------------------------
+// Set the anticipated release ID
+// -----------------------------------------------------------------------------------------------
 void Change::setAnticipatedReleaseID(const int newAnticipatedReleaseID) { 
     anticipatedReleaseID = newAnticipatedReleaseID; 
 }
 
+// ------------------------------------------------------------------------------------------------
+// Set the description
+// -----------------------------------------------------------------------------------------------
 void Change::setDescription(const char* newDescription) {
     strncpy(description, newDescription, MAX_DESCRIPTION_LENGTH);
     description[MAX_DESCRIPTION_LENGTH] = '\0';
 }
+
+// ------------------------------------------------------------------------------------------------
+// Set the date
+// -----------------------------------------------------------------------------------------------
 void Change::setDate(const int newDate) { date = newDate; }

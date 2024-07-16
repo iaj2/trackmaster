@@ -48,7 +48,7 @@ void Product::startOfProductFile() {
 }
 
 // -------------------------------------------------------------------------------------------------------------------
-// Function to get a product record from the file
+// Method to get a product record from the file
 // Reads a product record from the current file pointer position.
 // -------------------------------------------------------------------------------------------------------------------
 Product* Product::getProductRecord() {
@@ -81,7 +81,7 @@ Product* Product::getProductRecord() {
 // -------------------------------------------------------------------------------------------------------------------
 // Record a new product at the end of the file
 // -------------------------------------------------------------------------------------------------------------------
-void Product::recordProduct(const Product &newProduct) {
+const void Product::recordProduct(Product &newProduct) {
     // Make sure the file is open
     if (productFile.is_open()) {
         // Seek to the end 

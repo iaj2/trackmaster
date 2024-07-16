@@ -95,7 +95,7 @@ class Change {
 
         Return: Does not return anything.
         */
-        static void recordChange(Change newChange);
+        static const void recordChange(Change newChange);
 
     // --------------------------------------------------------------------------------------------------------------------
 
