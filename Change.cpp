@@ -2,11 +2,10 @@
 #include <fstream>
 #include <cstring>
 #include "Change.h"
+#include "FileOpenFailedException.h"
+#include "FileNotOpenException.h"
 
 using namespace std;
-
-// Static member variables
-std::fstream Change::changeFile;
 
 // Default Constructor
 Change::Change() : changeID(0), status(Status::Open), productName(""), anticipatedReleaseID(0),
@@ -33,48 +32,75 @@ void Change::initChange() {
     // Open file for input/output in binary mode
     changeFile.open(changeFileName, ios::out | ios::in | ios::binary );
 
-    // If file failed to open
-    if(!changeFile) {
-        // create file if it does not exist
-        changeFile.open(changeFileName, ios::out | ios::binary);
-
-        // close & reopen
-        changeFile.close();
-        changeFile.open(changeFileName, ios::in | ios::out | ios::binary);
+     if (!changeFile) {
+        // If the file does not exist, create it
+        std::fstream { changeFileName};
+        // Open for reading and writing
+        changeFile.open(changeFileName, std::ios::binary);
     }
-
-
+    // if open does not work then throw an exception 
+    if (!changeFile) {
+       throw FileOpenFailedException("Change file open failed");
+    }
 }
 
 void Change::startOfChangeFile() {
-    changeFile.seekg(0, ios::beg);
+    if (changeFile.is_open()) {
+        changeFile.seekp(0, std::ios::beg);
+    } else {
+        // if the file isnt open throw an exception 
+        throw FileNotOpenException("Change file is not open");
+    }
+}
+
+void Change::seekChangeFile(int records_offset) {
+    if (changeFile.is_open()) {
+        changeFile.seekg(sizeof(Change)*records_offset, ios::beg);
+    } else {
+        // if the file isnt open throw an exception 
+        throw FileNotOpenException("Change file is not open");
+    }
 }
 
 Change* Change::getChangeRecord() {
-    // return nullptr if at end of file
-    if (changeFile.eof()) return nullptr;
+    // check if the file is open 
+    if (changeFile.is_open()) {
 
-    // create blank change object
-    Change* change = new Change();
+        // return nullptr if at end of file
+        if (changeFile.eof()) {
+            return nullptr;
+        }
 
-    // read change record into object
-    changeFile.read(reinterpret_cast<char*>(change), sizeof(change));
+        // create blank change object   
+        Change* change = new Change();
 
-    // if record not fully read, return nullptr
-    if (changeFile.fail() || changeFile.eof()) {
-        delete change;
-        return nullptr;
+        // read change record into object
+        changeFile.read(reinterpret_cast<char*>(change), sizeof(change));
+
+        // if record not fully read, return nullptr
+        if (changeFile.fail() || changeFile.eof()) {
+            delete change;
+            return nullptr;
+        }
+        return change; 
+    // throw an exception if the file is not found 
+    } else {
+        throw FileNotOpenException("Change file is not open");
     }
-
-    return change;
 }
 
 void Change::recordChange(Change newChange) {
-    // seek to end of file
-    changeFile.seekp(0, ios::end);
+    // make sure the file is open 
+    if (changeFile.is_open()) {
+        // seek to the end 
+        changeFile.seekp(0, std::ios::end);
 
-    // write newChnage information to a record in file
-    changeFile.write(reinterpret_cast<const char*>(&newChange), sizeof(Change));
+        // write it to file 
+        changeFile.write(reinterpret_cast<char*>(&newChange), sizeof(Change));
+    // throw an exception if the file is not open 
+    } else {
+        throw FileNotOpenException("File is not open");
+    }
 }
 
 void Change::exitChange() {

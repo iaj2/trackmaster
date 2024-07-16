@@ -31,6 +31,7 @@ This exported class contains public functions that allow the user to retrieve th
 
 #ifndef CHANGE_H
 #define CHANGE_H
+#include <fstream>
 
 enum class Status {Open, Assessed, In_Progress, Done, Canceled};
 
@@ -64,6 +65,16 @@ class Change {
         
         */
         static void startOfChangeFile();
+    // --------------------------------------------------------------------------------------------------------------------
+
+        /* Seeks to an offset from the start of the change file.
+
+        Parameters: None
+
+        Return: Does not return anything.
+        
+        */
+        static void seekChangeFile(int records_offset);
 
     // --------------------------------------------------------------------------------------------------------------------
     
@@ -227,7 +238,7 @@ class Change {
         void setDate(const int newDate);
 
     // --------------------------------------------------------------------------------------------------------------------
-        static fstream changeFile;
+        static std::fstream changeFile;
         static const int MAX_PRODUCT_NAME_LENGTH = 15;
         static const int MAX_DESCRIPTION_LENGTH = 30;
 

@@ -24,7 +24,7 @@ static void Product::initProduct() {
     }
     // if open does not work then throw an exception 
     if (!productFile) {
-       throw FileOpenFailedException("File open failed");
+       throw FileOpenFailedException("Product file open failed");
     }
 }
 
@@ -35,7 +35,7 @@ static void Product::startOfProductFile() {
         productFile.seekp(0, std::ios::beg); // Use seekg for reading positions
     } else {
         // if the file isnt open throw an exception 
-        throw FileNotOpenException("File is not open");
+        throw FileNotOpenException("Product file is not open");
     }
 }
 
@@ -52,7 +52,7 @@ static Product* Product::getProductRecord() {
         // create blank change object   
         Product* product = new Product();
 
-        // read change record into object
+        // read product record into object
         productFile.read(reinterpret_cast<char*>(product), sizeof(product));
 
         // if record not fully read, return nullptr
@@ -63,7 +63,7 @@ static Product* Product::getProductRecord() {
         return product; 
     // throw an exception if the file is not found 
     } else {
-        throw FileNotOpenException("File is not open");
+        throw FileNotOpenException("Product file is not open");
     }
 }
 
@@ -73,13 +73,12 @@ static void Product::recordProduct(const Product &newProduct) {
     if (productFile.is_open()) {
         // seek to the end 
         productFile.seekp(0, std::ios::end);
-        // create a product object instance 
-        Product currentProduct(newProduct.getProductName());
-        // write it to memory 
-        productFile.write(reinterpret_cast<char*>(&currentProduct), sizeof(Product));
+
+        // write it to file 
+        productFile.write(reinterpret_cast<char*>(&newProduct), sizeof(Product));
     // throw an exception if the file is not open 
     } else {
-        throw FileNotOpenException("File is not open");
+        throw FileNotOpenException("Product file is not open");
     }
 }
 
