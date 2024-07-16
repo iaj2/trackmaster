@@ -126,7 +126,7 @@ class Product {
 
         Return: "Product" object's productName as an character array of maximum size 15.
         */
-        static char* getProductName() const;
+        char* getProductName() const;
 
     // --------------------------------------------------------------------------------------------------------------------
 
