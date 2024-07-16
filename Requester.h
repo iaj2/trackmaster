@@ -85,7 +85,7 @@ class Requester {
 
         Return: Does not return anything.
         */
-        void reportAllRequester();
+        // void reportAllRequester();
 
     // --------------------------------------------------------------------------------------------------------------------
 
