@@ -192,10 +192,16 @@ class Change {
         */
         char* getDate() const;
 
-    
-    private:
-    
-    
+    // --------------------------------------------------------------------------------------------------------------------
+
+        /* Function to retrieve the "Requester" object's record count.
+
+        No parameters.
+
+        Return: "Requester" object's record count.
+        */
+        static int getChangeCount();
+
     // --------------------------------------------------------------------------------------------------------------------
 
         /* Function to set the "Change" object's changeID.
@@ -245,10 +251,12 @@ class Change {
         Return: Does not return anything.
         */
         void setDate(const int newDate);
-
     // --------------------------------------------------------------------------------------------------------------------
+
+    private:
         static const int MAX_PRODUCT_NAME_LENGTH = 15;
         static const int MAX_DESCRIPTION_LENGTH = 30;
+        static int changeCount;
 
         int changeID;
         Status status;

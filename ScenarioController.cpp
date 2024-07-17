@@ -3,6 +3,7 @@
 #include "Change.h"
 #include "Requester.h"
 #include "Product.h"
+#include "Request.h"
 #include "ProductRelease.h"
 #include "UI.h"
 #include <iostream>
@@ -17,6 +18,19 @@ static const int maxRecordOutput = 5;
 
 void clearScreen() {
     system("clear");
+}
+
+Change** getNChanges(const int n) {
+    int i = 0;
+    Change* currentChange = nullptr;
+    Change** changes = new Change*[n]; // Allocate array of Change* pointers
+
+    while (i < n && (currentChange = Change::getChangeRecord()) != nullptr) {
+        changes[i] = currentChange;
+        i++;
+    }
+
+    return changes;
 }
 
 Requester** getNRequesters(const int n) {
@@ -43,6 +57,19 @@ Product** getNProducts(const int n) {
     }
 
     return products;
+}
+
+ProductRelease** getNProductReleases(const int n) {
+    int i = 0;
+    ProductRelease* currentProductRel = nullptr;
+    ProductRelease** productRels = new ProductRelease*[n]; // Allocate array of ProductRlease* pointers
+
+    while (i < n && (currentProductRel = ProductRelease::getProductReleaseRecord()) != nullptr) {
+        productRels[i] = currentProductRel;
+        i++;
+    }
+
+    return productRels;
 }
 
 string formatSelectionRange(int start, int end) {
@@ -94,9 +121,9 @@ void ScenarioController::createRequestControl() {
     while(true) {
         range = formatSelectionRange(1, Requester::getRequesterCount());
         cout << "=== Select Customer ===" << endl;
+        cout << " Name        Email" << endl;
         // list items
         for(int i = 0; i < maxRecordOutput; i++) {
-            cout << " Name" << "        Email" << endl;
             cout << to_string(requesterRecordOffset+i+1) << ")";
             if (requesters[i] == nullptr) {
                 cout << "Record unavailable" << endl;
@@ -133,7 +160,7 @@ void ScenarioController::createRequestControl() {
                 requesterEmail = requesters[option-requesterRecordOffset-1]->getRequesterEmail();
                 break;
             }
-            // check for display next
+            // out of range
             else {
                 // clear screen between attempts
                 clearScreen();
@@ -161,7 +188,300 @@ void ScenarioController::createRequestControl() {
             clearScreen();
     }
 
-    } while (true);
+    // free memory
+    for (int i = 0; i < sizeof(requesters)/sizeof(Requester); i++) {
+                delete requesters[i];
+            }
+            delete[] requesters;
+        }
+    
+    // get date information
+    string date;
+    int productRecordOffset = 0;
+    do {
+        cout << "ENTER the DATE of the request (YYYY-MM-DD) OR ENTER <0> to abort and" << endl;
+        cout << "exit to the main menu:";
+
+        getline(cin, date);
+
+        // check for exit
+        if(date == "0") return;
+
+    } while(date != "\0");
+    
+    // get product information
+    Product** products = getNProducts(maxRecordOutput);
+    string productSelection;
+    string productName;
+    while (true) {
+        range = formatSelectionRange(1, Product::getProductCount());
+        cout << "=== Select Product ===" << endl;
+        for(int i = 0; i< maxRecordOutput; i++) {
+            cout << to_string(productRecordOffset+i+1) << ")";
+            if (products[i] == nullptr) {
+                cout << "Record unavailable" << endl;
+            }
+            else {
+                cout << products[i]->getProductName() << endl;
+            }
+        }
+        cout << "ENTER selection" << range << "OR <0> to abort and exit to the main menu:";
+
+        getline(cin, productSelection);
+
+        try {
+            // Attempt to convert string to integer using stoi
+            option = stoi(productSelection);
+
+            // check for exit
+            if (option == 0) return;
+
+            // check selected valid option
+            if(option > 0 && option <= Product::getProductCount()) {
+                // save product name
+                productName = products[option-productRecordOffset-1]->getProductName();
+                break;
+            }
+            // check for display next
+            else {
+                // clear screen between attempts
+                clearScreen();
+                cout << "Error: The option you entered does not exist on the list" << endl << endl;
+            }
+
+        } catch (const exception& e) {
+            // clear screen between attempts
+            if (productSelection == "p" && productRecordOffset - maxRecordOutput >= 0) {
+                // move pointer and get previous set of items
+                productRecordOffset -= maxRecordOutput;
+                Product::seekProductFile(productRecordOffset);
+                products = getNProducts(maxRecordOutput);
+            }
+            else if (requesterSelection == "n" && productRecordOffset + maxRecordOutput <= Product::getProductCount()) {
+                // move pointer and get next set of items
+                productRecordOffset += maxRecordOutput;
+                Product::seekProductFile(productRecordOffset);
+                products = getNProducts(maxRecordOutput);
+            }
+            else {
+                cout << "Error: Input is invalid. Re-enter input" << endl;
+                cout << "Enter 0 to abort and return to the main menu" << endl << endl;
+            }
+            clearScreen();
+    }
+    // free memory
+    for (int i = 0; i < sizeof(products)/sizeof(Product); i++) {
+                delete products[i];
+            }
+            delete[] products;
+        }
+    
+    // get product release information
+    int productRelRecordOffset = 0;
+    ProductRelease::startOfProductReleaseFile();
+    ProductRelease** productReleases = getNProductReleases(maxRecordOutput);
+    string productRelSelection;
+    int productReleaseID;
+
+    while(true) {
+        range = formatSelectionRange(1, ProductRelease::getProductRelCount());
+        cout << "=== Select Product Release ===" << endl;
+        // list items
+        for(int i = 0; i < maxRecordOutput; i++) {
+            cout << to_string(productRelRecordOffset+i+1) << ")";
+            if (productReleases[i] == nullptr) {
+                cout << "Record unavailable" << endl;
+            }
+            else {
+                cout << to_string(productReleases[i]->getReleaseID()) << endl;
+            }
+        }
+        // if list of records too long
+        if (maxRecordOutput < ProductRelease::getProductRelCount()) {
+            cout << "*..." << endl;
+            if (productRelRecordOffset > maxRecordOutput) {
+            cout << "p) display previous items" << endl;
+            // seek
+            }
+            cout << "n) display next items" << endl;
+        }
+        cout << "ENTER selection " << range << " OR <0> to abort and exit to the main menu:";
+
+        getline(cin, productRelSelection);
+
+        try {
+            // Attempt to convert string to integer using stoi
+            option = stoi(productRelSelection);
+
+            // check for exit
+            if (option == 0) return;
+
+            // check selected valid option
+            if(option > 0 && option <= ProductRelease::getProductRelCount()) {
+                // save release ID
+                productReleaseID = productReleases[option-productRelRecordOffset-1]->getReleaseID();
+                break;
+            }
+            // out of range
+            else {
+                // clear screen between attempts
+                clearScreen();
+                cout << "Error: The option you entered does not exist on the list" << endl << endl;
+            }
+
+        } catch (const exception& e) {
+            // clear screen between attempts
+            if (productRelSelection == "p" && productRelRecordOffset - maxRecordOutput >= 0) {
+                // move pointer and get previous set of items
+                productRelRecordOffset -= maxRecordOutput;
+                ProductRelease::seekProductRelFile(productRelRecordOffset);
+                productReleases = getNProductReleases(maxRecordOutput);
+            }
+            else if (requesterSelection == "n" && requesterRecordOffset + maxRecordOutput <= ProductRelease::getProductRelCount()) {
+                // move pointer and get next set of items
+                productRelRecordOffset += maxRecordOutput;
+                ProductRelease::seekProductRelFile(requesterRecordOffset);
+                productReleases = getNProductReleases(maxRecordOutput);
+            }
+            else {
+                cout << "Error: Input is invalid. Re-enter input" << endl;
+                cout << "Enter 0 to abort and return to the main menu" << endl << endl;
+            }
+            clearScreen();
+    }
+    // free memory
+    for (int i = 0; i < sizeof(productReleases)/sizeof(ProductRelease); i++) {
+                delete productReleases[i];
+            }
+            delete[] productReleases;
+        }
+    
+
+    // get priority
+    Request::Priority priority;
+    string prioritySelection;
+  
+    cout << "=== Select a Priority ===" << endl;
+    cout << "1) Lowest" << endl;
+    cout << "2) Low" << endl;
+    cout << "3) Medium" << endl;
+    cout << "4) High" << endl;
+    cout << "5) Highest" << endl;
+    cout << "ENTER selection [1-5] OR <0> to abort and exit to the main menu:";
+
+    getline(cin, prioritySelection);
+
+    // check for exit
+    if(prioritySelection == "0") return;
+
+    priority = (Request::Priority) (stoi(prioritySelection) - 1);
+
+    // select a change item
+    int changeRecordOffset = 0;
+    // seek to start of file and get first set of items
+    Change::startOfChangeFile();
+    Change** changes = getNChanges(maxRecordOutput);
+    string changeSelection;
+    int changeID;
+
+    while(true) {
+        range = formatSelectionRange(1, Change::getChangeCount());
+        cout << "=== Select Change Item ===" << endl;
+        cout << "  Description                  ChangeID" << endl;
+        // list items
+        for(int i = 0; i < maxRecordOutput; i++) {
+            cout << to_string(changeRecordOffset+i+1) << ")";
+            if (changes[i] == nullptr) {
+                cout << "Record unavailable" << endl;
+            }
+            else {
+                cout << changes[i]->getDescription() << "                  " << \
+                to_string(changes[i]->getchangeID()) << endl;
+            }
+        }
+        // if list of records too long
+        if (maxRecordOutput < Change::getChangeCount()) {
+            cout << "*..." << endl;
+            if (changeRecordOffset > maxRecordOutput) {
+            cout << "p) display previous items" << endl;
+            // seek
+            }
+            cout << "n) display next items" << endl;
+        }
+        cout << "ENTER selection " << range << " OR <0> to abort and exit to the main menu:";
+        
+        getline(cin, changeSelection);
+
+        try {
+            // Attempt to convert string to integer using stoi
+            option = stoi(changeSelection);
+
+            // check for exit
+            if (option == 0) return;
+
+            // check selected valid option
+            if(option > 0 && option <= Change::getChangeCount()) {
+                // save change id
+                changeID = changes[option-changeRecordOffset-1]->getchangeID();
+                break;
+            }
+            // out of range
+            else {
+                // clear screen between attempts
+                clearScreen();
+                cout << "Error: The option you entered does not exist on the list" << endl << endl;
+            }
+        }
+        catch (const exception& e) {
+            // clear screen between attempts
+            if (changeSelection == "p" && changeRecordOffset - maxRecordOutput >= 0) {
+                // move pointer and get previous set of items
+                changeRecordOffset -= maxRecordOutput;
+                Change::seekChangeFile(changeRecordOffset);
+                changes = getNChanges(maxRecordOutput);
+            }
+            else if (requesterSelection == "n" && changeRecordOffset + maxRecordOutput <= Change::getChangeCount()) {
+                // move pointer and get next set of items
+                changeRecordOffset += maxRecordOutput;
+                Change::seekChangeFile(changeRecordOffset);
+                changes = getNChanges(maxRecordOutput);
+            }
+            else {
+                cout << "Error: Input is invalid. Re-enter input" << endl;
+                cout << "Enter 0 to abort and return to the main menu" << endl << endl;
+            }
+            clearScreen();
+        }
+    }
+
+
+    // Confirm new Request information to the user
+    char confirm;
+    do {
+        cout << "=== New Request Information ===" << endl;
+        cout << "Requester (" << reqTSelection << "): " << requesterEmail << endl;  // TODO: add requester name
+        cout << "Product: " << endl;
+        cout << "Priority: " << endl;
+        cout << "Change ID: " << endl;
+        cout << "ENTER <1> to confirm OR <0> to abort and exit to the main menu:" << endl;
+
+        confirm = cin.get();
+
+        // check for exit
+        if(confirm == '0') return;
+
+        if(confirm != '1') {
+            // clear screen between attempts
+            clearScreen();
+           
+            cout << "Error: Input is invalid. Re-enter input" << endl;
+            cout << "Enter 0 to abort and return to the main menu" << endl << endl;
+        }
+    } while (confirm != '1');
+
+    // record request
+    Request* newRecord = new Request(changeID, requesterEmail, productName, productReleaseID, priority);
+    Request::recordRequest(newRecord);
     
 }
 
@@ -548,157 +868,6 @@ void printScenario2Control() {
 
     // Clean up allocated memory
     delete[] products;
-}
-
-
-// REMOVE
-int main () {
-    Requester::initRequester();
-    ScenarioController::createRequestControl();
-    cout << "EXITED" << endl;
-    return 0;
-}
-    // free memory
-    for (int i = 0; i < sizeof(requesters)/sizeof(Requester); i++) {
-                delete requesters[i];
-            }
-            delete[] requesters;
-        }
-    
-    // get date information
-    string date;
-    int productRecordOffset = 0;
-    do {
-        cout << "ENTER the DATE of the request (YYYY-MM-DD) OR ENTER <0> to abort and" << endl;
-        cout << "exit to the main menu:";
-
-        getline(cin, date);
-
-        // check for exit
-        if(date == "0") return;
-
-    } while(date != "\0");
-    
-    // get product information
-    Product** products = getNProducts(maxRecordOutput);
-    string productSelection;
-    string productName;
-    while (true) {
-        range = formatSelectionRange(1, Product::getProductCount());
-        cout << "=== Select Product ===" << endl;
-        for(int i = 0; i< maxRecordOutput; i++) {
-            cout << to_string(productRecordOffset+i+1) << ")";
-            if (products[i] == nullptr) {
-                cout << "Record unavailable" << endl;
-            }
-            else {
-                cout << products[i]->getProductName() << endl;
-            }
-        }
-        cout << "ENTER selection" << range << "OR <0> to abort and exit to the main menu:";
-
-        getline(cin, productSelection);
-
-        try {
-            // Attempt to convert string to integer using stoi
-            option = stoi(productSelection);
-
-            // check for exit
-            if (option == 0) return;
-
-            // check selected valid option
-            if(option > 0 && option <= Product::getProductCount()) {
-                // save product name
-                productName = products[option-productRecordOffset-1]->getProductName();
-                break;
-            }
-            // check for display next
-            else {
-                // clear screen between attempts
-                clearScreen();
-                cout << "Error: The option you entered does not exist on the list" << endl << endl;
-            }
-
-        } catch (const exception& e) {
-            // clear screen between attempts
-            if (productSelection == "p" && productRecordOffset - maxRecordOutput >= 0) {
-                // move pointer and get previous set of items
-                productRecordOffset -= maxRecordOutput;
-                Product::seekProductFile(productRecordOffset);
-                products = getNProducts(maxRecordOutput);
-            }
-            else if (requesterSelection == "n" && productRecordOffset + maxRecordOutput <= Product::getProductCount()) {
-                // move pointer and get next set of items
-                productRecordOffset += maxRecordOutput;
-                Product::seekProductFile(productRecordOffset);
-                products = getNProducts(maxRecordOutput);
-            }
-            else {
-                cout << "Error: Input is invalid. Re-enter input" << endl;
-                cout << "Enter 0 to abort and return to the main menu" << endl << endl;
-            }
-            clearScreen();
-    }
-    // free memory
-    for (int i = 0; i < sizeof(products)/sizeof(Product); i++) {
-                delete products[i];
-            }
-            delete[] products;
-        }
-    
-    // get product release information
-    
-
-    // get priority
-    Request::Priority priority;
-    string prioritySelection;
-  
-    cout << "=== Select a Priority ===" << endl;
-    cout << "1) Lowest" << endl;
-    cout << "2) Low" << endl;
-    cout << "3) Medium" << endl;
-    cout << "4) High" << endl;
-    cout << "5) Highest" << endl;
-    cout << "ENTER selection [1-5] OR <0> to abort and exit to the main menu:";
-
-    getline(cin, prioritySelection);
-
-    // check for exit
-    if(prioritySelection == "0") return;
-
-    priority = (Request::Priority) (stoi(prioritySelection) - 1);
-
-    // TODO: select a change item
-
-    const int id = 123;
-
-    // Change* newChange = new Change(
-    //     id, Change::Status::Open, productName, anticipatedreleaseID, description, date
-    // )
-
-    // Confirm new Request information to the user
-    char confirm;
-    do {
-        cout << "=== New Request Information ===" << endl;
-        cout << "Requester (" << reqTSelection << "): " << requesterEmail << endl;  // TODO: add requester name
-        cout << "Product: " << endl;
-        cout << "Priority: " << endl;
-        cout << "Change ID: " << endl;
-        cout << "ENTER <1> to confirm OR <0> to abort and exit to the main menu:" << endl;
-
-        confirm = cin.get();
-
-        // check for exit
-        if(confirm == '0') return;
-
-        if(confirm != '1') {
-            // clear screen between attempts
-            clearScreen();
-           
-            cout << "Error: Input is invalid. Re-enter input" << endl;
-            cout << "Enter 0 to abort and return to the main menu" << endl << endl;
-        }
-    } while (confirm != '1');
 }
 
 

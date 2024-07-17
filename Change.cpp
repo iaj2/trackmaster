@@ -7,6 +7,7 @@
 
 using namespace std;
 
+int Change::changeCount = 0;
 fstream Change::changeFile;
 
 // ------------------------------------------------------------------------------------------------
@@ -121,6 +122,9 @@ const void Change::recordChange(Change newChange) {
 
         // write it to file 
         changeFile.write(reinterpret_cast<char*>(&newChange), sizeof(Change));
+
+        // increase count
+        changeCount++;
     // throw an exception if the file is not open 
     } else {
         throw FileNotOpenException("File is not open");
@@ -199,7 +203,10 @@ char* Change::getDate() const {
     return formattedDate;
 }
 
-// Private functions to set the attributes
+// Function to retrieve the "Change" object's record count.
+int Change::getChangeCount() {
+    return changeCount;
+}
 
 // ------------------------------------------------------------------------------------------------
 // Set the change ID

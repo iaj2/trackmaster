@@ -69,6 +69,17 @@ class ProductRelease {
 
         */
         static void startOfProductReleaseFile();
+    
+    // --------------------------------------------------------------------------------------------------------------------
+
+        /* Seeks to an offset from the start of the requester file.
+
+        Parameters: None
+
+        Return: Does not return anything.
+        
+        */
+        static void seekProductRelFile(int records_offset);
 
     // --------------------------------------------------------------------------------------------------------------------
 
@@ -152,6 +163,16 @@ class ProductRelease {
 
     // --------------------------------------------------------------------------------------------------------------------
 
+        /* Function to retrieve the "ProductRelease" object's record count.
+
+        No parameters.
+
+        Return: "ProductRelease" object's record count.
+        */
+        static int getProductRelCount();
+
+    // --------------------------------------------------------------------------------------------------------------------
+
         /* Function to set the "ProductRelease" object's releaseID.
 
         Parameter 1 (const int newReleaseID): In parameter.
@@ -177,10 +198,13 @@ class ProductRelease {
 
     private:
         static const int MAX_PRODUCT_NAME_LENGTH = 15;
+        static int productRelCount;
 
         char productName[MAX_PRODUCT_NAME_LENGTH + 1];
         int releaseID;
         int releaseDate;
+
+        static std::fstream productReleaseFile;
 };
 
 #endif

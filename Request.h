@@ -78,7 +78,7 @@ class Request {
         Return: Does not return anything.
         */
 
-        static void recordRequest(Request newRequest);
+        static const void recordRequest(Request newRequest);
 
     // --------------------------------------------------------------------------------------------------------------------
 
