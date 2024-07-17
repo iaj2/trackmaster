@@ -5,8 +5,8 @@
 
 using namespace std;
 
-// Use static global file stream for product file operations
-static std::fstream productReleaseFile;
+int ProductRelease::productRelCount = 0;
+fstream ProductRelease::productReleaseFile;
 
 // -------------------------------------------------------------------------------------------------------------------
 // Default constructor
@@ -42,6 +42,18 @@ void ProductRelease::startOfProductReleaseFile() {
     } else {
         // If the file isn't open, throw an exception
         throw FileNotOpenException("File is not open");
+    }
+}
+
+// ------------------------------------------------------------------------------------------------
+// Move the productRelease file pointer to an offset from the start
+// -----------------------------------------------------------------------------------------------
+void ProductRelease::seekProductRelFile(int records_offset) {
+    if (productReleaseFile.is_open()) {
+        productReleaseFile.seekg(sizeof(ProductRelease)*records_offset, ios::beg);
+    } else {
+        // if the file isnt open throw an exception 
+        throw FileNotOpenException("Product release file is not open");
     }
 }
 
@@ -87,6 +99,8 @@ void ProductRelease::recordProductRelease(const ProductRelease& newProductReleas
         ProductRelease currentProductRelease(newProductRelease.getProductName(), newProductRelease.getReleaseID(), newProductRelease.getReleaseDate());
         // Write it to memory
         productReleaseFile.write(reinterpret_cast<char*>(&currentProductRelease), sizeof(ProductRelease));
+        // increase count
+        productRelCount++;
     } else {
         // Throw an exception if the file is not open
         throw FileNotOpenException("File is not open");
@@ -158,6 +172,11 @@ int ProductRelease::getReleaseID() const {
 // -------------------------------------------------------------------------------------------------------------------
 int ProductRelease::getReleaseDate() const {
     return releaseDate;
+}//-------------------------------------------------------------------------------------------------------------------
+// Function to retrieve the "Requester" object's record count.
+// -------------------------------------------------------------------------------------------------------------------
+int ProductRelease::getProductRelCount() {
+    return productRelCount;
 }
 
 // -------------------------------------------------------------------------------------------------------------------

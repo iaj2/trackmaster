@@ -8,6 +8,8 @@ using namespace std;
 // Use static file stream for product file operations
 fstream Product::productFile;
 
+int Product::productCount = 0;
+
 // -------------------------------------------------------------------------------------------------------------------
 // Default constructor
 // -------------------------------------------------------------------------------------------------------------------
@@ -44,6 +46,18 @@ void Product::startOfProductFile() {
         throw FileNotOpenException("Product file is not open");
         // If the file isn't open, throw an exception
         throw FileNotOpenException("File is not open");
+    }
+}
+
+// ------------------------------------------------------------------------------------------------
+// Move the product file pointer to an offset from the start
+// -----------------------------------------------------------------------------------------------
+void Product::seekProductFile(int records_offset) {
+    if (productFile.is_open()) {
+        productFile.seekg(sizeof(Product)*records_offset, ios::beg);
+    } else {
+        // if the file isnt open throw an exception 
+        throw FileNotOpenException("Product file is not open");
     }
 }
 
@@ -89,11 +103,9 @@ const void Product::recordProduct(Product &newProduct) {
 
         // write it to file 
         productFile.write(reinterpret_cast<char*>(&newProduct), sizeof(Product));
-    // throw an exception if the file is not open 
-        // Create a product object instance 
-        Product currentProduct(newProduct.getProductName());
-        // Write it to memory 
-        productFile.write(reinterpret_cast<char*>(&currentProduct), sizeof(Product));
+        
+        // increase count
+        productCount++;
     } else {
         throw FileNotOpenException("Product file is not open");
         // Throw an exception if the file is not open
@@ -147,6 +159,13 @@ Product::Product(const char* newProductName) {
 // -------------------------------------------------------------------------------------------------------------------
 char* Product::getProductName() const {
     return const_cast<char*>(this->productName);
+}
+
+// -------------------------------------------------------------------------------------------------------------------
+// Get the product name
+// -------------------------------------------------------------------------------------------------------------------
+ int Product::getProductCount() {
+    return productCount;
 }
 
 // -------------------------------------------------------------------------------------------------------------------

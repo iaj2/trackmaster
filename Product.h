@@ -71,6 +71,17 @@ class Product {
 
     // --------------------------------------------------------------------------------------------------------------------
 
+        /* Seeks to an offset from the start of the product file.
+
+        Parameters: None
+
+        Return: Does not return anything.
+        
+        */
+        static void seekProductFile(int records_offset);
+
+    // --------------------------------------------------------------------------------------------------------------------
+
         /* Gets product record currently pointed to in file.
     
         Parameters: None
@@ -131,6 +142,16 @@ class Product {
 
     // --------------------------------------------------------------------------------------------------------------------
 
+        /* Function to retrieve the "Product" object's record count.
+
+        No parameters.
+
+        Return: "Product" object's record count.
+        */
+        static int getProductCount();
+
+    // --------------------------------------------------------------------------------------------------------------------
+
         /* Function to set the "Product" object's productName.
 
         Parameter 1 (const char* newProductName): In parameter.
@@ -146,6 +167,7 @@ class Product {
     private:
         static const int MAX_PRODUCT_NAME_LENGTH = 15;
         char productName[MAX_PRODUCT_NAME_LENGTH + 1];
+        static int productCount;
 
         static std::fstream productFile;
 };
