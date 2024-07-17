@@ -58,6 +58,17 @@ class Requester {
 
     // --------------------------------------------------------------------------------------------------------------------
 
+        /* Seeks to an offset from the start of the requester file.
+
+        Parameters: None
+
+        Return: Does not return anything.
+        
+        */
+        static void seekRequesterFile(int records_offset);
+
+    // --------------------------------------------------------------------------------------------------------------------
+
         /* Gets requester record currently pointed to in file.
 
         Parameters: None
@@ -222,7 +233,7 @@ class Requester {
         int phone;
         char department[MAX_DEPARTMENT_LENGTH + 1];
 
-        static std::fstream requester_file;
+        static std::fstream requesterFile;
 };
 
 #endif

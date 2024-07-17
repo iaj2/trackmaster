@@ -7,33 +7,48 @@
 
 using namespace std;
 
-fstream Requester::requester_file;
 int Requester::recordCount = 10;
 
+// ------------------------------------------------------------------------------------------------
 // Opens the necessary files relevant for "Requester" records.
+// ------------------------------------------------------------------------------------------------
 void Requester::initRequester() {
     string filename = "Requesters.bin";
-    requester_file.open(filename, ios::in | ios::out | ios::binary);
-    if (!requester_file.is_open()) {
+    requesterFile.open(filename, ios::in | ios::out | ios::binary);
+    if (!requesterFile.is_open()) {
         throw FileOpenFailedException("File open failed");
     }
 }
-
+// ------------------------------------------------------------------------------------------------
 // Seeks to start of the requester file.
+// ------------------------------------------------------------------------------------------------
 void Requester::startOfRequesterFile() {
-    if (requester_file.is_open()) {
-        requester_file.seekg(0, ios::beg);
+    if (requesterFile.is_open()) {
+        requesterFile.seekg(0, ios::beg);
     }
     else {
         throw FileNotOpenException("File not open");
     }
 }
 
+// ------------------------------------------------------------------------------------------------
+// Move the change file pointer to an offset from the start
+// -----------------------------------------------------------------------------------------------
+void Requester::seekRequesterFile(int records_offset) {
+    if (requesterFile.is_open()) {
+        requesterFile.seekg(sizeof(Requester)*records_offset, ios::beg);
+    } else {
+        // if the file isnt open throw an exception 
+        throw FileNotOpenException("Requester file is not open");
+    }
+}
+// ------------------------------------------------------------------------------------------------
 // Gets requester record currently pointed to in file.
+// ------------------------------------------------------------------------------------------------
 Requester* Requester::getRequesterRecord() {
-    if (requester_file.is_open()) {
+    if (requesterFile.is_open()) {
         Requester* currentRequester = new Requester();
-        requester_file.read(reinterpret_cast<char*>(&currentRequester), sizeof(Requester));
+        requesterFile.read(reinterpret_cast<char*>(&currentRequester), sizeof(Requester));
         return currentRequester;
     }
     else {
@@ -44,8 +59,8 @@ Requester* Requester::getRequesterRecord() {
 
 // Takes in the created "Requester" object to write to file.
 void Requester::recordRequester(Requester newRequester) {
-    if (requester_file.is_open()) {
-       requester_file.write(reinterpret_cast<char*>(&newRequester), sizeof(Requester));
+    if (requesterFile.is_open()) {
+       requesterFile.write(reinterpret_cast<char*>(&newRequester), sizeof(Requester));
        // increase count
        recordCount++;
     }
@@ -72,8 +87,8 @@ void Requester::reportAllRequester() {
 
 // Exits the Requester Operation.
 void Requester::exitRequester() {
-    if (requester_file.is_open()) {
-        requester_file.close();
+    if (requesterFile.is_open()) {
+        requesterFile.close();
     }
     else {
         throw FileNotOpenException("File not open");

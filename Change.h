@@ -247,10 +247,8 @@ class Change {
         void setDate(const int newDate);
 
     // --------------------------------------------------------------------------------------------------------------------
-        static std::fstream changeFile;
         static const int MAX_PRODUCT_NAME_LENGTH = 15;
         static const int MAX_DESCRIPTION_LENGTH = 30;
-
 
         int changeID;
         Status status;
@@ -258,6 +256,8 @@ class Change {
         int anticipatedReleaseID;
         char description[MAX_DESCRIPTION_LENGTH + 1];
         int date;
+
+        static std::fstream changeFile;
 };
 
 #endif
