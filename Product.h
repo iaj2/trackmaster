@@ -144,7 +144,7 @@ class Product {
      
 
     private:
-        static const int MAX_PRODUCT_NAME_LENGTH = 15;
+        z
         char productName[MAX_PRODUCT_NAME_LENGTH + 1];
 
         static std::fstream productFile;

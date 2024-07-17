@@ -221,7 +221,7 @@ class Requester {
 
     // --------------------------------------------------------------------------------------------------------------------
 
-    private:
+z
 
         static const int MAX_EMAIL_LENGTH = 30;
         static const int MAX_NAME_LENGTH = 15;
