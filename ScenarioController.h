@@ -19,16 +19,6 @@ This module contains the class for the "ScenarioController" entity. It encapsula
 #define SCENARIOCONTROLLER_H
 
 namespace ScenarioController {
-    
-// --------------------------------------------------------------------------------------------------------------------
-    
-    /* Initializes the "ScenarioController" object with default values by calling the default constructor.
-    
-    Parameters: None
-    
-    Return: Does not return anything.
-    */
-    void initScenarioController();
 
 // --------------------------------------------------------------------------------------------------------------------
     

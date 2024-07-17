@@ -32,7 +32,7 @@ The class restricts direct access to the private "productName" attribute, ensuri
 
 #include "FileNotOpenException.h"
 #include "FileOpenFailedException.h"
-#include "RecordNotFoundException.h"
+// #include "RecordNotFoundException.h"  this is causing errors
 
 class Product {
 
@@ -86,7 +86,7 @@ class Product {
         
         Return: Does not return anything.
         */
-        static void recordProduct(const Product &newProduct);
+        static const void recordProduct(Product &newProduct);
 
     // --------------------------------------------------------------------------------------------------------------------
 

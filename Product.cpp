@@ -28,7 +28,7 @@ void Product::initProduct() {
     }
     // If open does not work then throw an exception
     if (!productFile) {
-       throw FileOpenFailedException("File open failed");
+       throw FileOpenFailedException("Product file open failed");
     }
 }
 
@@ -40,13 +40,15 @@ void Product::startOfProductFile() {
     if (productFile.is_open()) {
         productFile.seekp(0, std::ios::beg); // Use seekg for reading positions
     } else {
+        // if the file isnt open throw an exception 
+        throw FileNotOpenException("Product file is not open");
         // If the file isn't open, throw an exception
         throw FileNotOpenException("File is not open");
     }
 }
 
 // -------------------------------------------------------------------------------------------------------------------
-// Function to get a product record from the file
+// Method to get a product record from the file
 // Reads a product record from the current file pointer position.
 // -------------------------------------------------------------------------------------------------------------------
 Product* Product::getProductRecord() {
@@ -70,6 +72,7 @@ Product* Product::getProductRecord() {
         }
         return product; 
     } else {
+        throw FileNotOpenException("Product file is not open");
         // Throw an exception if the file is not open
         throw FileNotOpenException("File is not open");
     }
@@ -78,16 +81,21 @@ Product* Product::getProductRecord() {
 // -------------------------------------------------------------------------------------------------------------------
 // Record a new product at the end of the file
 // -------------------------------------------------------------------------------------------------------------------
-void Product::recordProduct(const Product &newProduct) {
+const void Product::recordProduct(Product &newProduct) {
     // Make sure the file is open
     if (productFile.is_open()) {
         // Seek to the end 
         productFile.seekp(0, std::ios::end);
+
+        // write it to file 
+        productFile.write(reinterpret_cast<char*>(&newProduct), sizeof(Product));
+    // throw an exception if the file is not open 
         // Create a product object instance 
         Product currentProduct(newProduct.getProductName());
         // Write it to memory 
         productFile.write(reinterpret_cast<char*>(&currentProduct), sizeof(Product));
     } else {
+        throw FileNotOpenException("Product file is not open");
         // Throw an exception if the file is not open
         throw FileNotOpenException("File is not open");
     }

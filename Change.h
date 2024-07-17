@@ -31,15 +31,35 @@ This exported class contains public functions that allow the user to retrieve th
 
 #ifndef CHANGE_H
 #define CHANGE_H
+#include <fstream>
+#include <iostream>
 
 enum class Status {Open, Assessed, In_Progress, Done, Canceled};
 
 class Change {
 
     public:
+    // --------------------------------------------------------------------------------------------------------------------
+        /* Default constructor to create an unanitialized "Change" object
+        */
+        Change();
 
     // --------------------------------------------------------------------------------------------------------------------
+        /* Parameterized Constructor to create a "Change" Object.
+        This requires the input of all private data attributes of the "Change" class.
 
+        Parameter 1 (const int changeID): In parameter.
+        Parameter 2 (Status status): In parameter.
+        Parameter 3 (const char* productName): In parameter.
+        Parameter 4 (const int anticipatedReleaseID): In parameter.
+        Parameter 5 (const char* description): In parameter.
+        Parameter 6 (const int date): In parameter.
+
+        Return: Does not return anything.
+        */
+        Change(const int changeID, Status status, const char* productName, const int anticipatedReleaseID, const char* description, const int date);
+
+    // --------------------------------------------------------------------------------------------------------------------
         /* Opens the necessary files relevant for "Change" records.
 
         This function is static, therefore it does not require an instance of the class to be called.
@@ -60,6 +80,16 @@ class Change {
         
         */
         static void startOfChangeFile();
+    // --------------------------------------------------------------------------------------------------------------------
+
+        /* Seeks to an offset from the start of the change file.
+
+        Parameters: None
+
+        Return: Does not return anything.
+        
+        */
+        static void seekChangeFile(int records_offset);
 
     // --------------------------------------------------------------------------------------------------------------------
     
@@ -80,7 +110,7 @@ class Change {
 
         Return: Does not return anything.
         */
-        static void recordChange(Change newChange);
+        static const void recordChange(Change newChange);
 
     // --------------------------------------------------------------------------------------------------------------------
 
@@ -94,24 +124,14 @@ class Change {
 
     // --------------------------------------------------------------------------------------------------------------------
 
-        /* Parameterized Constructor to create a "Change" Object.
-        This requires the input of all private data attributes of the "Change" class.
+        /* Function to convert the status to string
+        
+        Parameters: None
 
-        Parameter 1 (const int changeID): In parameter.
-        Parameter 2 (Status status): In parameter.
-        Parameter 3 (const char* productName): In parameter.
-        Parameter 4 (const int anticipatedReleaseID): In parameter.
-        Parameter 5 (const char* description): In parameter.
-        Parameter 6 (const int date): In parameter.
-
-        Return: Does not return anything.
+        Return: Status enum as string
         */
-        Change(const int changeID, Status status, const char* productName, const int anticipatedReleaseID, const char* description, const int date);
+       static std::string statusToString(Status status);
 
-    // --------------------------------------------------------------------------------------------------------------------
-    
-    private:
-    
     // --------------------------------------------------------------------------------------------------------------------
 
         /* Function to retrieve the "Change" object's changeID.
@@ -172,6 +192,10 @@ class Change {
         */
         char* getDate() const;
 
+    
+    private:
+    
+    
     // --------------------------------------------------------------------------------------------------------------------
 
         /* Function to set the "Change" object's changeID.
@@ -224,7 +248,6 @@ class Change {
 
     // --------------------------------------------------------------------------------------------------------------------
         static std::fstream changeFile;
-        static const char* changeFileName;
         static const int MAX_PRODUCT_NAME_LENGTH = 15;
         static const int MAX_DESCRIPTION_LENGTH = 30;
 

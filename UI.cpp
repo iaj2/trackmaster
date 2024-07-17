@@ -3,11 +3,10 @@
 #include <iostream>
 
 using namespace std;
-using namespace UI;
 using namespace ScenarioController;
 
 
-void initUI() {
+void UI::initUI() {
     
     int main_choice;
     int create_choice;
@@ -129,7 +128,7 @@ void initUI() {
 
 
 
-void mainMenu() {
+void UI::mainMenu() {
     cout << "    === MAIN MENU ===" << endl;
     cout << "1) Create" << endl;
     cout << "2) Update" << endl;
@@ -140,7 +139,7 @@ void mainMenu() {
 }
 
 
-void createMenu() {
+void UI::createMenu() {
     cout << "    === Create Menu ===" << endl;
     cout << "1) Create Request" << endl;
     cout << "2) Create Requester" << endl;
@@ -150,7 +149,7 @@ void createMenu() {
 }
 
 
-void updateMenu() {
+void UI::updateMenu() {
     cout << "    === Update Menu ===" << endl;
     cout << "1) Assess new change items" << endl;
     cout << "2) Update a change item" << endl;
@@ -158,7 +157,7 @@ void updateMenu() {
 }
 
 
-void printMenu() {
+void UI::printMenu() {
     cout << "        === Print Menu ===" << endl;
     cout << "1) Print a Report of Upcoming Release Changes" << endl;
     cout << "   Description: A list of all assessed changes for a specific product" << endl;

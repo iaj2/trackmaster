@@ -8,6 +8,7 @@
 using namespace std;
 
 fstream Requester::requester_file;
+int Requester::recordCount = 10;
 
 // Opens the necessary files relevant for "Requester" records.
 void Requester::initRequester() {
@@ -45,6 +46,8 @@ Requester* Requester::getRequesterRecord() {
 void Requester::recordRequester(Requester newRequester) {
     if (requester_file.is_open()) {
        requester_file.write(reinterpret_cast<char*>(&newRequester), sizeof(Requester));
+       // increase count
+       recordCount++;
     }
     else {
         throw FileNotOpenException("File not open");
@@ -115,6 +118,12 @@ int Requester::getPhone() const {
 // Function to retrieve the "Requester" object's department.
 const char* Requester::getDepartment() const {
     return department;
+}
+
+
+// Function to retrieve the "Requester" object's record count.
+int Requester::getRequesterCount() {
+    return recordCount;
 }
 
 // Function to set the "Requester" object's requesterEmail.
