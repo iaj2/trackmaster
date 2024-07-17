@@ -8,7 +8,7 @@
 using namespace std;
 
 fstream Requester::requester_file;
-int Requester::recordCount = 0;
+int Requester::recordCount = 10;
 
 // Opens the necessary files relevant for "Requester" records.
 void Requester::initRequester() {

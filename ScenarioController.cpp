@@ -71,9 +71,18 @@ void ScenarioController::createRequestControl() {
     do {
         
 
-        range = formatSelectionRange(recordOffset+1, recordOffset+maxRecordOutput);
+        range = formatSelectionRange(1, Requester::getRequesterCount());
         cout << "=== Select Customer ===" << endl;
+        cout << to_string(recordOffset) << endl;
+        if (maxRecordOutput < Requester::getRequesterCount()) {
+            cout << "*..." << endl;
+            if (recordOffset > maxRecordOutput) {
+            cout << "p) display previous items" << endl;
+            }
+            cout << "n) display next items" << endl;
+        }
         cout << "ENTER selection " << range << " OR <0> to abort and exit to the main menu:";
+        
 
         getline(cin, requesterSelection);
 
@@ -84,9 +93,11 @@ void ScenarioController::createRequestControl() {
             // check for exit
             if (option == 0) return;
 
+            // check selected valid option
             if(option > 0 && option <= Requester::getRequesterCount()) {
                 break;
             }
+            // check for display next
             else {
                 // clear screen between attempts
                 clearScreen();
@@ -96,10 +107,17 @@ void ScenarioController::createRequestControl() {
 
         } catch (const exception& e) {
             // clear screen between attempts
+            if (requesterSelection == "p" && recordOffset - maxRecordOutput >= 0) {
+                recordOffset -= maxRecordOutput;
+            }
+            else if (requesterSelection == "n" && recordOffset + maxRecordOutput <= Requester::getRequesterCount()) {
+                recordOffset += maxRecordOutput;
+            }
+            else {
+                cout << "Error: Input is invalid. Re-enter input" << endl;
+                cout << "Enter 0 to abort and return to the main menu" << endl << endl;
+            }
             clearScreen();
-
-            cout << "Error: Input is invalid. Re-enter input" << endl;
-            cout << "Enter 0 to abort and return to the main menu" << endl << endl;
         }
 
     } while (true);
