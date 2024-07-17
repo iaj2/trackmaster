@@ -6,6 +6,7 @@ ProductRelease.h
 
 Revision History:
 Rev. 1 - 2024/06/29 Original by Bowen Jin and Isaac James
+Rev. 2 - 2024/07/16 Added the Function Implementations 
 
 --------------------------------------------------------------------------------------------------------------------
 
@@ -30,10 +31,24 @@ This exported class contains public functions that allow the user to retrieve th
 #ifndef PRODUCTRELEASE_H
 #define PRODUCTRELEASE_H
 
+#include "FileNotOpenException.h"
+#include "FileOpenFailedException.h"
+#include "RecordNotFoundException.h"
+
 class ProductRelease {
 
     public:
 
+    // --------------------------------------------------------------------------------------------------------------------
+
+        /* Default constructor.
+
+        Parameters: None
+
+        Return: Returns a pointer to a product object.
+        */
+
+        ProductRelease();
     // --------------------------------------------------------------------------------------------------------------------
 
         /* Opens the necessary files relevant for "ProductRelease" records.
@@ -73,7 +88,7 @@ class ProductRelease {
         
         Return: Does not return anything.
         */
-        static void recordProductRelease(ProductRelease newProductRelease);
+        static void recordProductRelease(const ProductRelease& newProductRelease);
 
     // --------------------------------------------------------------------------------------------------------------------
 
@@ -83,7 +98,7 @@ class ProductRelease {
 
         Return: Does not return anything.
         */
-        void reportProductRelease();
+        static void reportProductRelease(const ProductRelease& newProductRelease);
 
     // --------------------------------------------------------------------------------------------------------------------
 
@@ -104,10 +119,6 @@ class ProductRelease {
         Return: Does not return anything.
         */
         ProductRelease(const char* productName, int releaseID, int releaseDate);
-    
-    // --------------------------------------------------------------------------------------------------------------------
-    
-    private:
 
     // --------------------------------------------------------------------------------------------------------------------
         
@@ -159,6 +170,8 @@ class ProductRelease {
         Return: Does not return anything.
         */
         void setReleaseDate(const int newReleaseDate);
+
+        void setProductName(const char* newProductName);
 
     // --------------------------------------------------------------------------------------------------------------------
 
