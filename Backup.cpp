@@ -1,6 +1,14 @@
 // Backup.cpp
 
 #include "Backup.h"
+
+#include "Change.h"
+#include "Product.h"
+#include "ProductRelease.h"
+#include "Request.h"
+#include "Requester.h"
+
+
 #include <iostream>
 #include <fstream>
 
@@ -8,12 +16,21 @@ using namespace std;
 
 static fstream backupFile;
 
-static fstream changeFile;
-static fstream productFile;
-static fstream productReleaseFile;
-static fstream requestFile;
-static fstream requesterFile;
+fstream Change::changeFile;
+fstream Product::productFile;
+fstream ProductRelease::productReleaseFile;
+fstream Request::requestFile;
+fstream Requester::requesterFile;
 
+// --------------------------------------------------------------------------------------------------------------------
+/*
+
+Function: initBackup()
+
+Opening specific binary files for reading. These files will be read and its contents written on a separate .dat file.
+This function assumes that all .bin files can and have been opened already.
+
+*/
 
 void Backup::initBackup() {
 
@@ -25,7 +42,14 @@ void Backup::initBackup() {
 
 }
 
+// --------------------------------------------------------------------------------------------------------------------
+/*
 
+Function: backup()
+
+This function is responsible for backing up multiple specific files by calling the backSingleFile function for each file individually.
+
+*/
 
 static void Backup::backup() {
 
@@ -46,7 +70,22 @@ static void Backup::backup() {
 }
 
 
-// Helper function for backup(). Assumes all "originalFile" files are opened. 
+// --------------------------------------------------------------------------------------------------------------------
+/*
+
+Function: backSingleFile()
+
+Implements the backup of a single file. This is the helper function for backup() and assumes all "originalFile" files are opened
+
+If the specified backupFileName already exists, clears its contents.
+Otherwise, create a new file.
+Copies contents from originalFile to the backup file using the stream buffer, then closes the backup file.
+
+
+If unable to open backupFileName, throws a FileOpenFailedException .
+
+*/
+
 void Backup::backSingleFile(const string& backupFileName, fstream& originalFile) {
 
     // If backupFileName already exists, clear. If not, create new.
@@ -54,7 +93,7 @@ void Backup::backSingleFile(const string& backupFileName, fstream& originalFile)
 
     // Case 1: backupFileName cannot be opened.
     if (!backup.is_open()) {
-        throw FileNotOpenException("File is not open");
+        throw FileOpenFailedException("File cannot be opened");
     }
 
     // Copy contents from original file to backup file
@@ -62,6 +101,13 @@ void Backup::backSingleFile(const string& backupFileName, fstream& originalFile)
     backup.close();
 }
 
+
+// --------------------------------------------------------------------------------------------------------------------
+/*
+
+Function: exitBackup()
+
+*/
 
 void Backup::exitBackup() {
     // Exits the backup operation and closes any open files or resources.

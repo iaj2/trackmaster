@@ -50,7 +50,8 @@ namespace Backup {
 
     /* Creates a backup of a specific open file. This function will copy the file to a binary file.
 
-    Parameters: None
+    Parameter 1 (const string& backupFileName): In parameter.
+    Parameter 2 (std::fstream& originalFile): In parameter.
 
     Return: Does not return anything.
     */
