@@ -113,7 +113,6 @@ void ScenarioController::createRequestControl() {
             else {
                 // clear screen between attempts
                 clearScreen();
-
                 cout << "Error: The option you entered does not exist on the list" << endl << endl;
             }
 
@@ -144,6 +143,7 @@ void ScenarioController::createRequestControl() {
 
 // REMOVE
 int main () {
+    Requester::initRequester();
     ScenarioController::createRequestControl();
     cout << "EXITED" << endl;
     return 0;

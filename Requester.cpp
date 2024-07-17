@@ -8,15 +8,23 @@
 using namespace std;
 
 int Requester::recordCount = 10;
-
+fstream Requester::requesterFile;
 // ------------------------------------------------------------------------------------------------
 // Opens the necessary files relevant for "Requester" records.
 // ------------------------------------------------------------------------------------------------
 void Requester::initRequester() {
-    string filename = "Requesters.bin";
-    requesterFile.open(filename, ios::in | ios::out | ios::binary);
-    if (!requesterFile.is_open()) {
-        throw FileOpenFailedException("File open failed");
+    string productFileName = "Requesters.bat";
+    // Open the binary file
+    requesterFile.open(productFileName, ios::binary);
+    if (!requesterFile) {
+        // If the file does not exist, create it
+        fstream { productFileName };
+        // Open for reading and writing
+        requesterFile.open(productFileName, ios::binary);
+    }
+    // If open does not work then throw an exception
+    if (!requesterFile) {
+       throw FileOpenFailedException("Requesters file open failed");
     }
 }
 // ------------------------------------------------------------------------------------------------

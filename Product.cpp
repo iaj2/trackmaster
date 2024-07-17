@@ -5,8 +5,8 @@
 
 using namespace std;
 
-// Use static global file stream for product file operations
-static std::fstream productFile;
+// Use static file stream for product file operations
+fstream Product::productFile;
 
 // -------------------------------------------------------------------------------------------------------------------
 // Default constructor
