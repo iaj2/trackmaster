@@ -37,6 +37,10 @@ This exported class contains public functions that allow the user to retrieve th
 #include "FileOpenFailedException.h"
 #include "RecordNotFoundException.h"
 
+#include <fstream>
+
+
+
 class Request {
 
     public:
@@ -83,7 +87,7 @@ class Request {
         */
 
 
-        static Request* retrieveRequestRecord(const int changeID);
+        static Request* searchRequestRecord(const int changeID);
 
     // --------------------------------------------------------------------------------------------------------------------
 
@@ -237,6 +241,7 @@ class Request {
         Priority priority;
 
         static int recordCount;
+        static std::fstream requestFile;
 };
 
 #endif
