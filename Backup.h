@@ -18,6 +18,10 @@ This header file defines a namespace "Backup" that encapsulates functions necess
 #ifndef BACKUP_H
 #define BACKUP_H
 
+#include "FileNotOpenException.h"
+#include "FileOpenFailedException.h"
+#include "RecordNotFoundException.h"
+
 namespace Backup {
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -49,7 +53,7 @@ namespace Backup {
     Return: Does not return anything.
     */
 
-    static void backupFile(const string& backupFileName, fstream& originalFile);
+    static void backSingleFile(const string& backupFileName, fstream& originalFile);
 
 // --------------------------------------------------------------------------------------------------------------------
 
