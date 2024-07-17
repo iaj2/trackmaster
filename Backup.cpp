@@ -44,19 +44,19 @@ void Backup::initBackup() {
 static void Backup::backup() {
 
     // Backup changeFile
-    backSingleFile("changeFile.bin", changeFile);
+    backSingleFile("changeFile.dat", changeFile);
 
     // Backup productFile
-    backSingleFile("productFile.bin", productFile);
+    backSingleFile("productFile.dat", productFile);
 
     // Backup productReleaseFile
-    backSingleFile("productReleaseFile.bin", productReleaseFile);
+    backSingleFile("productReleaseFile.dat", productReleaseFile);
 
     // Backup requestFile
-    backSingleFile("requestFile.bin", requestFile);
+    backSingleFile("requestFile.dat", requestFile);
 
     // Backup requesterFile
-    backSingleFile("requesterFile.bin", requesterFile);
+    backSingleFile("requesterFile.dat", requesterFile);
 }
 
 
