@@ -74,13 +74,6 @@ Request* Request::getRequestRecord() {
     }
 }
 
-        /* Searches and returns the request record associated with the given changeID
-
-        Parameters (changeID): In parameter.
-
-        Return: Request object that has the associated changeID.
-
-        */
 Request* Request::retrieveRequestRecord(const int changeID) {
 
     // Case 1: Request File is opened
