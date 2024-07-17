@@ -7,6 +7,7 @@ PrintController.h
 
 Revision History:
 Rev. 1 - 2024/06/29 Original by Bowen Jin
+Rev. 2 - 2024/07/16 Function implementations added
 
 --------------------------------------------------------------------------------------------------------------------
 
@@ -25,8 +26,14 @@ Please note that the class assumes proper initialization and configuration of ex
 #ifndef PRINTCONTROLLER_H
 #define PRINTCONTROLLER_H
 
+#include "Change.h"
+#include "ProductRelease.h"
+#include "FileNotOpenException.h"
+#include "FileOpenFailedException.h"
+
 
 namespace PrintController {
+
 
     // --------------------------------------------------------------------------------------------------------------------
 
@@ -36,7 +43,7 @@ namespace PrintController {
 
     Return: None
     */
-    void initPrintController();
+    static void initPrintController();
 
     // --------------------------------------------------------------------------------------------------------------------
 
@@ -46,7 +53,7 @@ namespace PrintController {
 
     Return: None
     */
-    void printProduct();
+    static void printProduct(const ProductRelease &outputProductRelease);
 
     // --------------------------------------------------------------------------------------------------------------------
 
@@ -56,7 +63,7 @@ namespace PrintController {
 
     Return: None
     */
-    void printCompletedChangeItems();
+    static void printCompletedChangeItems(const Change &outputChangeItem);
 
     // --------------------------------------------------------------------------------------------------------------------
 
@@ -66,7 +73,7 @@ namespace PrintController {
 
     Return: None
     */
-    void exitPrint();
+    static void exitPrint();
 
     // --------------------------------------------------------------------------------------------------------------------
 
