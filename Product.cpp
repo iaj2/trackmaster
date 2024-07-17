@@ -8,6 +8,8 @@ using namespace std;
 // Use static file stream for product file operations
 fstream Product::productFile;
 
+int Product::productCount = 0;
+
 // -------------------------------------------------------------------------------------------------------------------
 // Default constructor
 // -------------------------------------------------------------------------------------------------------------------
@@ -89,11 +91,9 @@ const void Product::recordProduct(Product &newProduct) {
 
         // write it to file 
         productFile.write(reinterpret_cast<char*>(&newProduct), sizeof(Product));
-    // throw an exception if the file is not open 
-        // Create a product object instance 
-        Product currentProduct(newProduct.getProductName());
-        // Write it to memory 
-        productFile.write(reinterpret_cast<char*>(&currentProduct), sizeof(Product));
+        
+        // increase count
+        productCount++;
     } else {
         throw FileNotOpenException("Product file is not open");
         // Throw an exception if the file is not open
@@ -147,6 +147,13 @@ Product::Product(const char* newProductName) {
 // -------------------------------------------------------------------------------------------------------------------
 char* Product::getProductName() const {
     return const_cast<char*>(this->productName);
+}
+
+// -------------------------------------------------------------------------------------------------------------------
+// Get the product name
+// -------------------------------------------------------------------------------------------------------------------
+ int Product::getProductCount() {
+    return productCount;
 }
 
 // -------------------------------------------------------------------------------------------------------------------
