@@ -135,6 +135,21 @@ void Change::exitChange() {
 }
 
 // ------------------------------------------------------------------------------------------------
+// Convert the status enum to string
+// -----------------------------------------------------------------------------------------------
+string Change::statusToString(Status status) {
+    switch (status) {
+        case Status::Open: return "Open";
+        case Status::Assessed: return "Assessed";
+        case Status::In_Progress: return "In_Progress";
+        case Status::Done: return "Done";
+        case Status::Canceled: return "Canceled";
+
+        default:return "UNKNOWN";
+    }
+}
+
+// ------------------------------------------------------------------------------------------------
 // Get change ID
 // -----------------------------------------------------------------------------------------------
 int Change::getchangeID() const { return changeID; }
