@@ -48,10 +48,10 @@ int main() {
     // Step 3
     // Output result
     if (pass) {
-        cout << "Pass" << endl;
+        cout << "File write and read back test: Passed" << endl;
     }
     else {
-        cout << "Fail" << endl;
+        cout << "File write and read back test: Failed" << endl;
     }
 
     delete[] array;

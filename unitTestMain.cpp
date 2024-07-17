@@ -46,4 +46,8 @@ int main() {
 
     // Actual Results:
     // Varies, expected results are only shown if no user errors occurred
+    string result;
+    cin >> result;
+    cout << "Normal unit test case: " << result << endl;
+    return 0;
 }
