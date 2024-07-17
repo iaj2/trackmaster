@@ -49,6 +49,18 @@ void Product::startOfProductFile() {
     }
 }
 
+// ------------------------------------------------------------------------------------------------
+// Move the product file pointer to an offset from the start
+// -----------------------------------------------------------------------------------------------
+void Product::seekProductFile(int records_offset) {
+    if (productFile.is_open()) {
+        productFile.seekg(sizeof(Product)*records_offset, ios::beg);
+    } else {
+        // if the file isnt open throw an exception 
+        throw FileNotOpenException("Product file is not open");
+    }
+}
+
 // -------------------------------------------------------------------------------------------------------------------
 // Method to get a product record from the file
 // Reads a product record from the current file pointer position.

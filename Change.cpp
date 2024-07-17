@@ -159,7 +159,7 @@ int Change::getchangeID() const { return changeID; }
 // ------------------------------------------------------------------------------------------------
 // Get change status
 // -----------------------------------------------------------------------------------------------
-Status Change::getStatus() const { return status; }
+Change::Status Change::getStatus() const { return status; }
 
 // ------------------------------------------------------------------------------------------------
 // Get product name of the change

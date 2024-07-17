@@ -71,6 +71,17 @@ class Product {
 
     // --------------------------------------------------------------------------------------------------------------------
 
+        /* Seeks to an offset from the start of the product file.
+
+        Parameters: None
+
+        Return: Does not return anything.
+        
+        */
+        static void seekProductFile(int records_offset);
+
+    // --------------------------------------------------------------------------------------------------------------------
+
         /* Gets product record currently pointed to in file.
     
         Parameters: None

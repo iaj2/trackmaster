@@ -87,6 +87,7 @@ void ScenarioController::createRequestControl() {
     string requesterSelection;
     int option;
     string requesterEmail;
+    string requesterName;
     
     while(true) {
         range = formatSelectionRange(1, Requester::getRequesterCount());
@@ -125,7 +126,8 @@ void ScenarioController::createRequestControl() {
 
             // check selected valid option
             if(option > 0 && option <= Requester::getRequesterCount()) {
-                // save requester email
+                // save requester name and email
+                requesterName = requesters[option-requesterRecordOffset-1]->getName();
                 requesterEmail = requesters[option-requesterRecordOffset-1]->getRequesterEmail();
                 break;
             }
@@ -178,9 +180,10 @@ void ScenarioController::createRequestControl() {
 
     } while(date != "\0");
     
-    // TODO: get product information
+    // get product information
     Product** products = getNProducts(maxRecordOutput);
     string productSelection;
+    string productName;
     while (true) {
         range = formatSelectionRange(1, Product::getProductCount());
         cout << "=== Select Product ===" << endl;
@@ -206,6 +209,8 @@ void ScenarioController::createRequestControl() {
 
             // check selected valid option
             if(option > 0 && option <= Product::getProductCount()) {
+                // save product name
+                productName = products[option-productRecordOffset-1]->getProductName();
                 break;
             }
             // check for display next
@@ -220,13 +225,13 @@ void ScenarioController::createRequestControl() {
             if (productSelection == "p" && productRecordOffset - maxRecordOutput >= 0) {
                 // move pointer and get previous set of items
                 productRecordOffset -= maxRecordOutput;
-                Requester::seekProductFile(productRecordOffset);
+                Product::seekProductFile(productRecordOffset);
                 products = getNProducts(maxRecordOutput);
             }
             else if (requesterSelection == "n" && productRecordOffset + maxRecordOutput <= Product::getProductCount()) {
                 // move pointer and get next set of items
                 productRecordOffset += maxRecordOutput;
-                Requester::seekProductFile(productRecordOffset);
+                Product::seekProductFile(productRecordOffset);
                 products = getNProducts(maxRecordOutput);
             }
             else {
@@ -235,8 +240,15 @@ void ScenarioController::createRequestControl() {
             }
             clearScreen();
     }
+    // free memory
+    for (int i = 0; i < sizeof(products)/sizeof(Product); i++) {
+                delete products[i];
+            }
+            delete[] products;
+        }
     
-    // TODO: get product release information
+    // get product release information
+    
 
     // get priority
     Request::Priority priority;
@@ -262,7 +274,7 @@ void ScenarioController::createRequestControl() {
     const int id = 123;
 
     // Change* newChange = new Change(
-    //     id, status, productName, anticipatedreleaseID, description, date
+    //     id, Change::Status::Open, productName, anticipatedreleaseID, description, date
     // )
 
     // Confirm new Request information to the user

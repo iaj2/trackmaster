@@ -34,11 +34,11 @@ This exported class contains public functions that allow the user to retrieve th
 #include <fstream>
 #include <iostream>
 
-enum class Status {Open, Assessed, In_Progress, Done, Canceled};
-
 class Change {
 
     public:
+        enum class Status {Open, Assessed, In_Progress, Done, Canceled};
+
     // --------------------------------------------------------------------------------------------------------------------
         /* Default constructor to create an unanitialized "Change" object
         */

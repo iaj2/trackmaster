@@ -40,7 +40,7 @@ void Requester::startOfRequesterFile() {
 }
 
 // ------------------------------------------------------------------------------------------------
-// Move the change file pointer to an offset from the start
+// Move the requester file pointer to an offset from the start
 // -----------------------------------------------------------------------------------------------
 void Requester::seekRequesterFile(int records_offset) {
     if (requesterFile.is_open()) {
