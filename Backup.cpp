@@ -1,11 +1,6 @@
 // Backup.cpp
 
 #include "Backup.h"
-#include "Change.h"
-#include "Product.h"
-#include "ProductRelease.h"
-#include "Request.h"
-#include "Requester.h"
 #include <iostream>
 #include <fstream>
 
@@ -13,30 +8,21 @@ using namespace std;
 
 static fstream backupFile;
 
-// Checks if all files that need to be backed up are open
+static fstream changeFile;
+static fstream productFile;
+static fstream productReleaseFile;
+static fstream requestFile;
+static fstream requesterFile;
+
+
 void Backup::initBackup() {
 
-    if (!changeFile.is_open()) {
-        throw FileNotOpenException("File is not open");
-    }
+    changeFile.open("request.bin", ios::in | ios::binary);
+    productFile.open("product.bin", ios::in | ios::binary);
+    productReleaseFile.open("productRelease.bin", ios::in | ios::binary);
+    requestFile.open("request.bin", ios::in | ios::binary);
+    requesterFile.open("requester.bin", ios::in | ios::binary);
 
-
-    if (!productFile.is_open()) {
-        throw FileNotOpenException("File is not open");
-    }
-
-
-    if (!productReleaseFile.is_open()) {
-        throw FileNotOpenException("File is not open");
-    }
-
-    if (!requestFile.is_open()) {
-        throw FileNotOpenException("File is not open");
-    }
-
-    if (!requesterFile.is_open()) {
-        throw FileNotOpenException("File is not open");
-    }
 }
 
 

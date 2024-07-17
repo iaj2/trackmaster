@@ -22,11 +22,13 @@ This header file defines a namespace "Backup" that encapsulates functions necess
 #include "FileOpenFailedException.h"
 #include "RecordNotFoundException.h"
 
+#include <fstream>
+
 namespace Backup {
 
 // --------------------------------------------------------------------------------------------------------------------
 
-    /* Opens the necessary files and prepares the system for the backup operation.
+    /* Opens the necessary files for reading. Assumes all files exist and can be opened.
 
     Parameters: None
 
@@ -53,7 +55,7 @@ namespace Backup {
     Return: Does not return anything.
     */
 
-    static void backSingleFile(const string& backupFileName, fstream& originalFile);
+    static void backSingleFile(const string& backupFileName, std::fstream& originalFile);
 
 // --------------------------------------------------------------------------------------------------------------------
 
