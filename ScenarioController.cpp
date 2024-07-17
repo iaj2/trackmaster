@@ -45,20 +45,20 @@ void ScenarioController::createRequestControl() {
         }
         // invalid input
         else if (reqTSelection != 'c' && reqTSelection != 'e') {
-            
+            // clear screen between attempts
+            clearScreen();
            
             cout << "Error: Input is invalid. Re-enter input" << endl;
             cout << "Enter 0 to abort and return to the main menu" << endl << endl;
         }
-
-        // clear screen between prompts
-        clearScreen();
 
         // Clear stdin
         cin.ignore();
 
     } while(reqTSelection != 'c' && reqTSelection != 'e');
 
+    // clear screen between prompts
+    clearScreen();      
 
     // get requester from user
     const int maxRecordOutput = 5;
@@ -69,32 +69,42 @@ void ScenarioController::createRequestControl() {
     string requesterSelection;
     int option;
     do {
+        
+
         range = formatSelectionRange(recordOffset+1, recordOffset+maxRecordOutput);
         cout << "=== Select Customer ===" << endl;
         cout << "ENTER selection " << range << " OR <0> to abort and exit to the main menu:";
 
-       
         getline(cin, requesterSelection);
 
         try {
             // Attempt to convert string to integer using stoi
             option = stoi(requesterSelection);
 
+            // check for exit
+            if (option == 0) return;
 
+            if(option > 0 && option <= Requester::getRequesterCount()) {
+                break;
+            }
+            else {
+                // clear screen between attempts
+                clearScreen();
 
-        } catch (const invalid_argument& ia) {
-            cout << "Error: Input is invalid. Re-enter input" << endl;
-            cout << "Enter 0 to abort and return to the main menu" << endl << endl;
-        } catch (const out_of_range& oor) {
+                cout << "Error: The option you entered does not exist on the list" << endl << endl;
+            }
+
+        } catch (const exception& e) {
+            // clear screen between attempts
+            clearScreen();
+
             cout << "Error: Input is invalid. Re-enter input" << endl;
             cout << "Enter 0 to abort and return to the main menu" << endl << endl;
         }
 
-    } while (requesterSelection != "0");
-    
+    } while (true);
     
 }
-
 
 
 int main () {
