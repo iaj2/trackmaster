@@ -32,6 +32,7 @@ This exported class contains public functions that allow the user to retrieve th
 #ifndef CHANGE_H
 #define CHANGE_H
 #include <fstream>
+#include <iostream>
 
 enum class Status {Open, Assessed, In_Progress, Done, Canceled};
 
@@ -129,7 +130,7 @@ class Change {
 
         Return: Status enum as string
         */
-       static string statusToString(Status status);
+       static std::string statusToString(Status status);
 
     // --------------------------------------------------------------------------------------------------------------------
 

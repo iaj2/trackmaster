@@ -80,7 +80,7 @@ void ScenarioController::createRequestControl() {
             // Attempt to convert string to integer using stoi
             option = stoi(requesterSelection);
 
-            
+
 
         } catch (const invalid_argument& ia) {
             cout << "Error: Input is invalid. Re-enter input" << endl;
@@ -90,7 +90,7 @@ void ScenarioController::createRequestControl() {
             cout << "Enter 0 to abort and return to the main menu" << endl << endl;
         }
 
-    } while ();
+    } while (requesterSelection != "0");
     
     
 }
