@@ -7,6 +7,7 @@ Requester.h
 
 Revision History:
 Rev. 1 - 2024/06/29 Original by Bowen Jin and Isaac James
+Rev. 2 - 2024/07/14 by Kwan Wai Sit
 
 --------------------------------------------------------------------------------------------------------------------
 
@@ -28,6 +29,7 @@ This exported class contains public functions that allow the user to retrieve an
 
 #ifndef REQUESTER_H
 #define REQUESTER_H
+#include <fstream>
 
 class Requester {
 
@@ -52,7 +54,7 @@ class Requester {
         Return: Does not return anything.
 
         */
-        static void startOfProductFile();
+        static void startOfRequesterFile();
 
     // --------------------------------------------------------------------------------------------------------------------
 
@@ -83,7 +85,7 @@ class Requester {
 
         Return: Does not return anything.
         */
-        void reportAllRequester();
+        // void reportAllRequester();
 
     // --------------------------------------------------------------------------------------------------------------------
 
@@ -97,19 +99,26 @@ class Requester {
 
     // --------------------------------------------------------------------------------------------------------------------
 
+        /* Default Constructor to create a "Requester" Object.
+
+        Parameters: None
+
+        Return: Does not return anything.
+        */
+        Requester();
+
+    // --------------------------------------------------------------------------------------------------------------------
+
         /* Parameterized Constructor to create a "Requester" Object. This requires the input of all private data attributes of the "Requester" class.
     
         Parameter 1 (const char* requesterEmail): In parameter.
         Parameter 2 (const char* name): In parameter.
         Parameter 3 (int phone): In parameter.
+        Parameter 4 (department): In parameter.
     
         Return: Does not return anything.
         */
-        Requester(const char* requesterEmail, const char* name, int phone);
-    
-    // --------------------------------------------------------------------------------------------------------------------
-    
-    private:
+        Requester(const char* requesterEmail, const char* name, int phone, const char* department);
 
     // --------------------------------------------------------------------------------------------------------------------
         
@@ -119,7 +128,7 @@ class Requester {
 
         Return: "Requester" object's requesterEmail as an character array of maximum size 30.
         */
-        char* getRequesterEmail() const;
+        const char* getRequesterEmail() const;
 
     // --------------------------------------------------------------------------------------------------------------------
 
@@ -129,7 +138,7 @@ class Requester {
 
         Return: "Requester" object's name as an character array of maximum size 15.
         */
-        char* getName() const;
+        const char* getName() const;
 
     // --------------------------------------------------------------------------------------------------------------------
 
@@ -140,6 +149,16 @@ class Requester {
         Return: "Requester" object's phone number as a 10-digit integer.
         */
         int getPhone() const;
+
+    // --------------------------------------------------------------------------------------------------------------------
+
+        /* Function to retrieve the "Requester" object's department.
+
+        No parameters.
+
+        Return: "Requester" object's department as an character array of maximum size 15.
+        */
+        const char* getDepartment() const;
 
     // --------------------------------------------------------------------------------------------------------------------
 
@@ -169,15 +188,31 @@ class Requester {
         Return: Does not return anything
         */
         void setPhone(const int newPhone);
+    
+    // --------------------------------------------------------------------------------------------------------------------
+
+        /* Function to set the "Requester" object's department.
+
+        Parameter 1 (const char* newName): In parameter.
+
+        Return: Does not return anything
+        */
+        void setDepartment(const char* newDepartment);
 
     // --------------------------------------------------------------------------------------------------------------------
 
+    private:
+
         static const int MAX_EMAIL_LENGTH = 30;
         static const int MAX_NAME_LENGTH = 15;
+        static const int MAX_DEPARTMENT_LENGTH = 10;
 
         char requesterEmail[MAX_EMAIL_LENGTH + 1];
         char name[MAX_NAME_LENGTH + 1];
         int phone;
+        char department[MAX_DEPARTMENT_LENGTH + 1];
+
+        static std::fstream requester_file;
 };
 
 #endif
