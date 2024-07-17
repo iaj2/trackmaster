@@ -27,11 +27,9 @@ Please note that the class assumes proper initialization and configuration of ex
 #define PRINTCONTROLLER_H
 
 #include "Change.h"
-#include "Request.h"
 #include "ProductRelease.h"
 #include "FileNotOpenException.h"
 #include "FileOpenFailedException.h"
-#include "RecordNotFoundException.h"
 
 
 namespace PrintController {
