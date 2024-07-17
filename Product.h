@@ -32,6 +32,7 @@ The class restricts direct access to the private "productName" attribute, ensuri
 
 #include "FileNotOpenException.h"
 #include "FileOpenFailedException.h"
+#include <fstream>
 // #include "RecordNotFoundException.h"  this is causing errors
 
 class Product {
@@ -143,11 +144,10 @@ class Product {
      
 
     private:
-    
         static const int MAX_PRODUCT_NAME_LENGTH = 15;
         char productName[MAX_PRODUCT_NAME_LENGTH + 1];
 
-
+        static std::fstream productFile;
 };
 
 #endif
