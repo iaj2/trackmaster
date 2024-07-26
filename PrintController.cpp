@@ -10,7 +10,7 @@ static std::ofstream printFile;
 extern int printItemCount;
 
 
-namespace printController {
+namespace PrintController {
     // -------------------------------------------------------------------------------------------------------------------
     // Initialize the print controller
     // Opens the print output file, creating it if necessary, and initializes the print item count.

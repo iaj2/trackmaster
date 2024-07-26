@@ -33,7 +33,7 @@ namespace LifeCycleController {
 
     Return: None
     */
-    static void startUpSystem();
+    void startUpSystem();
 
     // --------------------------------------------------------------------------------------------------------------------
 
@@ -45,7 +45,7 @@ namespace LifeCycleController {
 
     Return: None
     */
-    static void shutDownSystem();
+    void shutDownSystem();
 
     // --------------------------------------------------------------------------------------------------------------------
 

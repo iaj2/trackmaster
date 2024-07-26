@@ -43,7 +43,7 @@ namespace PrintController {
 
     Return: None
     */
-    static void initPrintController();
+    void initPrintController();
 
     // --------------------------------------------------------------------------------------------------------------------
 
@@ -53,7 +53,7 @@ namespace PrintController {
 
     Return: None
     */
-    static void printProduct(const ProductRelease &outputProductRelease);
+    void printProduct(const ProductRelease &outputProductRelease);
 
     // --------------------------------------------------------------------------------------------------------------------
 
@@ -63,7 +63,7 @@ namespace PrintController {
 
     Return: None
     */
-    static void printCompletedChangeItems(const Change &outputChangeItem);
+    void printCompletedChangeItems(const Change &outputChangeItem);
 
     // --------------------------------------------------------------------------------------------------------------------
 
@@ -73,7 +73,7 @@ namespace PrintController {
 
     Return: None
     */
-    static void exitPrint();
+    void exitPrint();
 
     // --------------------------------------------------------------------------------------------------------------------
 
