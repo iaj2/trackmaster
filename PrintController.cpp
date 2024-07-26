@@ -20,9 +20,9 @@ void PrintController::initPrintController() {
     printFile.open("print_output.txt", std::ofstream::out | std::ofstream::trunc);
     // if the file doesn't exist make one 
     if (!printFile) {
-        std::ofstream { "product.bin" };
+        std::ofstream { "product.dat" };
         // Open for reading and writing
-        printFile.open("product.bin", std::ios::binary);
+        printFile.open("product.dat", std::ios::binary);
     } 
     // throw an exception if the file open failed
     if (!printFile) {

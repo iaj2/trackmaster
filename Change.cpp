@@ -7,9 +7,6 @@
 
 using namespace std;
 
-int Change::changeCount = 0;
-fstream Change::changeFile;
-
 // ------------------------------------------------------------------------------------------------
 // Default constructor
 // ------------------------------------------------------------------------------------------------
@@ -111,3 +108,21 @@ void Change::setDescription(const char* newDescription) {
 // Set the date
 // -----------------------------------------------------------------------------------------------
 void Change::setDate(const int newDate) { date = newDate; }
+
+// ------------------------------------------------------------------------------------------------
+// Convert status enum to string
+// -----------------------------------------------------------------------------------------------
+string Change::statusToString(Change::Status status) {
+    switch (status) {
+        case Change::Status::Assessed:
+            return "Assessed";
+        case Change::Status::Open:
+            return "Open";
+        case Change::Status::Canceled:
+            return "Canceled";
+        case Change::Status::In_Progress:
+            return "In Progress";
+        default:
+            return "";
+    }
+}

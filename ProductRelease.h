@@ -121,8 +121,6 @@ class ProductRelease {
         char productName[MAX_PRODUCT_NAME_LENGTH + 1];
         int releaseID;
         int releaseDate;
-
-        static std::fstream productReleaseFile;
 };
 
 #endif

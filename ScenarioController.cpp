@@ -320,7 +320,7 @@ void ScenarioController::assessNewChangeControl() {
     cout << "Product: " << productName << endl;
     cout << "Description: " << description << endl;
     cout << "Anticipated Release: " << productReleaseID << endl;
-    cout << "Status: " << status << endl;
+    cout << "Status: " << Change::statusToString(status) << endl;
     cout << "Change ID: " << changeID << endl;
 }
 
@@ -328,12 +328,7 @@ void ScenarioController::assessNewChangeControl() {
 void ScenarioController::updateChangeItemControl() {
     // Fetch initial product list
     vector<Product*> products = productIO.readNRecords(maxRecordOutput);
-    Product* selectedProduct = selectFromList(products,
-        "=== Select Product ===",
-        "Product: ",
-        "Record unavailable",
-        "p) display previous items\nn) display next items"
-    );
+    Product* selectedProduct = selectFromList(productIO, "product");
     
     if (!selectedProduct) return;  // Abort if no valid product selected
 
@@ -382,7 +377,7 @@ void ScenarioController::updateChangeItemControl() {
     cout << "Product: " << productName << endl;
     cout << "Description: " << description << endl;
     cout << "Anticipated Release: " << productReleaseID << endl;
-    cout << "Status: " << status << endl;
+    cout << "Status: " << Change::statusToString(status) << endl;
     cout << "Change ID: " << changeID << endl;
 }
 

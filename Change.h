@@ -31,6 +31,9 @@ This exported class contains public functions that allow the user to retrieve th
 #define CHANGE_H
 #include <fstream>
 #include <iostream>
+#include <string>
+
+using namespace std;
 
 class Change {
 
@@ -167,11 +170,17 @@ class Change {
         */
         void setDate(const int newDate);
     // --------------------------------------------------------------------------------------------------------------------
+        /* Function to get status as a string 
+        
+        Paramater 1 (Status status): In parameter
+
+        Return: status formatted as a string
+        */
+        static string statusToString(Status status);
 
     private:
         static const int MAX_PRODUCT_NAME_LENGTH = 15;
         static const int MAX_DESCRIPTION_LENGTH = 30;
-        static int changeCount;
 
         int changeID;
         Status status;
@@ -179,8 +188,6 @@ class Change {
         int anticipatedReleaseID;
         char description[MAX_DESCRIPTION_LENGTH + 1];
         int date;
-
-        static std::fstream changeFile;
 };
 
 #endif

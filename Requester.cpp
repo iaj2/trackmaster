@@ -7,9 +7,6 @@
 
 using namespace std;
 
-int Requester::requesterCount = 0;
-fstream Requester::requesterFile;
-
 // Default Constructor to create a "Requester" Object.
 Requester::Requester() {
     this->requesterEmail[0] = '\0';
@@ -48,12 +45,6 @@ int Requester::getPhone() const {
 // Function to retrieve the "Requester" object's department.
 const char* Requester::getDepartment() const {
     return department;
-}
-
-
-// Function to retrieve the "Requester" object's record count.
-int Requester::getRequesterCount() {
-    return requesterCount;
 }
 
 // Function to set the "Requester" object's requesterEmail.
