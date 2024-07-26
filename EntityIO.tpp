@@ -6,15 +6,32 @@ EntityIO<T>::EntityIO(const std::string& filename) : filename(filename), recordC
 
 template<typename T>
 void EntityIO<T>::init() {
+    // Attempt to open the file in read/write binary mode
     fileStream.open(filename, std::ios::in | std::ios::out | std::ios::binary);
+
+    // Check if file does not exist or is not open for some reason
     if (!fileStream.is_open()) {
-        throw std::runtime_error("Unable to open file: " + filename);
+        // File does not exist, so create it
+        fileStream.open(filename, std::ios::out | std::ios::binary);
+        if (!fileStream.is_open()) {
+            throw std::runtime_error("Unable to create file: " + filename);
+        }
+        // File created, close the file
+        fileStream.close();
+        
+        // Re-open the file in read/write mode
+        fileStream.open(filename, std::ios::in | std::ios::out | std::ios::binary);
+        if (!fileStream.is_open()) {
+            throw std::runtime_error("Unable to open file: " + filename);
+        }
     }
+
     // Determine the record count
     fileStream.seekg(0, std::ios::end);
     recordCount = fileStream.tellg() / sizeof(T);
     fileStream.seekg(0, std::ios::beg);
 }
+
 
 template<typename T>
 void EntityIO<T>::exit() {
