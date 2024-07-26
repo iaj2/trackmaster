@@ -1,5 +1,3 @@
-
-
 /*
 
 Change.h
@@ -33,6 +31,9 @@ This exported class contains public functions that allow the user to retrieve th
 #define CHANGE_H
 #include <fstream>
 #include <iostream>
+#include <string>
+
+using namespace std;
 
 class Change {
 
@@ -58,79 +59,6 @@ class Change {
         Return: Does not return anything.
         */
         Change(const int changeID, Status status, const char* productName, const int anticipatedReleaseID, const char* description, const int date);
-
-    // --------------------------------------------------------------------------------------------------------------------
-        /* Opens the necessary files relevant for "Change" records.
-
-        This function is static, therefore it does not require an instance of the class to be called.
-
-        Parameters: None
-
-        Return: Does not return anything.
-        */
-        static void initChange();
-
-    // --------------------------------------------------------------------------------------------------------------------
-
-        /* Seeks to start of the change file.
-
-        Parameters: None
-
-        Return: Does not return anything.
-        
-        */
-        static void startOfChangeFile();
-    // --------------------------------------------------------------------------------------------------------------------
-
-        /* Seeks to an offset from the start of the change file.
-
-        Parameters: None
-
-        Return: Does not return anything.
-        
-        */
-        static void seekChangeFile(int records_offset);
-
-    // --------------------------------------------------------------------------------------------------------------------
-    
-        /* Gets change record currently pointed to in file.
-        
-        Parameters: None
-        
-        Return: reference to the change record or nullptr if end of file.
-        
-        */
-        static Change* getChangeRecord();
-
-    // --------------------------------------------------------------------------------------------------------------------
-
-        /* Takes in a "Change" object to write to file.
-
-        Parameters: Change newChange. In parameter.
-
-        Return: Does not return anything.
-        */
-        static const void recordChange(Change newChange);
-
-    // --------------------------------------------------------------------------------------------------------------------
-
-        /* Exits the Change Operation.
-
-        Parameters: None
-
-        Return: Does not return anything.
-        */
-        static void exitChange();
-
-    // --------------------------------------------------------------------------------------------------------------------
-
-        /* Function to convert the status to string
-        
-        Parameters: None
-
-        Return: Status enum as string
-        */
-       static std::string statusToString(Status status);
 
     // --------------------------------------------------------------------------------------------------------------------
 
@@ -194,16 +122,6 @@ class Change {
 
     // --------------------------------------------------------------------------------------------------------------------
 
-        /* Function to retrieve the "Requester" object's record count.
-
-        No parameters.
-
-        Return: "Requester" object's record count.
-        */
-        static int getChangeCount();
-
-    // --------------------------------------------------------------------------------------------------------------------
-
         /* Function to set the "Change" object's changeID.
 
         Parameter 1 (const char* newChangeID): In parameter (must be unique combination of integers).
@@ -252,11 +170,17 @@ class Change {
         */
         void setDate(const int newDate);
     // --------------------------------------------------------------------------------------------------------------------
+        /* Function to get status as a string 
+        
+        Paramater 1 (Status status): In parameter
+
+        Return: status formatted as a string
+        */
+        static string statusToString(Status status);
 
     private:
         static const int MAX_PRODUCT_NAME_LENGTH = 15;
         static const int MAX_DESCRIPTION_LENGTH = 30;
-        static int changeCount;
 
         int changeID;
         Status status;
@@ -264,8 +188,6 @@ class Change {
         int anticipatedReleaseID;
         char description[MAX_DESCRIPTION_LENGTH + 1];
         int date;
-
-        static std::fstream changeFile;
 };
 
 #endif

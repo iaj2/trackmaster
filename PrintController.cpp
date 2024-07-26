@@ -1,10 +1,15 @@
 #include "PrintController.h"
+#include "EntityIO.h"
+#include "Change.h"
 #include <fstream>
 
 // Static file stream for handling print operations
 static std::ofstream printFile;
 // global variable to keep count of how many items have been printed
 extern int printItemCount;
+
+// io
+EntityIO<Change> changeIO("change.dat");
 
 // -------------------------------------------------------------------------------------------------------------------
 // Initialize the print controller
@@ -15,9 +20,9 @@ void PrintController::initPrintController() {
     printFile.open("print_output.txt", std::ofstream::out | std::ofstream::trunc);
     // if the file doesn't exist make one 
     if (!printFile) {
-        std::ofstream { "product.bin" };
+        std::ofstream { "product.dat" };
         // Open for reading and writing
-        printFile.open("product.bin", std::ios::binary);
+        printFile.open("product.dat", std::ios::binary);
     } 
     // throw an exception if the file open failed
     if (!printFile) {
@@ -38,12 +43,12 @@ void PrintController::printProduct(const ProductRelease &outputProductRelease) {
     }
 
     // go to the begining of the change file 
-    Change::startOfChangeFile();
+    changeIO.seekToStart();
     // make a new instance of change object 
     Change* outputChangeItem = new Change(); 
 
     // read the first change item 
-    outputChangeItem = Change::getChangeRecord();
+    outputChangeItem = changeIO.readRecord();
 
     // while the getChangeRecord has not returned a nullptr loop through the file 
     while(outputChangeItem != nullptr) {
@@ -62,7 +67,7 @@ void PrintController::printProduct(const ProductRelease &outputProductRelease) {
             const char * ProductName = outputChangeItem->getProductName();
             int ChangeID = outputChangeItem->getchangeID();
             char * Date = outputChangeItem->getDate();
-            Status status = outputChangeItem->getStatus();
+            Change::Status status = outputChangeItem->getStatus();
             int anticipatedReleaseID = outputChangeItem->getAnticipatedReleaseID();
             const char * Description = outputChangeItem->getDescription();
 
@@ -80,7 +85,7 @@ void PrintController::printProduct(const ProductRelease &outputProductRelease) {
         }
 
         // get the next record
-        outputChangeItem = Change::getChangeRecord();
+        outputChangeItem = changeIO.readRecord();
     }
 
     // free the Change Item instance 
@@ -98,7 +103,7 @@ void PrintController::printCompletedChangeItems(const Change &outputChangeItem) 
     const char * ProductName = outputChangeItem.getProductName();
     int ChangeID = outputChangeItem.getchangeID();
     char * Date = outputChangeItem.getDate();
-    Status status = outputChangeItem.getStatus();
+    Change::Status status = outputChangeItem.getStatus();
     int anticipatedReleaseID = outputChangeItem.getAnticipatedReleaseID();
     const char * Description = outputChangeItem.getDescription();
 

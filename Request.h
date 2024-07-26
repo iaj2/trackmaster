@@ -40,75 +40,14 @@ class Request {
 
     // --------------------------------------------------------------------------------------------------------------------
 
-        /* Opens the necessary files relevant for "Request" records.
-
-        Parameters: None
-
+        /* Default Constructor to create a Request Object.
+    
         Return: Does not return anything.
         */
-        static void initRequest();
-
+        Request();
+    
     // --------------------------------------------------------------------------------------------------------------------
 
-        /* Seeks to start of the request file.
-
-        Parameters: None
-
-        Return: Does not return anything.
-
-        */
-        static void startOfProductFile();
-
-    // --------------------------------------------------------------------------------------------------------------------
-
-        /* Gets request record currently pointed to in file.
-
-        Parameters: None
-
-        Return: reference to the request record or nullptr if end of file.
-
-        */
-        static Request* getRequestRecord();
-    // --------------------------------------------------------------------------------------------------------------------
-
-        /* Takes in the created "Request" object to write to file.
-
-        Parameters (Request newRequest): In parameter.
-
-        Return: Does not return anything.
-        */
-
-        static const void recordRequest(Request newRequest);
-
-    // --------------------------------------------------------------------------------------------------------------------
-
-        /* Generates a report for a specific request.
-
-        Parameters: None
-
-        Return: Does not return anything.
-        */
-        void reportRequest();
-
-    // --------------------------------------------------------------------------------------------------------------------
-
-        /* Generates a report for all requests.
-
-        Parameters: None
-
-        Return: Does not return anything.
-        */
-        void reportAllRequests();
-
-    // --------------------------------------------------------------------------------------------------------------------
-
-        /* Exits the Request Operation.
-
-        Parameters: None
-
-        Return: Does not return anything.
-        */
-        static void exitRequest();
 
     // --------------------------------------------------------------------------------------------------------------------
 
@@ -146,7 +85,7 @@ class Request {
 
         Return: "Request" object's requesterEmail as an character array of maximum size 30.
         */
-        char* getRequesterEmail() const;
+        const char* getRequesterEmail() const;
 
     // --------------------------------------------------------------------------------------------------------------------
 
@@ -156,7 +95,7 @@ class Request {
 
         Return: "Request" object's productName as an character array of maximum size 15.
         */
-        char* getProductName() const;
+        const char* getProductName() const;
 
     // --------------------------------------------------------------------------------------------------------------------
 
