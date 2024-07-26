@@ -148,12 +148,11 @@ class Requester {
 
     // --------------------------------------------------------------------------------------------------------------------
 
-    private:
-
+        static const int MAX_DEPARTMENT_LENGTH = 10;
         static const int MAX_EMAIL_LENGTH = 30;
         static const int MAX_NAME_LENGTH = 15;
-        static const int MAX_DEPARTMENT_LENGTH = 10;
 
+    private:
         char requesterEmail[MAX_EMAIL_LENGTH + 1];
         char name[MAX_NAME_LENGTH + 1];
         int phone;

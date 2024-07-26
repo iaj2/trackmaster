@@ -65,8 +65,6 @@ class Request {
     
     // --------------------------------------------------------------------------------------------------------------------
 
-    private:
-
     // --------------------------------------------------------------------------------------------------------------------
 
         /* Function to retrieve the "Request" object's changeID.
@@ -132,6 +130,7 @@ class Request {
         static const int MAX_EMAIL_LENGTH = 30;
         static const int MAX_PRODUCT_NAME_LENGTH = 15;
 
+    private:
         int changeID;
         char requesterEmail[MAX_EMAIL_LENGTH + 1];
         char productName[MAX_PRODUCT_NAME_LENGTH + 1];

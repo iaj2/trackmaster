@@ -115,9 +115,9 @@ class ProductRelease {
 
     // --------------------------------------------------------------------------------------------------------------------
 
-    private:
-        static const int MAX_PRODUCT_NAME_LENGTH = 15;
+    static const int MAX_PRODUCT_NAME_LENGTH = 15;
 
+    private:
         char productName[MAX_PRODUCT_NAME_LENGTH + 1];
         int releaseID;
         int releaseDate;
