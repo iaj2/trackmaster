@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #include "Change.h";
 #include "Requester.h";
 #include "Request.h";
@@ -5,6 +6,16 @@
 #include "ProductRelease.h";
 #include "LifeCycleController.h";
 #include "EntityIO.h";
+=======
+#include "Change.cpp"
+#include "Requester.h"
+#include "Request.h"
+#include "Product.h"
+#include "ProductRelease.h"
+#include "LifeCycleController.h"
+#include "EntityIO.h"
+#include "globalEntities.h"
+>>>>>>> 7e92c730d730683e813e5f95d8e4e61f006d54a7
 
 EntityIO<Product> productIO("product.dat");
 EntityIO<ProductRelease> productReleaseIO("productRelease.dat");

@@ -7,6 +7,7 @@
 #include "ProductRelease.h"
 #include "UI.h"
 #include "EntityIO.h"
+#include "globalEntities.h"
 #include <iostream>
 #include <cstdlib>
 #include <string.h>
@@ -17,11 +18,6 @@ using namespace UI;
 
 // Some global constants
 const int maxRecordOutput = 5; 
-EntityIO<Product> productIO("product.dat");
-EntityIO<ProductRelease> productReleaseIO("productRelease.dat");
-EntityIO<Request> requestIO("request.dat");
-EntityIO<Requester> requesterIO("requester.dat");
-EntityIO<Change> changeIO("change.dat");
 
 const vector<string> customerColHeaders = {"Name", "Email"};
 const vector<string> employeeColHeaders = {"Name", "Email", "Department"};
