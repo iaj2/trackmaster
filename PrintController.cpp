@@ -7,7 +7,6 @@
 // Static file stream for handling print operations
 static std::ofstream printFile;
 // global variable to keep count of how many items have been printed
-extern int printItemCount;
 
 
 namespace PrintController {
@@ -28,8 +27,6 @@ namespace PrintController {
         if (!printFile) {
         throw FileOpenFailedException("File open failed");
         }
-        // initialize print count 
-        printItemCount = 0;
     }
 
     // -------------------------------------------------------------------------------------------------------------------
@@ -38,6 +35,7 @@ namespace PrintController {
     // -------------------------------------------------------------------------------------------------------------------
     void printProduct(const ProductRelease &outputProductRelease) {
         // check to make sure the file is open 
+        static int printItemCount = 0;
         if (!printFile.is_open()) {
             throw FileNotOpenException("File is not open");
         }
