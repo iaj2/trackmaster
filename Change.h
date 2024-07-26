@@ -178,10 +178,10 @@ class Change {
         */
         static string statusToString(Status status);
 
-    private:
         static const int MAX_PRODUCT_NAME_LENGTH = 15;
         static const int MAX_DESCRIPTION_LENGTH = 30;
 
+    private:
         int changeID;
         Status status;
         char productName[MAX_PRODUCT_NAME_LENGTH + 1];

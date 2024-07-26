@@ -80,10 +80,10 @@ class Product {
 
     // --------------------------------------------------------------------------------------------------------------------
 
-     
-
-    private:
         static const int MAX_PRODUCT_NAME_LENGTH = 15;
+        
+    private:
+        
         char productName[MAX_PRODUCT_NAME_LENGTH + 1];
 };
 
