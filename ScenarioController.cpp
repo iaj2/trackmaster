@@ -46,7 +46,7 @@ string getInput(const string& prompt, int maxLength) {
     do {
         cout << prompt << endl;
         cout << "OR ENTER <0> to abort and exit to the main menu: ";
-        getline(cin, input);
+        cin >> input; 
         if (input == "0") {
             return "0";
         } else if (input.length() > maxLength) {
@@ -206,10 +206,11 @@ namespace ScenarioController {
             cout << "ENTER a selection [c - customer/e - employee]" << endl;
             cout << "OR ENTER <0> to abort and exit to the main menu" << endl;
 
-            reqTSelection = cin.get();
+            cin >> reqTSelection; 
+            
             if (reqTSelection == '0') return;
             else if (reqTSelection != 'c' && reqTSelection != 'e') {
-                clearScreen();
+                //clearScreen();
                 cout << "Error: Input is invalid. Re-enter input" << endl;
                 cout << "Enter 0 to abort and return to the main menu" << endl << endl;
             }
