@@ -36,4 +36,7 @@ private:
 
 };
 
+// Include the implementation of the template class in the header file
+#include "EntityIO.tpp"
+
 #endif // ENTITYIO_H

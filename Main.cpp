@@ -5,16 +5,19 @@
 #include "ScenarioController.h"
 #include "LifeCycleController.h"
 #include <iostream>
+
 using namespace std;
+using namespace LifeCycleController;
+using namespace UI;
 
 int main() {
     // Setup calls will go before UI initialized
-    LifeCycleController::startUpSystem();
+    startUpSystem();
     
-    UI::initUI();
+    initUI();
 
     // Shutdown after
-    LifeCycleController::shutDownSystem();
+    shutDownSystem();
 };
 
 

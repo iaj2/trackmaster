@@ -48,6 +48,11 @@ class Request {
     
     // --------------------------------------------------------------------------------------------------------------------
 
+        /* copy Constructor to create a Request Object.
+    
+        Return: Does not return anything.
+        */
+        Request(const Request& other);
 
     // --------------------------------------------------------------------------------------------------------------------
 
@@ -138,4 +143,4 @@ class Request {
         Priority priority;
 };
 
-#endif
+#endif // REQUEST_H

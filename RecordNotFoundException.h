@@ -13,4 +13,4 @@ class RecordNotFoundException : public logic_error {
       RecordNotFoundException(const string& message = "");
    
 }; 
-#endif
+#endif // RECORD_NOT_FOUND_EXCEPTION_H
