@@ -23,7 +23,13 @@ EntityIO<Request> requestIO("request.dat");
 EntityIO<Requester> requesterIO("requester.dat");
 EntityIO<Change> changeIO("change.dat");
 
-// Some helpers
+const vector<string> customerColHeaders = {"Name", "Email"};
+const vector<string> changeColHeaders = {"Description", "ChangeID"};
+const vector<string> openChangeColHeaders = {"Product", "Description", "Status"};
+const vector<string> assessedChangeColHeaders = {"Description", "Status", "ChangeID"};
+const vector<string> noColHeader = {""};
+
+// Some helper functions
 
 void clearScreen() {
     system("clear");
@@ -84,6 +90,30 @@ string getProductName() {
     return getInput("ENTER the PRODUCT NAME (Length: max 10)", Product::MAX_PRODUCT_NAME_LENGTH);
 }
 
+void printRequesterRow(Requester& requester) {
+    cout << requester.getName() << "   " << requester.getRequesterEmail();
+}
+
+void printProductRow(Product& product) {
+    cout << product.getProductName();
+}
+
+void printProductReleaseRow(ProductRelease& productRelease) {
+    cout << to_string(productRelease.getReleaseID());
+}
+
+void printChangeRow(Change& change) {
+    cout << change.getDescription() << "   " << to_string(change.getchangeID());
+}
+
+void printOpenChangeRow(Change& change) {
+    cout << change.getProductName() << "   " << change.getDescription() << "   " << Change::statusToString(change.getStatus());
+}
+
+void printAssessedChangeRow(Change& change) {
+    cout << change.getDescription() << "   " << Change::statusToString(change.getStatus()) << "   " << to_string(change.getchangeID());
+}
+
 template<typename T>
 T* selectFromList(EntityIO<T>& entityIO, const string& title, const vector<string>& columnNames, void (*printRow)(T &entity)) {
     int recordOffset = 0;
@@ -98,11 +128,13 @@ T* selectFromList(EntityIO<T>& entityIO, const string& title, const vector<strin
         cout << "=== Select " << title << " ===" << endl;
 
         // Print column headers
-        for (const string& columnName : columnNames) {
-            cout << columnName << "   ";
+        if(columnNames[0] != "") {
+            for (const string& columnName : columnNames) {
+                        cout << columnName << "   ";
+                    }
+            cout << endl;
         }
-        cout << endl;
-
+        
         // print rows
         for (int i = 0; i < maxRecordOutput; ++i) {
             cout << to_string(recordOffset + i + 1) << ")";
@@ -161,10 +193,6 @@ T* selectFromList(EntityIO<T>& entityIO, const string& title, const vector<strin
     return nullptr;
 }
 
-void printRequesterRow(Requester& requester) {
-    cout << requester.getName() << "   " << requester.getRequesterEmail();
-}
-
 // USE CASES
 
 void ScenarioController::createRequestControl() {
@@ -190,8 +218,7 @@ void ScenarioController::createRequestControl() {
     clearScreen();
 
     // Get requester from user
-    vector<string> colHeaders = {"Name", "Email"};
-    Requester* requester = selectFromList(requesterIO, "Customer", colHeaders, printRequesterRow);
+    Requester* requester = selectFromList(requesterIO, "Customer", customerColHeaders, printRequesterRow);
     if (requester == nullptr) return;
     string requesterName = requester->getName();
     string requesterEmail = requester->getRequesterEmail();
@@ -210,19 +237,19 @@ void ScenarioController::createRequestControl() {
     } while (date.empty());
 
     // Get product information
-    Product* product = selectFromList(productIO, "Product");
+    Product* product = selectFromList(productIO, "Product", noColHeader, printProductRow);
     if (product == nullptr) return;
     string productName = product->getProductName();
     delete product;
 
     // Get product release information
-    ProductRelease* productRelease = selectFromList(productReleaseIO, "Product Release");
+    ProductRelease* productRelease = selectFromList(productReleaseIO, "Product Release", noColHeader, printProductReleaseRow);
     if (productRelease == nullptr) return;
     int productReleaseID = productRelease->getReleaseID();
     delete productRelease;
 
     // Get change information
-    Change* change = selectFromList(changeIO, "Change");
+    Change* change = selectFromList(changeIO, "Change Item", changeColHeaders, printChangeRow);
     if (change == nullptr) return;
     string changeDate = change->getDate();
     string changeDesc = change->getDescription();
@@ -291,7 +318,7 @@ void ScenarioController::createProductControl() {
 
 void ScenarioController::assessNewChangeControl() {
     // Select a change item
-    Change* selectedChange = selectFromList(changeIO, "Change Item");
+    Change* selectedChange = selectFromList(changeIO, "Change Item", openChangeColHeaders, printOpenChangeRow);
     if (selectedChange == nullptr) return;
 
     int changeID = selectedChange->getchangeID();
@@ -321,7 +348,7 @@ void ScenarioController::assessNewChangeControl() {
     if(description == "0") return;
 
     // Select product release
-    ProductRelease* selectedProductRelease = selectFromList(productReleaseIO, "Product Release");
+    ProductRelease* selectedProductRelease = selectFromList(productReleaseIO, "Product Release", noColHeader, printProductReleaseRow);
     if (selectedProductRelease == nullptr) return;
 
     int productReleaseID = selectedProductRelease->getReleaseID();
@@ -341,7 +368,7 @@ void ScenarioController::assessNewChangeControl() {
 void ScenarioController::updateChangeItemControl() {
     // Fetch initial product list
     vector<Product*> products = productIO.readNRecords(maxRecordOutput);
-    Product* selectedProduct = selectFromList(productIO, "product");
+    Product* selectedProduct = selectFromList(productIO, "Product", noColHeader, printProductRow);
     
     if (!selectedProduct) return;  // Abort if no valid product selected
 
@@ -350,7 +377,7 @@ void ScenarioController::updateChangeItemControl() {
 
     // Fetch initial change list
     vector<Change*> changes = changeIO.readNRecords(maxRecordOutput);
-    Change* selectedChange = selectFromList(changeIO, "change");
+    Change* selectedChange = selectFromList(changeIO, "Change Item", assessedChangeColHeaders, printAssessedChangeRow);
     
     if (!selectedChange) return;  // Abort if no valid change selected
 
@@ -378,7 +405,7 @@ void ScenarioController::updateChangeItemControl() {
 
     // Fetch initial product release list
     vector<ProductRelease*> productReleases = productReleaseIO.readNRecords(maxRecordOutput);
-    ProductRelease* selectedProductRelease = selectFromList(productReleaseIO, "product release");
+    ProductRelease* selectedProductRelease = selectFromList(productReleaseIO, "Product Release", noColHeader, printProductReleaseRow);
 
     if (!selectedProductRelease) return;  // Abort if no valid product release selected
 
@@ -408,7 +435,7 @@ void ScenarioController::inquireChangeItemControl() {
         return;
     }
 
-    Product* selectedProduct = selectFromList(productIO, "product");
+    Product* selectedProduct = selectFromList(productIO, "Product", noColHeader, printProductRow);
 
     if (!selectedProduct) return;  // Abort if no valid product selected
     string productName = selectedProduct->getProductName();
@@ -418,7 +445,7 @@ void ScenarioController::inquireChangeItemControl() {
 
     // Step 2: Select a change item to inquire
     vector<Change*> changes = changeIO.readNRecords(changeIO.getRecordCount());
-    Change* selectedChange = selectFromList(changeIO, "change");
+    Change* selectedChange = selectFromList(changeIO, "Change Item", assessedChangeColHeaders, printAssessedChangeRow);
 
     if (!selectedChange) return;  // Abort if no valid change selected
 
@@ -468,7 +495,7 @@ void ScenarioController::printScenario1Control() {
         return;
     }
 
-    Product* selectedProduct = selectFromList(productIO, "product");
+    Product* selectedProduct = selectFromList(productIO, "Product", noColHeader, printProductRow);
 
     if (!selectedProduct) return;  // Abort if no valid product selected
 
@@ -480,7 +507,7 @@ void ScenarioController::printScenario1Control() {
         return;
     }
 
-    ProductRelease* selectedRelease = selectFromList(productReleaseIO, "product release");
+    ProductRelease* selectedRelease = selectFromList(productReleaseIO, "Product Release", noColHeader, printProductReleaseRow);
 
     if (!selectedRelease) {
         delete selectedProduct;
@@ -504,7 +531,7 @@ void ScenarioController::printScenario2Control() {
         return;
     }
 
-    Product* selectedProduct = selectFromList(productIO, "product");
+    Product* selectedProduct = selectFromList(productIO, "Product", noColHeader, printProductRow);
 
     if (!selectedProduct) return;  // Abort if no valid product selected
 
