@@ -97,15 +97,6 @@ class Requester {
         Return: "Requester" object's department as an character array of maximum size 15.
         */
         const char* getDepartment() const;
-    // --------------------------------------------------------------------------------------------------------------------
-
-        /* Function to retrieve the "Requester" object's record count.
-
-        No parameters.
-
-        Return: "Requester" object's record count.
-        */
-        static int getRequesterCount();
 
     // --------------------------------------------------------------------------------------------------------------------
 
@@ -153,6 +144,7 @@ class Requester {
         static const int MAX_NAME_LENGTH = 15;
 
     private:
+    
         char requesterEmail[MAX_EMAIL_LENGTH + 1];
         char name[MAX_NAME_LENGTH + 1];
         int phone;
