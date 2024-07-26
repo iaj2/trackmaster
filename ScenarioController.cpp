@@ -24,6 +24,7 @@ EntityIO<Requester> requesterIO("requester.dat");
 EntityIO<Change> changeIO("change.dat");
 
 const vector<string> customerColHeaders = {"Name", "Email"};
+const vector<string> employeeColHeaders = {"Name", "Email", "Department"};
 const vector<string> changeColHeaders = {"Description", "ChangeID"};
 const vector<string> openChangeColHeaders = {"Product", "Description", "Status"};
 const vector<string> assessedChangeColHeaders = {"Description", "Status", "ChangeID"};
@@ -90,8 +91,12 @@ string getProductName() {
     return getInput("ENTER the PRODUCT NAME (Length: max 10)", Product::MAX_PRODUCT_NAME_LENGTH);
 }
 
-void printRequesterRow(Requester& requester) {
+void printCustomerRow(Requester& requester) {
     cout << requester.getName() << "   " << requester.getRequesterEmail();
+}
+
+void printEmployeeRow(Requester& requester) {
+    cout << requester.getName() << "   " << requester.getRequesterEmail() << "   " << requester.getDepartment();
 }
 
 void printProductRow(Product& product) {
@@ -218,7 +223,10 @@ void ScenarioController::createRequestControl() {
     clearScreen();
 
     // Get requester from user
-    Requester* requester = selectFromList(requesterIO, "Customer", customerColHeaders, printRequesterRow);
+    Requester* requester; 
+    if(reqTSelection == 'c') requester = selectFromList(requesterIO, "Customer", customerColHeaders, printCustomerRow);
+    else {requester = selectFromList(requesterIO, "Employee", employeeColHeaders, printEmployeeRow);}
+
     if (requester == nullptr) return;
     string requesterName = requester->getName();
     string requesterEmail = requester->getRequesterEmail();
@@ -255,8 +263,8 @@ void ScenarioController::createRequestControl() {
     string changeDesc = change->getDescription();
     delete change;
 
-    // Save request information
-    Request newRequest(requesterName, requesterEmail, date, productName, productReleaseID, changeDate, changeDesc);
+    // Save request information. TODO: FIX THIS
+    Request newRequest(0, requesterEmail.c_str(), productName.c_str(), productReleaseID, Request::Priority::LOW );
     requestIO.appendRecord(newRequest);
 
     cout << "Request created successfully!" << endl;
@@ -412,10 +420,12 @@ void ScenarioController::updateChangeItemControl() {
     int productReleaseID = selectedProductRelease->getReleaseID();
     delete selectedProductRelease;  // Free memory
 
+    // TODO: GET DESCRIPTION
+
     // Output updated change information
     cout << "=== Updated Change Information ===" << endl;
     cout << "Product: " << productName << endl;
-    cout << "Description: " << description << endl;
+    cout << "Description: " << "THIS IS A PLACEHOLDER" << endl;
     cout << "Anticipated Release: " << productReleaseID << endl;
     cout << "Status: " << Change::statusToString(status) << endl;
     cout << "Change ID: " << changeID << endl;
