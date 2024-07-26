@@ -9,12 +9,12 @@ using namespace std;
 
 int main() {
     // Setup calls will go before UI initialized
-    LifeCycle::startUpSystem();
+    LifeCycleController::startUpSystem();
     
     UI::initUI();
 
     // Shutdown after
-    LifeCycle::shutDownSystem();
+    LifeCycleController::shutDownSystem();
 };
 
 

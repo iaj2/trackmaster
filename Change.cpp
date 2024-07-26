@@ -35,127 +35,6 @@ Change::Change(
 }
 
 // ------------------------------------------------------------------------------------------------
-// Initialize the change file
-// Opens the change file or creates it if it doesn't exist.
-// ------------------------------------------------------------------------------------------------
-void Change::initChange() {
-    char changeFileName[] = "changes.dat";
-
-    // Open file for input/output in binary mode
-    changeFile.open(changeFileName, ios::out | ios::in | ios::binary );
-
-     if (!changeFile) {
-        // If the file does not exist, create it
-        std::fstream { changeFileName};
-        // Open for reading and writing
-        changeFile.open(changeFileName, std::ios::binary);
-    }
-    // if open does not work then throw an exception 
-    if (!changeFile) {
-       throw FileOpenFailedException("Change file open failed");
-    }
-}
-
-// ------------------------------------------------------------------------------------------------
-// Move the change file pointer to the start
-// -----------------------------------------------------------------------------------------------
-void Change::startOfChangeFile() {
-    if (changeFile.is_open()) {
-        changeFile.seekp(0, std::ios::beg);
-    } else {
-        // if the file isnt open throw an exception 
-        throw FileNotOpenException("Change file is not open");
-    }
-}
-
-// ------------------------------------------------------------------------------------------------
-// Move the change file pointer to an offset from the start
-// -----------------------------------------------------------------------------------------------
-void Change::seekChangeFile(int records_offset) {
-    if (changeFile.is_open()) {
-        changeFile.seekg(sizeof(Change)*records_offset, ios::beg);
-    } else {
-        // if the file isnt open throw an exception 
-        throw FileNotOpenException("Change file is not open");
-    }
-}
-
-// ------------------------------------------------------------------------------------------------
-// Method to get a change record from the file
-// Reads a change record from the currrent file pointer position.
-// -----------------------------------------------------------------------------------------------
-Change* Change::getChangeRecord() {
-    // check if the file is open 
-    if (changeFile.is_open()) {
-
-        // return nullptr if at end of file
-        if (changeFile.eof()) {
-            return nullptr;
-        }
-
-        // create blank change object   
-        Change* change = new Change();
-
-        // read change record into object
-        changeFile.read(reinterpret_cast<char*>(change), sizeof(change));
-
-        // if record not fully read, return nullptr
-        if (changeFile.fail() || changeFile.eof()) {
-            delete change;
-            return nullptr;
-        }
-        return change; 
-    // throw an exception if the file is not found 
-    } else {
-        throw FileNotOpenException("Change file is not open");
-    }
-}
-
-// ------------------------------------------------------------------------------------------------
-// Record a new change to the end of the file
-// -----------------------------------------------------------------------------------------------
-const void Change::recordChange(Change newChange) {
-    // make sure the file is open 
-    if (changeFile.is_open()) {
-        // seek to the end 
-        changeFile.seekp(0, std::ios::end);
-
-        // write it to file 
-        changeFile.write(reinterpret_cast<char*>(&newChange), sizeof(Change));
-
-        // increase count
-        changeCount++;
-    // throw an exception if the file is not open 
-    } else {
-        throw FileNotOpenException("File is not open");
-    }
-}
-
-// ------------------------------------------------------------------------------------------------
-// Close the change file
-// -----------------------------------------------------------------------------------------------
-void Change::exitChange() {
-    if (changeFile.is_open()) {
-        changeFile.close();
-    }
-}
-
-// ------------------------------------------------------------------------------------------------
-// Convert the status enum to string
-// -----------------------------------------------------------------------------------------------
-string Change::statusToString(Status status) {
-    switch (status) {
-        case Status::Open: return "Open";
-        case Status::Assessed: return "Assessed";
-        case Status::In_Progress: return "In_Progress";
-        case Status::Done: return "Done";
-        case Status::Canceled: return "Canceled";
-
-        default:return "UNKNOWN";
-    }
-}
-
-// ------------------------------------------------------------------------------------------------
 // Get change ID
 // -----------------------------------------------------------------------------------------------
 int Change::getchangeID() const { return changeID; }
@@ -201,11 +80,6 @@ char* Change::getDate() const {
 
     // Return a pointer to the formatted date string
     return formattedDate;
-}
-
-// Function to retrieve the "Change" object's record count.
-int Change::getChangeCount() {
-    return changeCount;
 }
 
 // ------------------------------------------------------------------------------------------------

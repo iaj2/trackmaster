@@ -1,0 +1,81 @@
+#include "EntityIO.h"
+#include <iostream>
+
+template<typename T>
+EntityIO<T>::EntityIO(const std::string& filename) : filename(filename), recordCount(0) {
+    openFile();
+}
+
+template<typename T>
+EntityIO<T>::~EntityIO() {
+    closeFile();
+}
+
+template<typename T>
+void EntityIO<T>::openFile() {
+    fileStream.open(filename, std::ios::in | std::ios::out | std::ios::binary);
+    if (!fileStream.is_open()) {
+        throw std::runtime_error("Unable to open file: " + filename);
+    }
+    // Determine the record count
+    fileStream.seekg(0, std::ios::end);
+    recordCount = fileStream.tellg() / sizeof(T);
+    fileStream.seekg(0, std::ios::beg);
+}
+
+template<typename T>
+void EntityIO<T>::closeFile() {
+    if (fileStream.is_open()) {
+        fileStream.close();
+    }
+}
+
+template<typename T>
+void EntityIO<T>::seekToStart() {
+    fileStream.clear();
+    fileStream.seekg(0, std::ios::beg);
+}
+
+template<typename T>
+void EntityIO<T>::seekTo(int offset) {
+    fileStream.clear();
+    fileStream.seekg(offset * sizeof(T), std::ios::beg);
+}
+
+template<typename T>
+std::vector<T*> EntityIO<T>::readNRecords(int n) {
+    std::vector<T*> records;
+    for (int i = 0; i < n; ++i) {
+        T* record = new T;
+        if (fileStream.read(reinterpret_cast<char*>(record), sizeof(T))) {
+            records.push_back(record);
+        } else {
+            delete record;
+            records.push_back(nullptr);
+        }
+    }
+    return records;
+}
+
+template<typename T>
+T* EntityIO<T>::readRecord() {
+    T* record = new T;
+    if (fileStream.read(reinterpret_cast<char*>(record), sizeof(T))) {
+        return record;
+    }
+    
+    return nullptr;
+}
+
+template<typename T>
+void EntityIO<T>::appendRecord(const T& record) {
+    fileStream.clear();
+    fileStream.seekp(0, std::ios::end);
+    fileStream.write(reinterpret_cast<const char*>(&record), sizeof(T));
+    ++recordCount;
+}
+
+template<typename T>
+int EntityIO<T>::getRecordCount() {
+    return recordCount;
+}

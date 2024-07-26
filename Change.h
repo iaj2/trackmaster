@@ -1,5 +1,3 @@
-
-
 /*
 
 Change.h
@@ -60,79 +58,6 @@ class Change {
         Change(const int changeID, Status status, const char* productName, const int anticipatedReleaseID, const char* description, const int date);
 
     // --------------------------------------------------------------------------------------------------------------------
-        /* Opens the necessary files relevant for "Change" records.
-
-        This function is static, therefore it does not require an instance of the class to be called.
-
-        Parameters: None
-
-        Return: Does not return anything.
-        */
-        static void initChange();
-
-    // --------------------------------------------------------------------------------------------------------------------
-
-        /* Seeks to start of the change file.
-
-        Parameters: None
-
-        Return: Does not return anything.
-        
-        */
-        static void startOfChangeFile();
-    // --------------------------------------------------------------------------------------------------------------------
-
-        /* Seeks to an offset from the start of the change file.
-
-        Parameters: None
-
-        Return: Does not return anything.
-        
-        */
-        static void seekChangeFile(int records_offset);
-
-    // --------------------------------------------------------------------------------------------------------------------
-    
-        /* Gets change record currently pointed to in file.
-        
-        Parameters: None
-        
-        Return: reference to the change record or nullptr if end of file.
-        
-        */
-        static Change* getChangeRecord();
-
-    // --------------------------------------------------------------------------------------------------------------------
-
-        /* Takes in a "Change" object to write to file.
-
-        Parameters: Change newChange. In parameter.
-
-        Return: Does not return anything.
-        */
-        static const void recordChange(Change newChange);
-
-    // --------------------------------------------------------------------------------------------------------------------
-
-        /* Exits the Change Operation.
-
-        Parameters: None
-
-        Return: Does not return anything.
-        */
-        static void exitChange();
-
-    // --------------------------------------------------------------------------------------------------------------------
-
-        /* Function to convert the status to string
-        
-        Parameters: None
-
-        Return: Status enum as string
-        */
-       static std::string statusToString(Status status);
-
-    // --------------------------------------------------------------------------------------------------------------------
 
         /* Function to retrieve the "Change" object's changeID.
 
@@ -191,16 +116,6 @@ class Change {
         Return: "Change" object's date as an 8-digit integer formatted in YYYY/MM/DD
         */
         char* getDate() const;
-
-    // --------------------------------------------------------------------------------------------------------------------
-
-        /* Function to retrieve the "Requester" object's record count.
-
-        No parameters.
-
-        Return: "Requester" object's record count.
-        */
-        static int getChangeCount();
 
     // --------------------------------------------------------------------------------------------------------------------
 

@@ -50,78 +50,6 @@ class Product {
 
     // --------------------------------------------------------------------------------------------------------------------
 
-        /* Opens the necessary files relevant for Product records.
-    
-        Parameters: None
-    
-        Return: Does not return anything.
-        */
-        static void initProduct();
-
-    // --------------------------------------------------------------------------------------------------------------------
-
-        /* Seeks to start of the product file.
-    
-        Parameters: None
-    
-        Return: Does not return anything.
-    
-        */
-        static void startOfProductFile();
-
-    // --------------------------------------------------------------------------------------------------------------------
-
-        /* Seeks to an offset from the start of the product file.
-
-        Parameters: None
-
-        Return: Does not return anything.
-        
-        */
-        static void seekProductFile(int records_offset);
-
-    // --------------------------------------------------------------------------------------------------------------------
-
-        /* Gets product record currently pointed to in file.
-    
-        Parameters: None
-    
-        Return: reference to the product record or nullptr if end of file.
-    
-        */
-        static Product* getProductRecord();
-    // --------------------------------------------------------------------------------------------------------------------
-
-        /* Takes in the created "Product" object to write to file.
-        
-        Parameters: Product newProduct. In parameter.
-        
-        Return: Does not return anything.
-        */
-        static const void recordProduct(Product &newProduct);
-
-    // --------------------------------------------------------------------------------------------------------------------
-
-        /* Generates a report for all products.
-    
-        Parameters: None
-    
-        Return: Does not return anything.
-        */
-        static void reportAllProducts();
-
-    // --------------------------------------------------------------------------------------------------------------------
-
-        /* Exits the Product Operation.
-    
-        Parameters: None
-    
-        Return: Does not return anything.
-        */
-        static void exitProduct();
-
-    // --------------------------------------------------------------------------------------------------------------------
-
         /* Parameterized Constructor to create a "Product" Object. This requires the input of all private data attributes of the "Product" class.
         
         Parameter 1 (const char* productName): In parameter.
@@ -142,16 +70,6 @@ class Product {
 
     // --------------------------------------------------------------------------------------------------------------------
 
-        /* Function to retrieve the "Product" object's record count.
-
-        No parameters.
-
-        Return: "Product" object's record count.
-        */
-        static int getProductCount();
-
-    // --------------------------------------------------------------------------------------------------------------------
-
         /* Function to set the "Product" object's productName.
 
         Parameter 1 (const char* newProductName): In parameter.
@@ -167,7 +85,6 @@ class Product {
     private:
         static const int MAX_PRODUCT_NAME_LENGTH = 15;
         char productName[MAX_PRODUCT_NAME_LENGTH + 1];
-        static int productCount;
 
         static std::fstream productFile;
 };
