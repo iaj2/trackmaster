@@ -1,13 +1,20 @@
 
 #include <iostream>
 #include <fstream>
+#include <cstring>
 
 #include "Request.h"
+
+#include "FileNotOpenException.h"
+#include "FileOpenFailedException.h"
+#include "RecordNotFoundException.h"
+
 
 using namespace std;
 
 
 fstream Request::requestFile;
+int Request::recordCount = 0;
 
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -89,7 +96,6 @@ Request* Request::getRequestRecord() {
 
     // Ensure requestFile is opened
     if (requestFile.is_open()) {
-
         // Error 1: Currently pointed to EOF
         if (requestFile.eof()) {
             return nullptr;
@@ -97,65 +103,26 @@ Request* Request::getRequestRecord() {
 
         // Create new blank request object to fill
         Request* request = new Request();
-        requestFile.read(reinterpret_cast<char*>(&request), sizeof(Request));
+        requestFile.read(reinterpret_cast<char*>(request), sizeof(Request));
 
-        // If record is not fully read, delete allocated "request" and return nullptr
-        if (!request || requestFile.eof()) {
+        // Check for successful read
+        if (requestFile.fail()) {
+            delete request;
+            return nullptr;
+        }
+
+        // Verify if we have read enough bytes
+        if (requestFile.gcount() < sizeof(Request)) {
             delete request;
             return nullptr;
         }
 
         return request;
-    }
-
-    else {
+    } else {
         throw FileNotOpenException("File is not open");
     }
 }
 
-
-// --------------------------------------------------------------------------------------------------------------------
-/*
-
-Function: searchRequestRecord()
-
-Implements the search for a request record by changeID.
-If the request file is open, it loops through the file to find a matching changeID.
-When found, it creates a new Request object and returns it
-
-- If the changeID is not found, it throws a RecordNotFoundException.
-- If the file cannot be opened, it throws a FileNotOpenException.
-
-*/
-
-
-Request* Request::searchRequestRecord(const int changeID) {
-
-    // Case 1: Request File is opened
-    if (requestFile.is_open()) {
-        Request* currentRequest;
-        startOfRequestFile();
-
-        // Loop through the file to find the matching changeID. Reads data equal to the size of Request object.
-            // Each read checks if changeID in current block matches specified changeID provided
-        while (requestFile.read(reinterpret_cast<char*>(&currentRequest), sizeof(Request))){
-
-            // If found, create new Request object
-            if (currentRequest->changeID == changeID) {
-                Request* newRequest = Request(&currentRequest);
-                return newRequest;
-            }  
-        }
-
-        // Record does not exist
-        throw RecordNotFoundException("Record not found");
-    }
-    
-    // Case 2: File cannot be opened
-    else {
-        throw FileNotOpenException("File is not open");
-    }
-}
 
 // --------------------------------------------------------------------------------------------------------------------
 /*
@@ -173,7 +140,7 @@ void Request::recordRequest(Request &newRequest) {
     if (requestFile.is_open()) {
 
         // Move past last written "Request" record
-        requestFile.seekp((recordCount+1)*sizeof(Request));
+        requestFile.seekp((recordCount)*sizeof(Request), ios::beg);
 
         // Write the new request after the last record or at the end of the file
         requestFile.write(reinterpret_cast<char*>(&newRequest), sizeof(Request));
@@ -224,11 +191,11 @@ Request::Request(const int changeID, const char* requesterEmail, const char* pro
     this->productReleaseID = productReleaseID;
     this->priority = priority;
 
-    strncpy(this->requesterEmail, requesterEmail, MAX_EMAIL_LENGTH);
-    this->requesterEmail[MAX_EMAIL_LENGTH] = '\0';
+    strncpy(this->requesterEmail, requesterEmail, MAX_EMAIL_LENGTH - 1);
+    this->requesterEmail[MAX_EMAIL_LENGTH - 1] = '\0';
 
-    strncpy(this->productName, productName, MAX_PRODUCT_NAME_LENGTH);
-    this->productName[MAX_PRODUCT_NAME_LENGTH] = '\0';
+    strncpy(this->productName, productName, MAX_PRODUCT_NAME_LENGTH - 1);
+    this->productName[MAX_PRODUCT_NAME_LENGTH - 1] = '\0';
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -283,3 +250,13 @@ Priority Request::getPriority() {
 void Request::setPriority(Priority newPriority) {
     priority = newPriority;
 }
+
+// --------------------------------------------------------------------------------------------------------------------
+
+template<typename T>
+size_t Request::getAttributeSize(const T& attribute) {
+    return sizeof(attribute);
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+

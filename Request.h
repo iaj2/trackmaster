@@ -39,8 +39,6 @@ This exported class contains public functions that allow the user to retrieve th
 
 #include <fstream>
 
-
-
 class Request {
 
     public:
@@ -76,18 +74,6 @@ class Request {
 
         */
         static Request* getRequestRecord();
-    // --------------------------------------------------------------------------------------------------------------------
-
-        /* Searches and returns the request record associated with the given changeID
-
-        Parameters (changeID): In parameter.
-
-        Return: Request object that has the associated changeID. Otherwise returns nullptr.
-
-        */
-
-
-        static Request* searchRequestRecord(const int changeID);
 
     // --------------------------------------------------------------------------------------------------------------------
 
@@ -225,6 +211,17 @@ class Request {
         Return: Does not return anything
         */
         void setPriority(Priority newPriority);
+
+    // --------------------------------------------------------------------------------------------------------------------
+
+        /* Function to return a "Request" attribute's size
+
+        Parameter 1 (const T& attribute): In parameter.
+
+        Return: Size of passed attribute
+        */
+        template<typename T>
+        size_t getAttributeSize(const T& attribute);
 
     // --------------------------------------------------------------------------------------------------------------------
 
