@@ -10,16 +10,23 @@ template<typename T>
 class EntityIO {
 public:
     EntityIO(const std::string& filename);
-    ~EntityIO();
 
-    void openFile();
-    void closeFile();
+    void init();
+
+    void exit();
     
     void seekToStart();
+
     void seekTo(int offset);
+
     std::vector<T*> readNRecords(int n);
+
     T* readRecord();
+
     void appendRecord(const T& record);
+
+    void updateRecord(int index, const T& newRecord);
+
     int getRecordCount();
 
 private:

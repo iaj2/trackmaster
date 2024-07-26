@@ -85,7 +85,7 @@ string getProductName() {
 }
 
 template<typename T>
-T* selectFromList(EntityIO<T>& entityIO, const string& entityName) {
+T* selectFromList(EntityIO<T>& entityIO, const string& title, const vector<string>& columnNames, void (*printRow)(T &entity)) {
     int recordOffset = 0;
     entityIO.seekToStart();
     vector<T*> records = entityIO.readNRecords(maxRecordOutput);
@@ -95,14 +95,22 @@ T* selectFromList(EntityIO<T>& entityIO, const string& entityName) {
 
     while (true) {
         range = formatSelectionRange(1, entityIO.getRecordCount());
-        cout << "=== Select " << entityName << " ===" << endl;
+        cout << "=== Select " << title << " ===" << endl;
 
+        // Print column headers
+        for (const string& columnName : columnNames) {
+            cout << columnName << "   ";
+        }
+        cout << endl;
+
+        // print rows
         for (int i = 0; i < maxRecordOutput; ++i) {
             cout << to_string(recordOffset + i + 1) << ")";
             if (records[i] == nullptr) {
                 cout << "Record unavailable" << endl;
             } else {
-                cout << records[i]->toString() << endl; // Assume T has a toString() method
+                printRow(*records[i]);
+                cout << endl;
             }
         }
 
@@ -153,6 +161,10 @@ T* selectFromList(EntityIO<T>& entityIO, const string& entityName) {
     return nullptr;
 }
 
+void printRequesterRow(Requester& requester) {
+    cout << requester.getName() << "   " << requester.getRequesterEmail();
+}
+
 // USE CASES
 
 void ScenarioController::createRequestControl() {
@@ -178,7 +190,8 @@ void ScenarioController::createRequestControl() {
     clearScreen();
 
     // Get requester from user
-    Requester* requester = selectFromList(requesterIO, "Requester");
+    vector<string> colHeaders = {"Name", "Email"};
+    Requester* requester = selectFromList(requesterIO, "Customer", colHeaders, printRequesterRow);
     if (requester == nullptr) return;
     string requesterName = requester->getName();
     string requesterEmail = requester->getRequesterEmail();

@@ -4,21 +4,28 @@
 #include "Product.h";
 #include "ProductRelease.h";
 #include "LifeCycleController.h";
+#include "EntityIO.h";
+
+EntityIO<Product> productIO("product.dat");
+EntityIO<ProductRelease> productReleaseIO("productRelease.dat");
+EntityIO<Request> requestIO("request.dat");
+EntityIO<Requester> requesterIO("requester.dat");
+EntityIO<Change> changeIO("change.dat");
 
 void LifeCycleController::startUpSystem() {
   // init program entities
-  ProductRelease::initProductRelease();
-  Product::initProduct();
-  Request::initRequest();
-  Change::initChange();
-  Requester::initRequester();
+  productIO.init();
+  productReleaseIO.init();
+  requestIO.init();
+  requesterIO.init();
+  changeIO.init();
 }
 
 void LifeCycleController::shutDownSystem() {
   // close program entities
-  ProductRelease::exitProductRelease();
-  Product::exitProduct();
-  Request::exitRequest();
-  Change::exitChange();
-  Requester::exitRequester();
+  productIO.exit();
+  productReleaseIO.exit();
+  requestIO.exit();
+  requesterIO.exit();
+  changeIO.exit();
 }

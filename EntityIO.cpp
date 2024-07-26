@@ -2,17 +2,10 @@
 #include <iostream>
 
 template<typename T>
-EntityIO<T>::EntityIO(const std::string& filename) : filename(filename), recordCount(0) {
-    openFile();
-}
+EntityIO<T>::EntityIO(const std::string& filename) : filename(filename), recordCount(0) {}
 
 template<typename T>
-EntityIO<T>::~EntityIO() {
-    closeFile();
-}
-
-template<typename T>
-void EntityIO<T>::openFile() {
+void EntityIO<T>::init() {
     fileStream.open(filename, std::ios::in | std::ios::out | std::ios::binary);
     if (!fileStream.is_open()) {
         throw std::runtime_error("Unable to open file: " + filename);
@@ -24,7 +17,7 @@ void EntityIO<T>::openFile() {
 }
 
 template<typename T>
-void EntityIO<T>::closeFile() {
+void EntityIO<T>::exit() {
     if (fileStream.is_open()) {
         fileStream.close();
     }
@@ -73,6 +66,19 @@ void EntityIO<T>::appendRecord(const T& record) {
     fileStream.seekp(0, std::ios::end);
     fileStream.write(reinterpret_cast<const char*>(&record), sizeof(T));
     ++recordCount;
+}
+
+template<typename T>
+void EntityIO<T>::updateRecord(int index, const T& newRecord) {
+    if (index < 0 || index >= recordCount) {
+        throw std::out_of_range("Index out of range");
+    }
+
+    seekTo(index);
+    fileStream.write(reinterpret_cast<const char*>(&newRecord), sizeof(T));
+    if (!fileStream) {
+        throw std::runtime_error("Failed to write to the file");
+    }
 }
 
 template<typename T>
