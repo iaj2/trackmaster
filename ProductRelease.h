@@ -123,4 +123,4 @@ class ProductRelease {
         int releaseDate;
 };
 
-#endif
+#endif // PRODUCTRELEASE_H

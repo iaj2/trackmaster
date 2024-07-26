@@ -87,4 +87,4 @@ class Product {
         char productName[MAX_PRODUCT_NAME_LENGTH + 1];
 };
 
-#endif
+#endif // PRODUCT_H

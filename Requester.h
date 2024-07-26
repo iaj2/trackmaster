@@ -151,4 +151,4 @@ class Requester {
         char department[MAX_DEPARTMENT_LENGTH + 1];
 };
 
-#endif
+#endif // REQUESTER_H

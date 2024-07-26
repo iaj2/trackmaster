@@ -1,9 +1,9 @@
-#include <iostream>
-#include <fstream>
-#include <cstring>
 #include "Change.h"
 #include "FileOpenFailedException.h"
 #include "FileNotOpenException.h"
+#include <iostream>
+#include <fstream>
+#include <cstring>
 
 using namespace std;
 

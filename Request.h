@@ -143,4 +143,4 @@ class Request {
         Priority priority;
 };
 
-#endif
+#endif // REQUEST_H

@@ -51,4 +51,4 @@ namespace LifeCycleController {
 
 }
 
-#endif
+#endif // LIFECYCLECONTROLLER_H

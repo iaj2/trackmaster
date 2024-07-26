@@ -29,6 +29,7 @@ This exported class contains public functions that allow the user to retrieve th
 
 #ifndef CHANGE_H
 #define CHANGE_H
+
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -190,4 +191,4 @@ class Change {
         int date;
 };
 
-#endif
+#endif // CHANGE_H

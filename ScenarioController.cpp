@@ -196,350 +196,354 @@ T* selectFromList(EntityIO<T>& entityIO, const string& title, const vector<strin
 
 // USE CASES
 
-void ScenarioController::createRequestControl() {
-    // Get requester type from user
-    char reqTSelection;
-    do {
-        cout << "Is this request coming from a customer or an employee?" << endl;
-        cout << "ENTER a selection [c - customer/e - employee]" << endl;
-        cout << "OR ENTER <0> to abort and exit to the main menu" << endl;
 
-        reqTSelection = cin.get();
-        if (reqTSelection == '0') return;
-        else if (reqTSelection != 'c' && reqTSelection != 'e') {
-            clearScreen();
-            cout << "Error: Input is invalid. Re-enter input" << endl;
-            cout << "Enter 0 to abort and return to the main menu" << endl << endl;
+namespace ScenarioController {
+    void createRequestControl() {
+        // Get requester type from user
+        char reqTSelection;
+        do {
+            cout << "Is this request coming from a customer or an employee?" << endl;
+            cout << "ENTER a selection [c - customer/e - employee]" << endl;
+            cout << "OR ENTER <0> to abort and exit to the main menu" << endl;
+
+            reqTSelection = cin.get();
+            if (reqTSelection == '0') return;
+            else if (reqTSelection != 'c' && reqTSelection != 'e') {
+                clearScreen();
+                cout << "Error: Input is invalid. Re-enter input" << endl;
+                cout << "Enter 0 to abort and return to the main menu" << endl << endl;
+            }
+
+            cin.ignore();
+
+        } while (reqTSelection != 'c' && reqTSelection != 'e');
+
+        clearScreen();
+
+        // Get requester from user
+        Requester* requester; 
+        if(reqTSelection == 'c') requester = selectFromList(requesterIO, "Customer", customerColHeaders, printCustomerRow);
+        else {requester = selectFromList(requesterIO, "Employee", employeeColHeaders, printEmployeeRow);}
+
+        if (requester == nullptr) return;
+        string requesterName = requester->getName();
+        string requesterEmail = requester->getRequesterEmail();
+        delete requester;
+
+        // Get date information
+        string date;
+        do {
+            cout << "ENTER the DATE of the request (YYYY-MM-DD) OR ENTER <0> to abort and" << endl;
+            cout << "exit to the main menu:";
+
+            getline(cin, date);
+
+            if (date == "0") return;
+
+        } while (date.empty());
+
+        // Get product information
+        Product* product = selectFromList(productIO, "Product", noColHeader, printProductRow);
+        if (product == nullptr) return;
+        string productName = product->getProductName();
+        delete product;
+
+        // Get product release information
+        ProductRelease* productRelease = selectFromList(productReleaseIO, "Product Release", noColHeader, printProductReleaseRow);
+        if (productRelease == nullptr) return;
+        int productReleaseID = productRelease->getReleaseID();
+        delete productRelease;
+
+        // Get change information
+        Change* change = selectFromList(changeIO, "Change Item", changeColHeaders, printChangeRow);
+        if (change == nullptr) return;
+        string changeDate = change->getDate();
+        string changeDesc = change->getDescription();
+        delete change;
+
+        // Save request information. TODO: FIX THIS
+        Request newRequest(0, requesterEmail.c_str(), productName.c_str(), productReleaseID, Request::Priority::LOW );
+        requestIO.appendRecord(newRequest);
+
+        cout << "Request created successfully!" << endl;
+    }
+
+    void createRequesterControl() {
+        clearScreen();
+        
+        string requesterEmail = getEmail();
+        if (requesterEmail == "0") return;
+
+        clearScreen();
+
+        string phoneInput = getPhone();
+        if (phoneInput == "0") return;
+        int phone = stoi(phoneInput);
+
+        clearScreen();
+
+        string name = getName();
+        if (name == "0") return;
+
+        clearScreen();
+
+        string department = getDepartment();
+        if (department == "0") return;
+
+        clearScreen();
+
+        Requester newRequester(requesterEmail.c_str(), name.c_str(), phone, department.c_str());
+        requesterIO.appendRecord(newRequester);
+
+        cout << "The new requester has been successfully added to the system." << endl;
+        cout << "ENTER <0> to go back to the main menu: ";
+        string input;
+        do {
+            getline(cin, input);
+        } while (input != "0");
+    }
+
+    void createProductControl() {
+        clearScreen();
+        
+        string productName = getProductName();
+        if (productName == "0") return;
+
+        clearScreen();
+
+        Product newProduct(productName.c_str());
+        productIO.appendRecord(newProduct);
+
+        cout << "The new product has been successfully added to the system." << endl;
+        cout << "ENTER <0> to go back to the main menu: ";
+        string input;
+        do {
+            getline(cin, input);
+        } while (input != "0");
+    }
+
+    void assessNewChangeControl() {
+        // Select a change item
+        Change* selectedChange = selectFromList(changeIO, "Change Item", openChangeColHeaders, printOpenChangeRow);
+        if (selectedChange == nullptr) return;
+
+        int changeID = selectedChange->getchangeID();
+        string productName = selectedChange->getProductName();
+        
+        // Free memory
+        delete selectedChange;
+
+        int statusSelection;
+        // Select new status
+        cout << "=== Select Status ===" << endl;
+        cout << "1) Assessed" << endl;
+        cout << "2) Canceled" << endl;
+        cin >> statusSelection;
+
+        // Check for exit
+        if(statusSelection == 0) return;
+
+        Change::Status status = (statusSelection == 1) ? Change::Status::Assessed : Change::Status::Canceled;
+
+        // Get new description
+        string description;
+        cout << "ENTER a new description for the change [max 30 characters, leave blank to skip]" << endl;
+        cout << "OR <0> to abort and exit to main menu:";
+        getline(cin >> ws, description); // `ws` is used to ignore leading whitespace
+        // Check for exit
+        if(description == "0") return;
+
+        // Select product release
+        ProductRelease* selectedProductRelease = selectFromList(productReleaseIO, "Product Release", noColHeader, printProductReleaseRow);
+        if (selectedProductRelease == nullptr) return;
+
+        int productReleaseID = selectedProductRelease->getReleaseID();
+
+        // Free memory
+        delete selectedProductRelease;
+
+        cout << "=== Updated Change Information ===" << endl;
+        cout << "Product: " << productName << endl;
+        cout << "Description: " << description << endl;
+        cout << "Anticipated Release: " << productReleaseID << endl;
+        cout << "Status: " << Change::statusToString(status) << endl;
+        cout << "Change ID: " << changeID << endl;
+    }
+
+
+    void updateChangeItemControl() {
+        // Fetch initial product list
+        vector<Product*> products = productIO.readNRecords(maxRecordOutput);
+        Product* selectedProduct = selectFromList(productIO, "Product", noColHeader, printProductRow);
+        
+        if (!selectedProduct) return;  // Abort if no valid product selected
+
+        string productName = selectedProduct->getProductName();
+        delete selectedProduct;  // Free memory
+
+        // Fetch initial change list
+        vector<Change*> changes = changeIO.readNRecords(maxRecordOutput);
+        Change* selectedChange = selectFromList(changeIO, "Change Item", assessedChangeColHeaders, printAssessedChangeRow);
+        
+        if (!selectedChange) return;  // Abort if no valid change selected
+
+        int changeID = selectedChange->getchangeID();
+        delete selectedChange;  // Free memory
+
+        // Select status
+        int statusSelection;
+        cout << "=== Select Status ===" << endl;
+        cout << "1) In Progress" << endl;
+        cout << "2) Done" << endl;
+        cout << "3) Canceled" << endl;
+        cin >> statusSelection;
+        cin.ignore();  // To ignore the newline character left in the buffer
+
+        if (statusSelection == 0) return;  // Abort if exit
+
+        Change::Status status;
+        switch (statusSelection) {
+            case 1: status = Change::Status::In_Progress; break;
+            case 2: status = Change::Status::Done; break;
+            case 3: status = Change::Status::Canceled; break;
+            default: status = Change::Status::In_Progress; break;
         }
 
-        cin.ignore();
+        // Fetch initial product release list
+        vector<ProductRelease*> productReleases = productReleaseIO.readNRecords(maxRecordOutput);
+        ProductRelease* selectedProductRelease = selectFromList(productReleaseIO, "Product Release", noColHeader, printProductReleaseRow);
 
-    } while (reqTSelection != 'c' && reqTSelection != 'e');
+        if (!selectedProductRelease) return;  // Abort if no valid product release selected
 
-    clearScreen();
+        int productReleaseID = selectedProductRelease->getReleaseID();
+        delete selectedProductRelease;  // Free memory
 
-    // Get requester from user
-    Requester* requester; 
-    if(reqTSelection == 'c') requester = selectFromList(requesterIO, "Customer", customerColHeaders, printCustomerRow);
-    else {requester = selectFromList(requesterIO, "Employee", employeeColHeaders, printEmployeeRow);}
+        // TODO: GET DESCRIPTION
 
-    if (requester == nullptr) return;
-    string requesterName = requester->getName();
-    string requesterEmail = requester->getRequesterEmail();
-    delete requester;
-
-    // Get date information
-    string date;
-    do {
-        cout << "ENTER the DATE of the request (YYYY-MM-DD) OR ENTER <0> to abort and" << endl;
-        cout << "exit to the main menu:";
-
-        getline(cin, date);
-
-        if (date == "0") return;
-
-    } while (date.empty());
-
-    // Get product information
-    Product* product = selectFromList(productIO, "Product", noColHeader, printProductRow);
-    if (product == nullptr) return;
-    string productName = product->getProductName();
-    delete product;
-
-    // Get product release information
-    ProductRelease* productRelease = selectFromList(productReleaseIO, "Product Release", noColHeader, printProductReleaseRow);
-    if (productRelease == nullptr) return;
-    int productReleaseID = productRelease->getReleaseID();
-    delete productRelease;
-
-    // Get change information
-    Change* change = selectFromList(changeIO, "Change Item", changeColHeaders, printChangeRow);
-    if (change == nullptr) return;
-    string changeDate = change->getDate();
-    string changeDesc = change->getDescription();
-    delete change;
-
-    // Save request information. TODO: FIX THIS
-    Request newRequest(0, requesterEmail.c_str(), productName.c_str(), productReleaseID, Request::Priority::LOW );
-    requestIO.appendRecord(newRequest);
-
-    cout << "Request created successfully!" << endl;
-}
-
-void ScenarioController::createRequesterControl() {
-    clearScreen();
-    
-    string requesterEmail = getEmail();
-    if (requesterEmail == "0") return;
-
-    clearScreen();
-
-    string phoneInput = getPhone();
-    if (phoneInput == "0") return;
-    int phone = stoi(phoneInput);
-
-    clearScreen();
-
-    string name = getName();
-    if (name == "0") return;
-
-    clearScreen();
-
-    string department = getDepartment();
-    if (department == "0") return;
-
-    clearScreen();
-
-    Requester newRequester(requesterEmail.c_str(), name.c_str(), phone, department.c_str());
-    requesterIO.appendRecord(newRequester);
-
-    cout << "The new requester has been successfully added to the system." << endl;
-    cout << "ENTER <0> to go back to the main menu: ";
-    string input;
-    do {
-        getline(cin, input);
-    } while (input != "0");
-}
-
-void ScenarioController::createProductControl() {
-    clearScreen();
-    
-    string productName = getProductName();
-    if (productName == "0") return;
-
-    clearScreen();
-
-    Product newProduct(productName.c_str());
-    productIO.appendRecord(newProduct);
-
-    cout << "The new product has been successfully added to the system." << endl;
-    cout << "ENTER <0> to go back to the main menu: ";
-    string input;
-    do {
-        getline(cin, input);
-    } while (input != "0");
-}
-
-void ScenarioController::assessNewChangeControl() {
-    // Select a change item
-    Change* selectedChange = selectFromList(changeIO, "Change Item", openChangeColHeaders, printOpenChangeRow);
-    if (selectedChange == nullptr) return;
-
-    int changeID = selectedChange->getchangeID();
-    string productName = selectedChange->getProductName();
-    
-    // Free memory
-    delete selectedChange;
-
-    int statusSelection;
-    // Select new status
-    cout << "=== Select Status ===" << endl;
-    cout << "1) Assessed" << endl;
-    cout << "2) Canceled" << endl;
-    cin >> statusSelection;
-
-    // Check for exit
-    if(statusSelection == 0) return;
-
-    Change::Status status = (statusSelection == 1) ? Change::Status::Assessed : Change::Status::Canceled;
-
-    // Get new description
-    string description;
-    cout << "ENTER a new description for the change [max 30 characters, leave blank to skip]" << endl;
-    cout << "OR <0> to abort and exit to main menu:";
-    getline(cin >> ws, description); // `ws` is used to ignore leading whitespace
-    // Check for exit
-    if(description == "0") return;
-
-    // Select product release
-    ProductRelease* selectedProductRelease = selectFromList(productReleaseIO, "Product Release", noColHeader, printProductReleaseRow);
-    if (selectedProductRelease == nullptr) return;
-
-    int productReleaseID = selectedProductRelease->getReleaseID();
-
-    // Free memory
-    delete selectedProductRelease;
-
-    cout << "=== Updated Change Information ===" << endl;
-    cout << "Product: " << productName << endl;
-    cout << "Description: " << description << endl;
-    cout << "Anticipated Release: " << productReleaseID << endl;
-    cout << "Status: " << Change::statusToString(status) << endl;
-    cout << "Change ID: " << changeID << endl;
-}
-
-
-void ScenarioController::updateChangeItemControl() {
-    // Fetch initial product list
-    vector<Product*> products = productIO.readNRecords(maxRecordOutput);
-    Product* selectedProduct = selectFromList(productIO, "Product", noColHeader, printProductRow);
-    
-    if (!selectedProduct) return;  // Abort if no valid product selected
-
-    string productName = selectedProduct->getProductName();
-    delete selectedProduct;  // Free memory
-
-    // Fetch initial change list
-    vector<Change*> changes = changeIO.readNRecords(maxRecordOutput);
-    Change* selectedChange = selectFromList(changeIO, "Change Item", assessedChangeColHeaders, printAssessedChangeRow);
-    
-    if (!selectedChange) return;  // Abort if no valid change selected
-
-    int changeID = selectedChange->getchangeID();
-    delete selectedChange;  // Free memory
-
-    // Select status
-    int statusSelection;
-    cout << "=== Select Status ===" << endl;
-    cout << "1) In Progress" << endl;
-    cout << "2) Done" << endl;
-    cout << "3) Canceled" << endl;
-    cin >> statusSelection;
-    cin.ignore();  // To ignore the newline character left in the buffer
-
-    if (statusSelection == 0) return;  // Abort if exit
-
-    Change::Status status;
-    switch (statusSelection) {
-        case 1: status = Change::Status::In_Progress; break;
-        case 2: status = Change::Status::Done; break;
-        case 3: status = Change::Status::Canceled; break;
-        default: status = Change::Status::In_Progress; break;
+        // Output updated change information
+        cout << "=== Updated Change Information ===" << endl;
+        cout << "Product: " << productName << endl;
+        cout << "Description: " << "THIS IS A PLACEHOLDER" << endl;
+        cout << "Anticipated Release: " << productReleaseID << endl;
+        cout << "Status: " << Change::statusToString(status) << endl;
+        cout << "Change ID: " << changeID << endl;
     }
 
-    // Fetch initial product release list
-    vector<ProductRelease*> productReleases = productReleaseIO.readNRecords(maxRecordOutput);
-    ProductRelease* selectedProductRelease = selectFromList(productReleaseIO, "Product Release", noColHeader, printProductReleaseRow);
 
-    if (!selectedProductRelease) return;  // Abort if no valid product release selected
+    void inquireChangeItemControl() {
+        clearScreen();
 
-    int productReleaseID = selectedProductRelease->getReleaseID();
-    delete selectedProductRelease;  // Free memory
+        // Step 1: Enter Inquire Menu
+        cout << "=== Inquire Menu ===" << endl;
 
-    // TODO: GET DESCRIPTION
-
-    // Output updated change information
-    cout << "=== Updated Change Information ===" << endl;
-    cout << "Product: " << productName << endl;
-    cout << "Description: " << "THIS IS A PLACEHOLDER" << endl;
-    cout << "Anticipated Release: " << productReleaseID << endl;
-    cout << "Status: " << Change::statusToString(status) << endl;
-    cout << "Change ID: " << changeID << endl;
-}
-
-
-void ScenarioController::inquireChangeItemControl() {
-    clearScreen();
-
-    // Step 1: Enter Inquire Menu
-    cout << "=== Inquire Menu ===" << endl;
-
-    // Fetch product records
-    vector<Product*> products = productIO.readNRecords(productIO.getRecordCount());
-    if (products.empty()) {
-        cout << "No products available for inquiry." << endl;
-        return;
-    }
-
-    Product* selectedProduct = selectFromList(productIO, "Product", noColHeader, printProductRow);
-
-    if (!selectedProduct) return;  // Abort if no valid product selected
-    string productName = selectedProduct->getProductName();
-    delete selectedProduct;
-
-    clearScreen();
-
-    // Step 2: Select a change item to inquire
-    vector<Change*> changes = changeIO.readNRecords(changeIO.getRecordCount());
-    Change* selectedChange = selectFromList(changeIO, "Change Item", assessedChangeColHeaders, printAssessedChangeRow);
-
-    if (!selectedChange) return;  // Abort if no valid change selected
-
-    // Output change item details
-    cout << "Change Item Report:" << endl;
-    cout << "Product name: " << productName << endl;
-    cout << "ChangeID: " << selectedChange->getchangeID() << endl;
-    cout << "First Reported: " << selectedChange->getDate() << endl;
-    cout << "Status: " << Change::statusToString(selectedChange->getStatus()) << endl;
-    cout << "Anticipated release: " << selectedChange->getAnticipatedReleaseID() << endl;
-    cout << "Description: " << selectedChange->getDescription() << endl << endl;
-
-    delete selectedChange;
-
-    // Step 4: Ask for further inquiry or return to main menu
-    cout << "Enter <1> to inquire about another change item." << endl;
-    cout << "Enter <0> to go back to the main menu." << endl;
-    cout << "ENTER Selection: ";
-
-    int continueOption;
-    do {
-        cin >> continueOption;
-
-        if (continueOption == 0) {
-            clearScreen();
-            return; // Return to main menu
-        } else if (continueOption != 1) {
-            clearScreen();
-            cout << "Error: Invalid input. Please enter 0 or 1." << endl;
-            cout << "Enter <1> to inquire about another change item." << endl;
-            cout << "Enter <0> to go back to the main menu." << endl;
-            cout << "ENTER Selection: ";
+        // Fetch product records
+        vector<Product*> products = productIO.readNRecords(productIO.getRecordCount());
+        if (products.empty()) {
+            cout << "No products available for inquiry." << endl;
+            return;
         }
 
-    } while (continueOption != 0 && continueOption != 1);
+        Product* selectedProduct = selectFromList(productIO, "Product", noColHeader, printProductRow);
 
-    clearScreen();
-}
-
-
-// Updated printScenario1Control using getProductReleaseRecords and getProductRecords
-void ScenarioController::printScenario1Control() {
-    // Fetch product records
-    vector<Product*> products = productIO.readNRecords(productIO.getRecordCount());
-    if (products.empty()) {
-        cout << "Error fetching product records. Aborting." << endl;
-        return;
-    }
-
-    Product* selectedProduct = selectFromList(productIO, "Product", noColHeader, printProductRow);
-
-    if (!selectedProduct) return;  // Abort if no valid product selected
-
-    // Fetch product release records
-    vector<ProductRelease*> releases = productReleaseIO.readNRecords(4);  // Adjust count if needed
-    if (releases.empty()) {
-        cout << "Error fetching product release records. Aborting." << endl;
+        if (!selectedProduct) return;  // Abort if no valid product selected
+        string productName = selectedProduct->getProductName();
         delete selectedProduct;
-        return;
+
+        clearScreen();
+
+        // Step 2: Select a change item to inquire
+        vector<Change*> changes = changeIO.readNRecords(changeIO.getRecordCount());
+        Change* selectedChange = selectFromList(changeIO, "Change Item", assessedChangeColHeaders, printAssessedChangeRow);
+
+        if (!selectedChange) return;  // Abort if no valid change selected
+
+        // Output change item details
+        cout << "Change Item Report:" << endl;
+        cout << "Product name: " << productName << endl;
+        cout << "ChangeID: " << selectedChange->getchangeID() << endl;
+        cout << "First Reported: " << selectedChange->getDate() << endl;
+        cout << "Status: " << Change::statusToString(selectedChange->getStatus()) << endl;
+        cout << "Anticipated release: " << selectedChange->getAnticipatedReleaseID() << endl;
+        cout << "Description: " << selectedChange->getDescription() << endl << endl;
+
+        delete selectedChange;
+
+        // Step 4: Ask for further inquiry or return to main menu
+        cout << "Enter <1> to inquire about another change item." << endl;
+        cout << "Enter <0> to go back to the main menu." << endl;
+        cout << "ENTER Selection: ";
+
+        int continueOption;
+        do {
+            cin >> continueOption;
+
+            if (continueOption == 0) {
+                clearScreen();
+                return; // Return to main menu
+            } else if (continueOption != 1) {
+                clearScreen();
+                cout << "Error: Invalid input. Please enter 0 or 1." << endl;
+                cout << "Enter <1> to inquire about another change item." << endl;
+                cout << "Enter <0> to go back to the main menu." << endl;
+                cout << "ENTER Selection: ";
+            }
+
+        } while (continueOption != 0 && continueOption != 1);
+
+        clearScreen();
     }
 
-    ProductRelease* selectedRelease = selectFromList(productReleaseIO, "Product Release", noColHeader, printProductReleaseRow);
 
-    if (!selectedRelease) {
+    // Updated printScenario1Control using getProductReleaseRecords and getProductRecords
+    void printScenario1Control() {
+        // Fetch product records
+        vector<Product*> products = productIO.readNRecords(productIO.getRecordCount());
+        if (products.empty()) {
+            cout << "Error fetching product records. Aborting." << endl;
+            return;
+        }
+
+        Product* selectedProduct = selectFromList(productIO, "Product", noColHeader, printProductRow);
+
+        if (!selectedProduct) return;  // Abort if no valid product selected
+
+        // Fetch product release records
+        vector<ProductRelease*> releases = productReleaseIO.readNRecords(4);  // Adjust count if needed
+        if (releases.empty()) {
+            cout << "Error fetching product release records. Aborting." << endl;
+            delete selectedProduct;
+            return;
+        }
+
+        ProductRelease* selectedRelease = selectFromList(productReleaseIO, "Product Release", noColHeader, printProductReleaseRow);
+
+        if (!selectedRelease) {
+            delete selectedProduct;
+            return;  // Abort if no valid product release selected
+        }
+
+        // Call PrintController method with selected product and release
+        PrintController::printProduct(*selectedRelease);
+
         delete selectedProduct;
-        return;  // Abort if no valid product release selected
+        delete selectedRelease;
     }
 
-    // Call PrintController method with selected product and release
-    PrintController::printProduct(*selectedRelease);
 
-    delete selectedProduct;
-    delete selectedRelease;
-}
+    // Updated printScenario2Control using getProductRecords
+    void printScenario2Control() {
+        // Fetch product records
+        vector<Product*> products = productIO.readNRecords(productIO.getRecordCount());
+        if (products.empty()) {
+            cout << "Error fetching product records. Aborting." << endl;
+            return;
+        }
 
+        Product* selectedProduct = selectFromList(productIO, "Product", noColHeader, printProductRow);
 
-// Updated printScenario2Control using getProductRecords
-void ScenarioController::printScenario2Control() {
-    // Fetch product records
-    vector<Product*> products = productIO.readNRecords(productIO.getRecordCount());
-    if (products.empty()) {
-        cout << "Error fetching product records. Aborting." << endl;
-        return;
+        if (!selectedProduct) return;  // Abort if no valid product selected
+
+        delete selectedProduct;
     }
-
-    Product* selectedProduct = selectFromList(productIO, "Product", noColHeader, printProductRow);
-
-    if (!selectedProduct) return;  // Abort if no valid product selected
-
-    delete selectedProduct;
 }
+
