@@ -28,10 +28,6 @@ const vector<string> noColHeader = {""};
 
 // Some helper functions
 
-void clearScreen() {
-    system("clear");
-}
-
 string formatSelectionRange(int start, int end) {
     return "[" + to_string(start) + "-" + to_string(end) + "]";
 }
@@ -124,7 +120,7 @@ void printAssessedChangeRow(Change& change) {
 
 template<typename T>
 T* selectFromList(EntityIO<T>& entityIO, const string& title, const vector<string>& columnNames, void (*printRow)(T &entity)) {
-    int recordOffset = 0;
+    int recordIndex = 0;
     entityIO.seekToStart();
     vector<T*> records = entityIO.readNRecords(maxRecordOutput);
     string selection;
@@ -145,9 +141,9 @@ T* selectFromList(EntityIO<T>& entityIO, const string& title, const vector<strin
         
         // print rows
         for (int i = 0; i < maxRecordOutput; ++i) {
-            cout << to_string(recordOffset + i + 1) << ")";
+            cout << to_string(recordIndex + i + 1) << ")";
             if (records[i] == nullptr) {
-                cout << "Record unavailable" << endl;
+                cout << " Record unavailable" << endl;
             } else {
                 printRow(*records[i]);
                 cout << endl;
@@ -155,13 +151,10 @@ T* selectFromList(EntityIO<T>& entityIO, const string& title, const vector<strin
         }
 
         // "scrolling" functionality
-        if (maxRecordOutput < entityIO.getRecordCount()) {
-            cout << "*..." << endl;
-            if (recordOffset > maxRecordOutput) {
-                cout << "p) display previous items" << endl;
-            }
-            cout << "n) display next items" << endl;
-        }
+        if (maxRecordOutput < entityIO.getRecordCount()) cout << "*..." << endl;
+        if(recordIndex + maxRecordOutput < entityIO.getRecordCount()) cout << "n) display next items" << endl;
+        if (recordIndex+1 > maxRecordOutput) cout << "p) display previous items" << endl;
+            
         
         cout << "ENTER selection " << range << " OR <0> to abort and exit to the main menu:";
 
@@ -172,7 +165,7 @@ T* selectFromList(EntityIO<T>& entityIO, const string& title, const vector<strin
             if (option == 0) return nullptr;
 
             if (option > 0 && option <= entityIO.getRecordCount()) {
-                T* selectedRecord = records[option - recordOffset - 1];
+                T* selectedRecord = records[option - recordIndex - 1];
                 for (T* record : records) delete record;  // Free memory
                 return selectedRecord;
             } else {
@@ -181,13 +174,13 @@ T* selectFromList(EntityIO<T>& entityIO, const string& title, const vector<strin
             }
 
         } catch (const exception&) {
-            if (selection == "p" && recordOffset - maxRecordOutput >= 0) {
-                recordOffset -= maxRecordOutput;
-                entityIO.seekTo(recordOffset);
+            if (selection == "p" && recordIndex - maxRecordOutput >= 0) {
+                recordIndex -= maxRecordOutput;
+                entityIO.seekTo(recordIndex);
                 records = entityIO.readNRecords(maxRecordOutput);
-            } else if (selection == "n" && recordOffset + maxRecordOutput <= entityIO.getRecordCount()) {
-                recordOffset += maxRecordOutput;
-                entityIO.seekTo(recordOffset);
+            } else if (selection == "n" && recordIndex + maxRecordOutput <= entityIO.getRecordCount()) {
+                recordIndex += maxRecordOutput;
+                entityIO.seekTo(recordIndex);
                 records = entityIO.readNRecords(maxRecordOutput);
             } else {
                 cout << "Error: Input is invalid. Re-enter input" << endl;

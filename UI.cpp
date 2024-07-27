@@ -14,14 +14,15 @@ namespace UI {
         int update_choice;
         int print_choice;
 
-
         do {
+            // start on a blank screen
+            clearScreen();
+
             mainMenu();
-            cout << "Enter Selection [1-6]: " << endl;
+            cout << "Enter Selection [0-5]: " << endl;
         
             cin >> main_choice;
             switch (main_choice) {
-
                 // Create Sub-Menu
                 case 1:
                     createMenu();
@@ -124,23 +125,27 @@ namespace UI {
                     cout << "Thank you for using TrackMaster" << endl;
                     break;
             }
-        } while (main_choice != 6);
+        } while (main_choice != 0);
     }
 
 
 
     void mainMenu() {
+        // start on a blank screen
+        clearScreen();
         cout << "    === MAIN MENU ===" << endl;
         cout << "1) Create" << endl;
         cout << "2) Update" << endl;
         cout << "3) Inquire" << endl;
         cout << "4) Print" << endl;
         cout << "5) Backup" << endl;
-        cout << "6) Quit TrackMaster" << endl;
+        cout << "0) Quit TrackMaster" << endl;
     }
 
 
     void createMenu() {
+        // start on a blank screen
+        clearScreen();
         cout << "    === Create Menu ===" << endl;
         cout << "1) Create Request" << endl;
         cout << "2) Create Requester" << endl;
@@ -151,6 +156,8 @@ namespace UI {
 
 
     void updateMenu() {
+        // start on a blank screen
+        clearScreen();
         cout << "    === Update Menu ===" << endl;
         cout << "1) Assess new change items" << endl;
         cout << "2) Update a change item" << endl;
@@ -159,6 +166,8 @@ namespace UI {
 
 
     void printMenu() {
+        // start on a blank screen
+        clearScreen();
         cout << "        === Print Menu ===" << endl;
         cout << "1) Print a Report of Upcoming Release Changes" << endl;
         cout << "   Description: A list of all assessed changes for a specific product" << endl;
@@ -176,5 +185,9 @@ namespace UI {
 
         cout << "0) Exit" << endl;
         cout << "ENTER selection [0-2]: " << endl;
+    }
+
+    void clearScreen() {
+        system("clear");
     }
 }
