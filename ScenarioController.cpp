@@ -217,9 +217,7 @@ T* selectFromList(EntityIO<T>& entityIO, const string& title, const vector<strin
 
 // Covers steps 2-6 of the "Create Requester" use case. Returns a new requester based off user input
 Requester* createNewRequester() {
-    cin.ignore(10000,'\n');
         clearScreen();
-        
         string requesterEmail = getEmail();
         if (requesterEmail == "0") return nullptr;
 
@@ -247,7 +245,6 @@ Requester* createNewRequester() {
 
 // Covers step 3 of the "Create Product" use case. Returns a new product based off user input
 Product* createNewProduct() {
-    cin.ignore(10000,'\n');
     clearScreen();
     
     string productName = getProductName();
@@ -260,7 +257,6 @@ Product* createNewProduct() {
 }
 
 Change* createNewChangeItem() {
-    cin.ignore(10000,'\n');
     clearScreen();
 
     string changeDescription = getInput("ENTER a description for a new change (30 char. max)", Change::MAX_DESCRIPTION_LENGTH);
