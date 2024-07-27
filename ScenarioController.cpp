@@ -68,6 +68,8 @@ string getPhone() {
         cout << "ENTER the PHONE NUMBER of the requester (Length: Exactly 10)" << endl;
         cout << "OR ENTER <0> to abort and exit to the main menu: ";
         cin >> phoneInput;
+        cin.clear();
+        cin.ignore(10000,'\n');
         if (phoneInput == "0") {
             return "0";
         } else if (phoneInput.length() != 10) {
@@ -210,8 +212,6 @@ namespace ScenarioController {
             cout << "OR ENTER <0> to abort and exit to the main menu" << endl;
 
             cin >> reqTSelection; 
-            cin.clear();
-            cin.ignore(10000,'\n');
             
             if (reqTSelection == '0') return;
             else if (reqTSelection != 'c' && reqTSelection != 'e') {
@@ -219,8 +219,6 @@ namespace ScenarioController {
                 cout << "Error: Input is invalid. Re-enter input" << endl;
                 cout << "Enter 0 to abort and return to the main menu" << endl << endl;
             }
-
-            cin.ignore();
 
         } while (reqTSelection != 'c' && reqTSelection != 'e');
 
@@ -311,6 +309,7 @@ namespace ScenarioController {
     }
 
     void createProductControl() {
+        cin.ignore(10000,'\n');
         clearScreen();
         
         string productName = getProductName();
