@@ -59,7 +59,7 @@ class Change {
 
         Return: Does not return anything.
         */
-        Change(const int changeID, Status status, const char* productName, const int anticipatedReleaseID, const char* description, const int date);
+        Change(Status status, const char* productName, const int anticipatedReleaseID, const char* description, const int date);
 
     // --------------------------------------------------------------------------------------------------------------------
 
@@ -123,16 +123,6 @@ class Change {
 
     // --------------------------------------------------------------------------------------------------------------------
 
-        /* Function to set the "Change" object's changeID.
-
-        Parameter 1 (const char* newChangeID): In parameter (must be unique combination of integers).
-
-        Return: Does not return anything.
-        */
-        void setchangeID(const int newChangeID);
-
-    // --------------------------------------------------------------------------------------------------------------------
-
         /* Function to retrieve the "Change" object's status.
 
         Parameter 1 (Status status): In parameter (must be 1 of Open, Assessed, In_Progress, Done, or Canceled)
@@ -170,6 +160,7 @@ class Change {
         Return: Does not return anything.
         */
         void setDate(const int newDate);
+
     // --------------------------------------------------------------------------------------------------------------------
         /* Function to get status as a string 
         
@@ -183,6 +174,17 @@ class Change {
         static const int MAX_DESCRIPTION_LENGTH = 30;
 
     private:
+
+       // --------------------------------------------------------------------------------------------------------------------
+
+        /* Function to set the "Change" object's changeID.
+
+        No parameters
+
+        Return: Does not return anything.
+        */
+        void setchangeID();
+
         int changeID;
         Status status;
         char productName[MAX_PRODUCT_NAME_LENGTH + 1];

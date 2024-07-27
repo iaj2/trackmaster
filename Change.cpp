@@ -3,6 +3,8 @@
 #include "FileNotOpenException.h"
 #include <iostream>
 #include <fstream>
+#include <cstdlib>
+#include <ctime>
 #include <cstring>
 
 using namespace std;
@@ -10,7 +12,7 @@ using namespace std;
 // ------------------------------------------------------------------------------------------------
 // Default constructor
 // ------------------------------------------------------------------------------------------------
-Change::Change() : changeID(0), status(Status::Open), productName(""), anticipatedReleaseID(0),
+Change::Change() : status(Status::Open), productName(""), anticipatedReleaseID(0),
     description(""), date(0)
   {}
 
@@ -18,10 +20,13 @@ Change::Change() : changeID(0), status(Status::Open), productName(""), anticipat
 // Parameterized Constructor
 // ------------------------------------------------------------------------------------------------
 Change::Change(
-  const int changeID, Status status, const char* productName, const int anticipatedReleaseID, 
+  Status status, const char* productName, const int anticipatedReleaseID, 
   const char* description, const int date
   ) : changeID(changeID), status(status), anticipatedReleaseID(anticipatedReleaseID), date(date) 
   {
+    // set auto-generated change id
+
+
     // Take product name up to its max length
     strncpy(this->productName, productName, MAX_PRODUCT_NAME_LENGTH);
     this->productName[MAX_PRODUCT_NAME_LENGTH] = '\0'; // set last character to null
@@ -82,7 +87,11 @@ char* Change::getDate() const {
 // ------------------------------------------------------------------------------------------------
 // Set the change ID
 // -----------------------------------------------------------------------------------------------
-void Change::setchangeID(const int newChangeID) { changeID = newChangeID; }
+void Change::setchangeID() { 
+    srand(static_cast<unsigned int>(time(nullptr)));
+    int num = rand() % 9000 + 1000;
+    this->changeID = num;
+}
 
 // ------------------------------------------------------------------------------------------------
 // Set the status

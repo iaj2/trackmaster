@@ -126,7 +126,9 @@ void printAssessedChangeRow(Change& change) {
 }
 
 template<typename T>
-T* selectFromList(EntityIO<T>& entityIO, const string& title, const vector<string>& columnNames, void (*printRow)(T &entity)) {
+T* selectFromList(EntityIO<T>& entityIO, const string& title, const vector<string>& columnNames, 
+    void (*printRow)(T &entity), T* (*createNewItem)() = nullptr) {
+
     int recordIndex = 0;
     entityIO.seekToStart();
     vector<T*> records = entityIO.readNRecords(maxRecordOutput);
@@ -157,6 +159,11 @@ T* selectFromList(EntityIO<T>& entityIO, const string& title, const vector<strin
             }
         }
 
+        // Add option to create a new item if createNewItem is provided
+        if (createNewItem && recordIndex + maxRecordOutput >= entityIO.getRecordCount()) {
+            cout << to_string(entityIO.getRecordCount() + 1) << ") New " << title << endl;
+        }
+
         // "scrolling" functionality
         if (maxRecordOutput < entityIO.getRecordCount()) cout << "*..." << endl;
         if(recordIndex + maxRecordOutput < entityIO.getRecordCount()) cout << "n) display next items" << endl;
@@ -175,7 +182,14 @@ T* selectFromList(EntityIO<T>& entityIO, const string& title, const vector<strin
                 T* selectedRecord = records[option - recordIndex - 1];
                 for (T* record : records) delete record;  // Free memory
                 return selectedRecord;
-            } else {
+            }
+            else if (createNewItem && option  == entityIO.getRecordCount() + 1) {
+                // Handle creating a new item
+                T* newItem = createNewItem();
+                cout << "New " << title << " created!" << endl;
+                return newItem; // Return new item
+            }
+            else {
                 clearScreen();
                 cout << "Error: The option you entered does not exist on the list" << endl << endl;
             }
@@ -199,6 +213,67 @@ T* selectFromList(EntityIO<T>& entityIO, const string& title, const vector<strin
 
     for (T* record : records) delete record;  // Free memory
     return nullptr;
+}
+
+// Covers steps 2-6 of the "Create Requester" use case. Returns a new requester based off user input
+Requester* createNewRequester() {
+    cin.ignore(10000,'\n');
+        clearScreen();
+        
+        string requesterEmail = getEmail();
+        if (requesterEmail == "0") return nullptr;
+
+        clearScreen();
+
+        string phoneInput = getPhone();
+        if (phoneInput == "0") return nullptr;
+        int phone = stol(phoneInput);
+
+        clearScreen();
+
+        string name = getName();
+        if (name == "0") return nullptr;
+
+        clearScreen();
+
+        string department = getDepartment();
+        if (department == "0") return nullptr;
+
+        clearScreen();
+
+        Requester* newRequester = new Requester(requesterEmail.c_str(), name.c_str(), phone, department.c_str());
+        return newRequester;
+}
+
+// Covers step 3 of the "Create Product" use case. Returns a new product based off user input
+Product* createNewProduct() {
+    cin.ignore(10000,'\n');
+    clearScreen();
+    
+    string productName = getProductName();
+    if (productName == "0") return nullptr;
+
+    clearScreen();
+
+    Product* newProduct = new Product(productName.c_str());
+    return newProduct;
+}
+
+Change* createNewChangeItem() {
+    cin.ignore(10000,'\n');
+    clearScreen();
+
+    string changeDescription = getInput("ENTER a description for a new change (30 char. max)", Change::MAX_DESCRIPTION_LENGTH);
+    if (changeDescription == "0") return nullptr;
+
+    clearScreen();
+    cout << "Select a product product release that the change is anticipated to completed for" << endl;
+    ProductRelease* productRelease = selectFromList(productReleaseIO, "Product Release", noColHeader, printProductReleaseRow);
+
+    Change* newChangeItem = new Change(Change::Status::Open, "PLACEHOLDER", productRelease->getReleaseID(), 
+                                        changeDescription.c_str(), 1231);
+
+    return newChangeItem;
 }
 
 // USE CASES
@@ -227,8 +302,8 @@ namespace ScenarioController {
 
         // Get requester from user
         Requester* requester; 
-        if(reqTSelection == 'c') requester = selectFromList(requesterIO, "Customer", customerColHeaders, printCustomerRow);
-        else {requester = selectFromList(requesterIO, "Employee", employeeColHeaders, printEmployeeRow);}
+        if(reqTSelection == 'c') requester = selectFromList(requesterIO, "Customer", customerColHeaders, printCustomerRow, createNewRequester);
+        else {requester = selectFromList(requesterIO, "Employee", employeeColHeaders, printEmployeeRow, createNewRequester);}
 
         if (requester == nullptr) return;
         string requesterName = requester->getName();
@@ -248,7 +323,7 @@ namespace ScenarioController {
         } while (date.empty());
 
         // Get product information
-        Product* product = selectFromList(productIO, "Product", noColHeader, printProductRow);
+        Product* product = selectFromList(productIO, "Product", noColHeader, printProductRow, createNewProduct);
         if (product == nullptr) return;
         string productName = product->getProductName();
         delete product;
@@ -260,7 +335,7 @@ namespace ScenarioController {
         delete productRelease;
 
         // Get change information
-        Change* change = selectFromList(changeIO, "Change Item", changeColHeaders, printChangeRow);
+        Change* change = selectFromList(changeIO, "Change Item", changeColHeaders, printChangeRow, createNewChangeItem);
         if (change == nullptr) return;
         string changeDate = change->getDate();
         string changeDesc = change->getDescription();
@@ -274,32 +349,12 @@ namespace ScenarioController {
     }
 
     void createRequesterControl() {
-        cin.ignore(10000,'\n');
-        clearScreen();
-        
-        string requesterEmail = getEmail();
-        if (requesterEmail == "0") return;
+        Requester* newRequester = createNewRequester();
 
-        clearScreen();
+        if (newRequester == nullptr) return;
 
-        string phoneInput = getPhone();
-        if (phoneInput == "0") return;
-        int phone = stol(phoneInput);
-
-        clearScreen();
-
-        string name = getName();
-        if (name == "0") return;
-
-        clearScreen();
-
-        string department = getDepartment();
-        if (department == "0") return;
-
-        clearScreen();
-
-        Requester newRequester(requesterEmail.c_str(), name.c_str(), phone, department.c_str());
-        requesterIO.appendRecord(newRequester);
+        requesterIO.appendRecord(*newRequester);
+        delete newRequester; // free memory
 
         cout << "The new requester has been successfully added to the system." << endl;
         cout << "ENTER <0> to go back to the main menu: ";
@@ -310,16 +365,12 @@ namespace ScenarioController {
     }
 
     void createProductControl() {
-        cin.ignore(10000,'\n');
-        clearScreen();
+        Product* newProduct = createNewProduct();
         
-        string productName = getProductName();
-        if (productName == "0") return;
+        if (newProduct == nullptr) return;
 
-        clearScreen();
-
-        Product newProduct(productName.c_str());
-        productIO.appendRecord(newProduct);
+        productIO.appendRecord(*newProduct);
+        delete newProduct; // free memory
 
         cout << "The new product has been successfully added to the system." << endl;
         cout << "ENTER <0> to go back to the main menu: ";
