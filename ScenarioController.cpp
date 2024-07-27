@@ -46,9 +46,7 @@ string getInput(const string& prompt, int maxLength) {
     do {
         cout << prompt << endl;
         cout << "OR ENTER <0> to abort and exit to the main menu: ";
-        cin >> input; 
-        cin.clear();
-        cin.ignore(10000,'\n');
+        getline(cin, input);
 
         if (input == "0") {
             return "0";
@@ -70,8 +68,6 @@ string getPhone() {
         cout << "ENTER the PHONE NUMBER of the requester (Length: Exactly 10)" << endl;
         cout << "OR ENTER <0> to abort and exit to the main menu: ";
         cin >> phoneInput;
-        cin.clear();
-        cin.ignore(10000,'\n');
         if (phoneInput == "0") {
             return "0";
         } else if (phoneInput.length() != 10) {
@@ -279,6 +275,7 @@ namespace ScenarioController {
     }
 
     void createRequesterControl() {
+        cin.ignore(10000,'\n');
         clearScreen();
         
         string requesterEmail = getEmail();
