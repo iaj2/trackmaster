@@ -42,9 +42,7 @@ string getInput(const string& prompt, int maxLength) {
     do {
         cout << prompt << endl;
         cout << "OR ENTER <0> to abort and exit to the main menu: ";
-        cin >> input; 
-        cin.clear();
-        cin.ignore(10000,'\n');
+        getline(cin, input);
 
         if (input == "0") {
             return "0";
@@ -207,8 +205,6 @@ namespace ScenarioController {
             cout << "OR ENTER <0> to abort and exit to the main menu" << endl;
 
             cin >> reqTSelection; 
-            cin.clear();
-            cin.ignore(10000,'\n');
             
             if (reqTSelection == '0') return;
             else if (reqTSelection != 'c' && reqTSelection != 'e') {
@@ -216,8 +212,6 @@ namespace ScenarioController {
                 cout << "Error: Input is invalid. Re-enter input" << endl;
                 cout << "Enter 0 to abort and return to the main menu" << endl << endl;
             }
-
-            cin.ignore();
 
         } while (reqTSelection != 'c' && reqTSelection != 'e');
 
@@ -272,6 +266,7 @@ namespace ScenarioController {
     }
 
     void createRequesterControl() {
+        cin.ignore(10000,'\n');
         clearScreen();
         
         string requesterEmail = getEmail();
@@ -307,6 +302,7 @@ namespace ScenarioController {
     }
 
     void createProductControl() {
+        cin.ignore(10000,'\n');
         clearScreen();
         
         string productName = getProductName();
