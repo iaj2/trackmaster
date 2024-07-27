@@ -178,7 +178,7 @@ T* selectFromList(EntityIO<T>& entityIO, const string& title, const vector<strin
                 recordIndex -= maxRecordOutput;
                 entityIO.seekTo(recordIndex);
                 records = entityIO.readNRecords(maxRecordOutput);
-            } else if (selection == "n" && recordIndex + maxRecordOutput <= entityIO.getRecordCount()) {
+            } else if (selection == "n" && recordIndex + maxRecordOutput < entityIO.getRecordCount()) {
                 recordIndex += maxRecordOutput;
                 entityIO.seekTo(recordIndex);
                 records = entityIO.readNRecords(maxRecordOutput);
