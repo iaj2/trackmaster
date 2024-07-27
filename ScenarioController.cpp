@@ -94,6 +94,40 @@ string getProductName() {
     return getInput("ENTER the PRODUCT NAME (Length: max 10)", Product::MAX_PRODUCT_NAME_LENGTH);
 }
 
+string getReleaseIDData() {
+    string releaseIDInput;
+    do {
+        cout << "ENTER the release ID of the Product Release (integrs, Length: at most 4)" << endl;
+        cout << "OR ENTER <0> to abort and exit to the main menu: ";
+        cin >> releaseIDInput;
+        cin.clear();
+        cin.ignore(10000,'\n');
+        if (releaseIDInput == "0") {
+            return "0";
+        } else if (releaseIDInput.length() > 4) {
+            clearScreenAndShowError(".");
+        }
+    } while (releaseIDInput.length() > 4);
+    return releaseIDInput;
+}
+
+string getDateData() {
+    string dateInput;
+    do {
+        cout << "ENTER the DATE of the request (integers YYYYMMDD) OR ENTER <0> to abort and" << endl;
+        cout << "exit to the main menu:";
+        cin >> dateInput;
+        cin.clear();
+        cin.ignore(10000,'\n');
+        if (dateInput == "0") {
+            return "0";
+        } else if (dateInput.length() > 8) {
+            clearScreenAndShowError(".");
+        }
+    } while (dateInput.length() > 8);
+    return dateInput;
+}
+
 void printCustomerRow(Requester& requester) {
     cout << requester.getName() << "   " << requester.getRequesterEmail();
 }
@@ -400,6 +434,37 @@ namespace ScenarioController {
         } while (input != "0");
     }
 
+    void createProductReleaseControl() {
+            clearScreen();
+            
+            string productName = getProductName();
+            if (productName == "0") return;
+
+            clearScreen();
+
+            string ReleaseID = getReleaseIDData();
+            if (ReleaseID == "0") return;
+            int ReleaseIDNumber = stol(ReleaseID);
+            
+            clearScreen();
+
+            string date = getDateData();
+            if (date == "0") return;
+            int dateNumber = stol(date);
+
+            clearScreen();
+
+            ProductRelease newProductRelease(productName.c_str(), ReleaseIDNumber, dateNumber);
+            productReleaseIO.appendRecord(newProductRelease);
+
+            cout << "The new product release has been successfully added to the system." << endl;
+            cout << "ENTER <0> to go back to the main menu: ";
+            string input;
+            do {
+                getline(cin, input);
+            } while (input != "0");
+        }
+
     void assessNewChangeControl() {
         // Select a change item
         Change* selectedChange = selectFromList(changeIO, "Change Item", openChangeColHeaders, printOpenChangeRow);
@@ -582,69 +647,78 @@ namespace ScenarioController {
         }
 
         Product* selectedProduct = selectFromList(productIO, "Product", noColHeader, printProductRow);
+        if (!selectedProduct) {
+            // Clean up products if no valid product selected
+            for (Product* product : products) {
+                delete product;
+            }
+            return;
+        }
 
-        if (!selectedProduct) return;  // Abort if no valid product selected
+        vector<ProductRelease*> productReleases = productReleaseIO.readNRecords(productReleaseIO.getRecordCount());
 
-        vector<ProductRelease*> productRelease = productReleaseIO.readNRecords(productReleaseIO.getRecordCount());
-
-        // Filter productRelease to keep only those matching the selectedProduct's name
+        // Filter product releases to keep only those matching the selected product's name
         string selectedProductName = selectedProduct->getProductName();
-
-        for (auto it = productRelease.begin(); it != productRelease.end(); ) {
+        for (auto it = productReleases.begin(); it != productReleases.end(); ) {
             if ((*it)->getProductName() != selectedProductName) {
                 // Remove product release if it does not match the selected product
-                it = productRelease.erase(it);
+                delete *it;  // Delete the ProductRelease object before erasing the pointer
+                it = productReleases.erase(it);
             } else {
-                // Move to the next product release if it matches
-                it++;
+                ++it;
             }
         }
 
-        ProductRelease* selectedProductRelease = selectFromVector(productRelease, "ProductRelease", noColHeader, printProductReleaseRow);
+        ProductRelease* selectedProductRelease = selectFromVector(productReleases, "ProductRelease", noColHeader, printProductReleaseRow);
+        if (selectedProductRelease) {
+            PrintController::initPrintController();
+            PrintController::printProduct(*selectedProductRelease); 
+            PrintController::exitPrint();
 
+            cout << "Report for \"" << selectedProductName << "\" version: \"" << selectedProductRelease->getReleaseID() << "\" has been successfully printed." << endl;
+        } else {
+            cout << "No valid product release selected. Aborting." << endl;
+        }
 
-        PrintController::initPrintController();
-        PrintController::printProduct(*selectedProductRelease); 
-        PrintController::exitPrint();
+        // Clean up remaining product releases
+        for (ProductRelease* release : productReleases) {
+            delete release;
+        }
+        productReleases.clear();
 
-        delete selectedProduct;
-        delete selectedProductRelease;
+        // Clean up products
+        for (Product* product : products) {
+            delete product;
+        }
 
-        cout << 'Report for “' << selectedProductName <<'” version: “'<< selectedProductRelease << '” has been successfully printed.' <<  endl;
+        int continueOption = -1;
+        while (continueOption != 0 && continueOption != 1) {
+            cout << "Enter <1> to print another report." << endl;
+            cout << "Enter <0> to go back to the main menu." << endl;
+            cout << "ENTER Selection: ";
 
-        cout << "Enter <1> to print another report." << endl;
-        cout << "Enter <0> to go back to the main menu." << endl;
-        cout << "ENTER Selection: ";
-
-        int continueOption;
-        do {
             cin >> continueOption;
+            cin.ignore(10000,'\n');
 
             if (continueOption == 0) {
                 clearScreen();
                 return; // Return to main menu
             } else if (continueOption == 1) {
                 clearScreen();
-                printScenario1Control();
-                return; 
-            } else if (continueOption != 1 || continueOption != 0) { 
+                printScenario1Control(); // Recursive call (consider using a loop for production code)
+                return;
+            } else {
                 clearScreen();
                 cout << "Error: Invalid input. Please enter 0 or 1." << endl;
-                cout << "Enter <1> to inquire about another change item." << endl;
-                cout << "Enter <0> to go back to the main menu." << endl;
-                cout << "ENTER Selection: ";
             }
-
-        } while (continueOption != 0 && continueOption != 1);
-
-        clearScreen();
-
         }
 
+        clearScreen();
+}
 
         // Updated printScenario2Control using getProductRecords
         void printScenario2Control() {
-
+            // Fetch product records
             vector<Product*> products = productIO.readNRecords(productIO.getRecordCount());
             if (products.empty()) {
                 cout << "Error fetching product records. Aborting." << endl;
@@ -652,59 +726,71 @@ namespace ScenarioController {
             }
 
             Product* selectedProduct = selectFromList(productIO, "Product", noColHeader, printProductRow);
+            if (!selectedProduct) {
+                for (Product* product : products) {
+                    delete product;
+                }
+                return;  // Abort if no valid product selected
+            }
 
-            if (!selectedProduct) return;  // Abort if no valid product selected
+            vector<Change*> changes = changeIO.readNRecords(changeIO.getRecordCount());
 
-            vector<Change*> Changes = changeIO.readNRecords(changeIO.getRecordCount());
-
-            // Filter productRelease to keep only those matching the selectedProduct's name
+            // Filter changes to keep only those matching the selectedProduct's name and status "done"
             string selectedProductName = selectedProduct->getProductName();
-
-            for (auto it = Changes.begin(); it != Changes.end(); ) {
-                if ((*it)->getProductName() != selectedProductName || Change::statusToString((*it)->getStatus()) != "Completed"  ) {
-                    // Remove product release if it does not match the selected product
-                    it = Changes.erase(it);
+            for (auto it = changes.begin(); it != changes.end(); ) {
+                if ((*it)->getProductName() != selectedProductName || Change::statusToString((*it)->getStatus()) != "done") {
+                    // Remove change if it does not match the selected product name or status
+                    delete *it;  // Delete the Change object before erasing the pointer
+                    it = changes.erase(it);
                 } else {
-                    // Move to the next product release if it matches
-                    it++;
+                    // Move to the next change if it matches
+                    ++it;
                 }
             }
 
-            Change* selectedChange = selectFromVector(Changes, "Change", noColHeader, printChangeRow);
+            Change* selectedChange = selectFromVector(changes, "Change", noColHeader, printChangeRow);
+            if (selectedChange) {
+                PrintController::initPrintController();
+                PrintController::printCompletedChangeItems(*selectedChange);
+                PrintController::exitPrint();
 
-            PrintController::initPrintController();
-            PrintController::printCompletedChangeItems(*selectedChange); 
-            PrintController::exitPrint();
+                cout << "The report for the completed change item has been successfully printed." << endl;
+            } else {
+                cout << "No valid change item selected. Aborting." << endl;
+            }
 
-            delete selectedProduct;
-            delete selectedChange;
+            // Clean up remaining changes
+            for (Change* change : changes) {
+                delete change;
+            }
+            changes.clear();
 
-            cout << "The report for the completed change item has been successfully printed." <<  endl;
+            for (Product* product : products) {
+                delete product;
+            }
 
-            cout << "Enter <1> to print another report." << endl;
-            cout << "Enter <0> to go back to the main menu." << endl;
-            cout << "ENTER Selection: ";
+            int continueOption = -1;
+            while (continueOption != 0 && continueOption != 1) {
+                cout << "Enter <1> to print another report." << endl;
+                cout << "Enter <0> to go back to the main menu." << endl;
+                cout << "ENTER Selection: ";
 
-            int continueOption;
-            do {
                 cin >> continueOption;
+                cin.ignore(10000,'\n');
+        // Clear input buffer
 
                 if (continueOption == 0) {
                     clearScreen();
                     return; // Return to main menu
                 } else if (continueOption == 1) {
                     clearScreen();
-                    printScenario2Control();
-                    return; 
-                } else if (continueOption != 1 || continueOption != 0) { 
+                    printScenario2Control(); // Call the function again for another report
+                    return;
+                } else {
                     clearScreen();
                     cout << "Error: Invalid input. Please enter 0 or 1." << endl;
-                    cout << "Enter <1> to inquire about another change item." << endl;
-                    cout << "Enter <0> to go back to the main menu." << endl;
-                    cout << "ENTER Selection: ";
                 }
-
-            } while (continueOption != 0 && continueOption != 1);
+            }
 
             clearScreen();
         }
