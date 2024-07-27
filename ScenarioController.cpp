@@ -46,7 +46,10 @@ string getInput(const string& prompt, int maxLength) {
     do {
         cout << prompt << endl;
         cout << "OR ENTER <0> to abort and exit to the main menu: ";
-        getline(cin, input);
+        cin >> input; 
+        cin.clear();
+        cin.ignore(10000,'\n');
+
         if (input == "0") {
             return "0";
         } else if (input.length() > maxLength) {
@@ -55,6 +58,7 @@ string getInput(const string& prompt, int maxLength) {
     } while (input.length() > maxLength);
     return input;
 }
+
 
 string getEmail() {
     return getInput("ENTER the EMAIL ADDRESS of the requester (Length: max 30)", Requester::MAX_EMAIL_LENGTH);
@@ -65,7 +69,9 @@ string getPhone() {
     do {
         cout << "ENTER the PHONE NUMBER of the requester (Length: Exactly 10)" << endl;
         cout << "OR ENTER <0> to abort and exit to the main menu: ";
-        getline(cin, phoneInput);
+        cin >> phoneInput;
+        cin.clear();
+        cin.ignore(10000,'\n');
         if (phoneInput == "0") {
             return "0";
         } else if (phoneInput.length() != 10) {
@@ -82,6 +88,7 @@ string getName() {
 string getDepartment() {
     return getInput("ENTER the DEPARTMENT NAME of the requester (Length: max 12)\n***Must be left blank if requester is not an employee of the company***", Requester::MAX_DEPARTMENT_LENGTH);
 }
+
 
 string getProductName() {
     return getInput("ENTER the PRODUCT NAME (Length: max 10)", Product::MAX_PRODUCT_NAME_LENGTH);
@@ -206,10 +213,13 @@ namespace ScenarioController {
             cout << "ENTER a selection [c - customer/e - employee]" << endl;
             cout << "OR ENTER <0> to abort and exit to the main menu" << endl;
 
-            reqTSelection = cin.get();
+            cin >> reqTSelection; 
+            cin.clear();
+            cin.ignore(10000,'\n');
+            
             if (reqTSelection == '0') return;
             else if (reqTSelection != 'c' && reqTSelection != 'e') {
-                clearScreen();
+                //clearScreen();
                 cout << "Error: Input is invalid. Re-enter input" << endl;
                 cout << "Enter 0 to abort and return to the main menu" << endl << endl;
             }
@@ -278,7 +288,7 @@ namespace ScenarioController {
 
         string phoneInput = getPhone();
         if (phoneInput == "0") return;
-        int phone = stoi(phoneInput);
+        int phone = stol(phoneInput);
 
         clearScreen();
 
