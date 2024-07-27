@@ -201,6 +201,74 @@ T* selectFromList(EntityIO<T>& entityIO, const string& title, const vector<strin
     return nullptr;
 }
 
+// Function to display a list of items and prompt the user for a selection
+template<typename T>
+T* selectFromVector(vector<T*>& items, const string& title, const vector<string>& columnNames, void (*printRow)(T& item)) {
+    int itemCount = items.size();
+    int recordOffset = 0;
+    int maxRecordOutput = 10; // Adjust as needed
+    string selection;
+    int option;
+    string range;
+
+    while (true) {
+        range = formatSelectionRange(1, itemCount);
+        cout << "=== Select " << title << " ===" << endl;
+
+        // Print column headers
+        if (!columnNames.empty() && !columnNames[0].empty()) {
+            for (const string& columnName : columnNames) {
+                cout << columnName << "   ";
+            }
+            cout << endl;
+        }
+
+        // Print rows
+        for (int i = 0; i < maxRecordOutput && (recordOffset + i) < itemCount; ++i) {
+            cout << to_string(recordOffset + i + 1) << ")";
+            if (items[recordOffset + i] != nullptr) {
+                printRow(*items[recordOffset + i]);
+            } else {
+                cout << "Item unavailable";
+            }
+            cout << endl;
+        }
+
+        // Scrolling functionality
+        if (maxRecordOutput < itemCount) {
+            cout << "*..." << endl;
+            if (recordOffset > 0) {
+                cout << "p) display previous items" << endl;
+            }
+            cout << "n) display next items" << endl;
+        }
+
+        cout << "ENTER selection " << range << " OR <0> to abort and exit: ";
+        getline(cin, selection);
+
+        try {
+            option = stoi(selection);
+            if (option == 0) return nullptr;
+
+            if (option > 0 && option <= itemCount) {
+                T* selectedItem = items[recordOffset + option - 1];
+                return selectedItem;
+            } else {
+                cout << "Error: The option you entered does not exist on the list" << endl << endl;
+            }
+
+        } catch (const invalid_argument&) {
+            if (selection == "p" && recordOffset - maxRecordOutput >= 0) {
+                recordOffset -= maxRecordOutput;
+            } else if (selection == "n" && recordOffset + maxRecordOutput < itemCount) {
+                recordOffset += maxRecordOutput;
+            } else {
+                cout << "Error: Input is invalid. Re-enter input" << endl;
+                cout << "Enter 0 to abort" << endl << endl;
+            }
+        }
+    }
+}
 // USE CASES
 
 
@@ -517,43 +585,128 @@ namespace ScenarioController {
 
         if (!selectedProduct) return;  // Abort if no valid product selected
 
-        // Fetch product release records
-        vector<ProductRelease*> releases = productReleaseIO.readNRecords(4);  // Adjust count if needed
-        if (releases.empty()) {
-            cout << "Error fetching product release records. Aborting." << endl;
-            delete selectedProduct;
-            return;
+        vector<ProductRelease*> productRelease = productReleaseIO.readNRecords(productReleaseIO.getRecordCount());
+
+        // Filter productRelease to keep only those matching the selectedProduct's name
+        string selectedProductName = selectedProduct->getProductName();
+
+        for (auto it = productRelease.begin(); it != productRelease.end(); ) {
+            if ((*it)->getProductName() != selectedProductName) {
+                // Remove product release if it does not match the selected product
+                it = productRelease.erase(it);
+            } else {
+                // Move to the next product release if it matches
+                it++;
+            }
         }
 
-        ProductRelease* selectedRelease = selectFromList(productReleaseIO, "Product Release", noColHeader, printProductReleaseRow);
+        ProductRelease* selectedProductRelease = selectFromVector(productRelease, "ProductRelease", noColHeader, printProductReleaseRow);
 
-        if (!selectedRelease) {
-            delete selectedProduct;
-            return;  // Abort if no valid product release selected
-        }
 
-        // Call PrintController method with selected product and release
-        PrintController::printProduct(*selectedRelease);
+        PrintController::initPrintController();
+        PrintController::printProduct(*selectedProductRelease); 
+        PrintController::exitPrint();
 
         delete selectedProduct;
-        delete selectedRelease;
-    }
+        delete selectedProductRelease;
 
+        cout << 'Report for “' << selectedProductName <<'” version: “'<< selectedProductRelease << '” has been successfully printed.' <<  endl;
 
-    // Updated printScenario2Control using getProductRecords
-    void printScenario2Control() {
-        // Fetch product records
-        vector<Product*> products = productIO.readNRecords(productIO.getRecordCount());
-        if (products.empty()) {
-            cout << "Error fetching product records. Aborting." << endl;
-            return;
+        cout << "Enter <1> to print another report." << endl;
+        cout << "Enter <0> to go back to the main menu." << endl;
+        cout << "ENTER Selection: ";
+
+        int continueOption;
+        do {
+            cin >> continueOption;
+
+            if (continueOption == 0) {
+                clearScreen();
+                return; // Return to main menu
+            } else if (continueOption == 1) {
+                clearScreen();
+                printScenario1Control();
+                return; 
+            } else if (continueOption != 1 || continueOption != 0) { 
+                clearScreen();
+                cout << "Error: Invalid input. Please enter 0 or 1." << endl;
+                cout << "Enter <1> to inquire about another change item." << endl;
+                cout << "Enter <0> to go back to the main menu." << endl;
+                cout << "ENTER Selection: ";
+            }
+
+        } while (continueOption != 0 && continueOption != 1);
+
+        clearScreen();
+
         }
 
-        Product* selectedProduct = selectFromList(productIO, "Product", noColHeader, printProductRow);
 
-        if (!selectedProduct) return;  // Abort if no valid product selected
+        // Updated printScenario2Control using getProductRecords
+        void printScenario2Control() {
 
-        delete selectedProduct;
+            vector<Product*> products = productIO.readNRecords(productIO.getRecordCount());
+            if (products.empty()) {
+                cout << "Error fetching product records. Aborting." << endl;
+                return;
+            }
+
+            Product* selectedProduct = selectFromList(productIO, "Product", noColHeader, printProductRow);
+
+            if (!selectedProduct) return;  // Abort if no valid product selected
+
+            vector<Change*> Changes = changeIO.readNRecords(changeIO.getRecordCount());
+
+            // Filter productRelease to keep only those matching the selectedProduct's name
+            string selectedProductName = selectedProduct->getProductName();
+
+            for (auto it = Changes.begin(); it != Changes.end(); ) {
+                if ((*it)->getProductName() != selectedProductName || Change::statusToString((*it)->getStatus()) != "Completed"  ) {
+                    // Remove product release if it does not match the selected product
+                    it = Changes.erase(it);
+                } else {
+                    // Move to the next product release if it matches
+                    it++;
+                }
+            }
+
+            Change* selectedChange = selectFromVector(Changes, "Change", noColHeader, printChangeRow);
+
+            PrintController::initPrintController();
+            PrintController::printCompletedChangeItems(*selectedChange); 
+            PrintController::exitPrint();
+
+            delete selectedProduct;
+            delete selectedChange;
+
+            cout << "The report for the completed change item has been successfully printed." <<  endl;
+
+            cout << "Enter <1> to print another report." << endl;
+            cout << "Enter <0> to go back to the main menu." << endl;
+            cout << "ENTER Selection: ";
+
+            int continueOption;
+            do {
+                cin >> continueOption;
+
+                if (continueOption == 0) {
+                    clearScreen();
+                    return; // Return to main menu
+                } else if (continueOption == 1) {
+                    clearScreen();
+                    printScenario2Control();
+                    return; 
+                } else if (continueOption != 1 || continueOption != 0) { 
+                    clearScreen();
+                    cout << "Error: Invalid input. Please enter 0 or 1." << endl;
+                    cout << "Enter <1> to inquire about another change item." << endl;
+                    cout << "Enter <0> to go back to the main menu." << endl;
+                    cout << "ENTER Selection: ";
+                }
+
+            } while (continueOption != 0 && continueOption != 1);
+
+            clearScreen();
+        }
+
     }
-}
-

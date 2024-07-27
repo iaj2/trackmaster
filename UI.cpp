@@ -175,6 +175,6 @@ namespace UI {
         cout << endl;
 
         cout << "0) Exit" << endl;
-        cout << "ENTER selection [0-2]: " << endl;
+        // cout << "ENTER selection [0-2]: " << endl;
     }
 }
