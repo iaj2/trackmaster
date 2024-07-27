@@ -12,6 +12,8 @@
 #include <cstdlib>
 #include <string.h>
 #include <vector>
+#include <algorithm>
+#include <cctype>
 
 using namespace std;
 using namespace UI;
@@ -37,6 +39,11 @@ void clearScreenAndShowError(const string& errorMessage) {
     cout << "Error: " << errorMessage << " Please re-enter." << endl << endl;
 }
 
+// Function to check if a string is only whitespace
+bool isBlank(const string& str) {
+    return all_of(str.begin(), str.end(), [](unsigned char c) { return isspace(c); });
+}
+
 string getInput(const string& prompt, int maxLength) {
     string input;
     do {
@@ -48,9 +55,11 @@ string getInput(const string& prompt, int maxLength) {
             return "0";
         } else if (input.length() > maxLength) {
             clearScreenAndShowError("Input is too long.");
+        } else if (input.empty() || isBlank(input)) clearScreenAndShowError("Input is invalid");
+        else {
+            return input;
         }
-    } while (input.length() > maxLength);
-    return input;
+    } while (true);
 }
 
 
@@ -139,9 +148,9 @@ T* selectFromList(EntityIO<T>& entityIO, const string& title, const vector<strin
         
         // print rows
         for (int i = 0; i < maxRecordOutput; ++i) {
-            cout << to_string(recordIndex + i + 1) << ")";
+            cout << to_string(recordIndex + i + 1) << ") ";
             if (records[i] == nullptr) {
-                cout << " Record unavailable" << endl;
+                cout << "Record unavailable" << endl;
             } else {
                 printRow(*records[i]);
                 cout << endl;
@@ -193,7 +202,6 @@ T* selectFromList(EntityIO<T>& entityIO, const string& title, const vector<strin
 }
 
 // USE CASES
-
 
 namespace ScenarioController {
     void createRequestControl() {
