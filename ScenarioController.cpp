@@ -22,6 +22,8 @@ using namespace UI;
 // Some global constants
 const int maxRecordOutput = 5; 
 
+enum scenarioState {Create, Assess, Update, P2Control, Blank};
+
 // Some helper functions
 
 string formatSelectionRange(int start, int end) {
@@ -91,9 +93,81 @@ string getProductName() {
     return getInput("ENTER the PRODUCT NAME (Length: max 10)", Product::MAX_PRODUCT_NAME_LENGTH);
 }
 
-void printProductReleaseRow(ProductRelease& productRelease) {
-    cout << to_string(productRelease.getReleaseID());
+// count customer type requesters
+int countCustomers() {
+    int count = 0;
+    requesterIO.seekToStart();
+
+    while (true) {
+        Requester* requester = requesterIO.readRecord();
+
+        // if department is empty, must be a customer
+        if (requester != nullptr && requester->getDepartment() == "") {
+            count++;
+        } else if (requester == nullptr) {
+            break; // If readRecord returns nullptr, stop reading
+        }
+    }
+    return count;
 }
+
+// count employee type requesters
+int countEmployees() {
+    int count = 0;
+    requesterIO.seekToStart();
+
+    while (true) {
+        Requester* requester = requesterIO.readRecord();
+
+        // if department is not empty, must be an employee
+        if (requester != nullptr && requester->getDepartment() != "") {
+            count++;
+        } else if (requester == nullptr) {
+            break; // If readRecord returns nullptr, stop reading
+        }
+    }
+    return count;
+}
+
+// count product releases for a product
+int countProductReleases(const string& productName) {
+    int count = 0;
+    productReleaseIO.seekToStart();
+
+    while (true) {
+        ProductRelease* pr = productReleaseIO.readRecord();
+
+        if (pr != nullptr && pr->getProductName() == productName) {
+            count++;
+        } else if (pr == nullptr) {
+            break; // If readRecord returns nullptr, stop reading
+        }
+    }
+    return count;
+}
+
+// count change items by product name and status
+int countChangeItems(const string& productName, const string& status = "") {
+    int count = 0;
+    changeIO.seekToStart();
+
+    while (true) {
+        Change* change = changeIO.readRecord();
+
+        if (change != nullptr) {
+            bool matchesProductName = (productName != "" && productName == change->getProductName()) || productName == "";
+            bool matchesStatus = (status != "" && status == Change::statusToString(change->getStatus())) || status == "";
+
+            if (matchesProductName && matchesStatus) {
+                count++;
+            }
+        } else {
+            break; // If readRecord returns nullptr, stop reading
+        }
+    }
+    return count;
+}
+
 
 // gets n customer type requesters
 vector<Requester*> fetchNCustomers(int n, int recordIndex) {
@@ -158,6 +232,7 @@ vector<ProductRelease*> fetchNProductReleases(int n, int recordIndex, string pro
 }
 
 // gets n change items by product name and status. if status left blank, get change item of any status
+// if product name is blank, do not filter by product name
 vector<Change*> fetchNChangeItems(int n, int recordIndex, string productName, string status = "") {
     vector<Change*> changeItems;
     int count = 0;
@@ -167,10 +242,12 @@ vector<Change*> fetchNChangeItems(int n, int recordIndex, string productName, st
     while (count < n) {
         Change* change = changeIO.readRecord();
 
-        if (change != nullptr && change->getProductName() == productName) {
-            if ((status != "" && status == Change::statusToString(change->getStatus())) || status == "") {
+        if (change != nullptr) {
+            if ((productName != "" && productName == change->getProductName()) || productName == "") {
+                if ((status != "" && status == Change::statusToString(change->getStatus())) || status == "") {
                 changeItems.push_back(change);
                 count++;
+                }
             }
         } else {
             break;
@@ -228,7 +305,7 @@ Change* createNewChangeItem(string productName) {
 
     clearScreen();
     cout << "Select a product product release that the change is anticipated to completed for" << endl;
-    int productRelease = selectProductReleaseID(productName, "");
+    int productRelease = selectProductReleaseID(productName, Blank);
 
     // TODO: DATE
     Change* newChangeItem = new Change(Change::Status::Open, productName.c_str(), productRelease, 
@@ -251,7 +328,7 @@ bool userSelectedPrev(string selection, int recordIndex, int recordCount) {
     return (selection == "n" && recordIndex + maxRecordOutput < recordCount);
 }
 // Select product from list
-Product* selectProduct(string state) {
+Product* selectProduct(scenarioState state) {
     // start at beginning of records
     int recordIndex = 0;
     productIO.seekToStart();
@@ -278,7 +355,7 @@ Product* selectProduct(string state) {
             }
         }
         // Option to create a new item
-        if (state=="create" && (recordIndex + maxRecordOutput >= recordCount)) {
+        if (state== Create && (recordIndex + maxRecordOutput >= recordCount)) {
             cout << to_string(recordCount + 1) << ") New Product" << endl; 
         }
 
@@ -305,7 +382,7 @@ Product* selectProduct(string state) {
                     for (Product* product : products) delete product;  // Free memory
                     return selectedProduct;
                 }
-                else if (state=="create" && option  == recordCount + 1) {
+                else if (state== Create && option  == recordCount + 1) {
                     // Handle creating a new item
                     selectedProduct = createNewProduct();
                     cout << "New Product created!" << endl << endl;
@@ -319,7 +396,7 @@ Product* selectProduct(string state) {
     }
 }
 
-int selectProductReleaseID(string productName, string state) {
+int selectProductReleaseID(string productName, scenarioState state) {
     // start at beginning of records
     int recordIndex = 0;
     productReleaseIO.seekToStart();
@@ -327,8 +404,8 @@ int selectProductReleaseID(string productName, string state) {
     // get first set of records
     vector<ProductRelease*> productRels = fetchNProductReleases(maxRecordOutput, recordIndex, productName);
 
-    // TODO: get record count
-    int recordCount = 0;
+    // Get record count
+    int recordCount = countProductReleases(productName);
 
     //
     string selection;
@@ -347,7 +424,7 @@ int selectProductReleaseID(string productName, string state) {
         }
         
         // Option to skip
-        if ((state=="assess" || state== "update") && (recordIndex + maxRecordOutput >= recordCount)) {
+        if ((state== Assess || state== Update) && (recordIndex + maxRecordOutput >= recordCount)) {
             cout << to_string(recordCount+1) << ") Skip" << endl;
         }
 
@@ -372,7 +449,7 @@ int selectProductReleaseID(string productName, string state) {
                     for (ProductRelease* p : productRels) delete p;  // Free memory
                     return selectedProductRel->getReleaseID();
                 }
-                else if (state=="assess" && option  == recordCount + 1) {
+                else if (state==Assess && option  == recordCount + 1) {
                     return -1; // signals skip
                 }
                 else {
@@ -383,7 +460,7 @@ int selectProductReleaseID(string productName, string state) {
     }
 }
 
-Requester* selectRequester(string state, string type) {
+Requester* selectRequester(scenarioState state, string type) {
     // start of beginning of records
     int recordIndex = 0;
     requesterIO.seekToStart();
@@ -391,12 +468,14 @@ Requester* selectRequester(string state, string type) {
     // get first set of records
     vector<Requester*> requesters;
     int recordCount;
+    
     if(type == "c"){
-        requesters = fetchNCustomers(maxRecordOutput, recordIndex);  // TODO: GET CUSTOMER COUNT
-        recordCount = 0;
+        requesters = fetchNCustomers(maxRecordOutput, recordIndex);
+        recordCount = countCustomers();
     } 
     else {
-        requesters = fetchNEmployees(maxRecordOutput, recordIndex); // TODO: GET EMPLOYEE COUNT
+        requesters = fetchNEmployees(maxRecordOutput, recordIndex);
+        recordCount = countEmployees();
     }
 
     //
@@ -421,7 +500,7 @@ Requester* selectRequester(string state, string type) {
             }
         }
         // Option to create a new item
-        if (state=="create" && (recordIndex + maxRecordOutput >= recordCount)) {
+        if (state == Create  && (recordIndex + maxRecordOutput >= recordCount)) {
             cout << to_string(recordCount + 1) << ") New ";
             if (type == "c") cout << "Customer" << endl;
             else cout << "Employee" << endl;
@@ -453,7 +532,7 @@ Requester* selectRequester(string state, string type) {
                     for (Requester* req : requesters) delete req;  // Free memory
                     return selectedRequester;
                 }
-                else if (state=="create" && option  == recordCount + 1) {
+                else if (state==Create  && option  == recordCount + 1) {
                     // Handle creating a new item
                     selectedRequester = createNewRequester();
                     cout << "New Requester created!" << endl << endl;
@@ -468,23 +547,23 @@ Requester* selectRequester(string state, string type) {
 }
 
 // Select change item from list
-Change* selectChange(string productName, string state) {
+Change* selectChange(string productName, scenarioState state) {
     // start at beginning of records
     int recordIndex = 0;
     changeIO.seekToStart();
 
     // filter based on status
     string statusFilter;
-    if (state == "assess") statusFilter = "Open";
-    else if (state == "update") statusFilter = "Assessed";
-    else if (state == "p2control") statusFilter = "Done";
+    if (state == Assess) statusFilter = "Open";
+    else if (state == Update) statusFilter = "Assessed";
+    else if (state == P2Control) statusFilter = "Done";
     else statusFilter == "";
 
     // get first set of records
     vector<Change*> changes = fetchNChangeItems(maxRecordOutput, recordIndex, productName, statusFilter);
 
-    // TODO: get record count
-    int recordCount = 0;
+    // Get record count
+    int recordCount = countChangeItems(productName, statusFilter);
 
     //
     string selection;
@@ -499,9 +578,9 @@ Change* selectChange(string productName, string state) {
             if (changes[i] == nullptr) cout << "Record unavailable" << endl;
             else {
                 // create display
-                if(state == "create") cout << changes[i]->getDescription() << "   " << to_string(changes[i]->getchangeID());
+                if(state == Create ) cout << changes[i]->getDescription() << "   " << to_string(changes[i]->getchangeID());
                 // assess display
-                else if (state == "assess" || state == "p2control")cout << changes[i]->getDescription() << "   " \
+                else if (state == Assess || state == P2Control)cout << changes[i]->getDescription() << "   " \
                     << Change::statusToString(changes[i]->getStatus()) << "   " << to_string(changes[i]->getchangeID());
                 // update display
                 else cout << changes[i]->getProductName() << "   " << changes[i]->getDescription() \
@@ -509,7 +588,7 @@ Change* selectChange(string productName, string state) {
             }
         }
         // Option to create a new item
-        if (state=="create" && (recordIndex + maxRecordOutput >= recordCount)) {
+        if (state==Create  && (recordIndex + maxRecordOutput >= recordCount)) {
             cout << to_string(recordCount + 1) << ") New Change Item" << endl; 
         }
 
@@ -534,7 +613,7 @@ Change* selectChange(string productName, string state) {
                     for (Change* change : changes) delete change;  // Free memory
                     return selectedChange;
                 }
-                else if (state=="create" && option  == recordCount + 1) {
+                else if (state==Create  && option  == recordCount + 1) {
                     // Handle creating a new item
                     selectedChange = createNewChangeItem(productName);
                     cout << "New Change Item created!" << endl << endl;
@@ -585,9 +664,10 @@ int selectPriority() {
 
 // USE CASES
 
+// Use case 1: Create Requester
 namespace ScenarioController {
     void createRequestControl() {
-        // Get requester type from user
+        // Step 3: Get requester type from user
         string reqTSelection;
         do {
             cout << "Is this request coming from a customer or an employee?" << endl;
@@ -598,17 +678,15 @@ namespace ScenarioController {
             
             if (reqTSelection == "0") return;
             else if (reqTSelection != "c" && reqTSelection != "e") {
-                //clearScreen();
-                cout << "Error: Input is invalid. Re-enter input" << endl;
-                cout << "Enter 0 to abort and return to the main menu" << endl << endl;
+                clearScreenAndShowError("Invalid Input");
             }
 
         } while (reqTSelection != "c" && reqTSelection != "e");
 
         clearScreen();
 
-        // Get requester from user
-        Requester* requester = selectRequester("create", reqTSelection);
+        // Step 4: Get requester from user
+        Requester* requester = selectRequester(scenarioState::Create, reqTSelection);
 
         if (requester == nullptr) return;
 
@@ -617,7 +695,7 @@ namespace ScenarioController {
 
         delete requester;
 
-        // Get date information
+        // Step 5: Get date information
         string date;
         do {
             cout << "ENTER the DATE of the request (YYYY-MM-DD) OR ENTER <0> to abort and" << endl;
@@ -629,52 +707,80 @@ namespace ScenarioController {
 
         } while (date.empty());
 
-        // Get product information
-        Product* product = selectProduct("create");
+        // Step 6: Get product information
+        Product* product = selectProduct(scenarioState::Create);
         if (product == nullptr) return;
         string productName = product->getProductName();
         delete product;
 
-        // Get product release id
-        int productReleaseID = selectProductReleaseID(productName, "create");
+        // Step 7: get product release id
+        int productReleaseID = selectProductReleaseID(productName, scenarioState::Create);
         if (productReleaseID == 0) return;
 
-        // get priority
+        // Step 8: get priority
         int selectedPriority = selectPriority();
         Request::Priority priority;
+        string priorityStr;
         switch (selectedPriority)
         {
             case 1:
-                priority = Request::Priority::LOW; break;
+                priority = Request::Priority::LOW; 
+                priorityStr  = "1 - Low"; break;
             case 2:
-                priority = Request::Priority::MEDIUM; break;
+                priority = Request::Priority::MEDIUM;
+                priorityStr = "2 - Medium"; break;
             case 3:
-                priority = Request::Priority::HIGH; break;
+                priority = Request::Priority::HIGH;
+                priorityStr = "3 - High"; break;
             case 4:
-                priority = Request::Priority::VERY_HIGH; break;
+                priority = Request::Priority::VERY_HIGH;
+                priorityStr = "4 - Very High"; break;
             case 5:
-                priority = Request::Priority::CRITICAL; break;
-            default:
-                priority = Request::Priority::MEDIUM; // medium priority by default
+                priority = Request::Priority::CRITICAL;
+                priorityStr = "5 - Critical"; break;
+            default: // medium priority by default
+                priority = Request::Priority::MEDIUM; 
+                priorityStr = "2 - Medium";
                 break;
         }
 
-        // Get change information
-        Change* change = selectChange(productName, "create");
+        // Step 9 (and 10-11 if creating new change): get change information
+        Change* change = selectChange(productName, Create);
         if (change == nullptr) return;
         int changeID = change->getchangeID();
         string changeDate = change->getDate();
         string changeDesc = change->getDescription();
         delete change;
 
-        // Save request information. TODO: FIX THIS
+        // Step 12: confirm new request
+        string confirmSel;
+        string reqType = (reqTSelection == "c") ? "customer" : "employee";
+
+        do {
+            cout << "=== New Request Information ===" << endl;
+            cout << "Requester (" << reqType << "): " << requesterName << " - " << requesterEmail << endl;
+            cout << "Product: " << productName << endl;
+            cout << "Release: " << to_string(productReleaseID) << endl;
+            cout << "Priority: " << priorityStr << endl;
+            cout << "Change ID: " << to_string(changeID);
+            cout << "ENTER <1> to confirm OR <0> to abort and exit to main menu: ";
+
+            getline(cin, confirmSel);
+
+            if (confirmSel == "0") return; // abort
+            else if (confirmSel != "1") clearScreenAndShowError("Invalid Input");
+            cout << endl;
+        } while (confirmSel != "1");
+
+        // record request
         Request newRequest(changeID, requesterEmail.c_str(), productName.c_str(), productReleaseID, priority);
         requestIO.appendRecord(newRequest);
-
-        cout << "Request created successfully!" << endl;
+        
     }
 
+    // Use case 2: Create Requester
     void createRequesterControl() {
+        // Step 2-6
         Requester* newRequester = createNewRequester();
 
         if (newRequester == nullptr) return;
@@ -682,15 +788,24 @@ namespace ScenarioController {
         requesterIO.appendRecord(*newRequester);
         delete newRequester; // free memory
 
-        cout << "The new requester has been successfully added to the system." << endl;
-        cout << "ENTER <0> to go back to the main menu: ";
+        // Step 7: confirm
         string input;
         do {
+            cout << "The new requester has been successfully added to the system." << endl;
+            cout << "ENTER <0> to go back to the main menu: ";
+        
             getline(cin, input);
-        } while (input != "0");
+
+            if (input == "0") return;
+
+            clearScreenAndShowError("Invalid Input");
+            cout << endl;
+        } while (true);
     }
 
+    // Use case 3: create product
     void createProductControl() {
+        // step 3
         Product* newProduct = createNewProduct();
         
         if (newProduct == nullptr) return;
@@ -698,18 +813,23 @@ namespace ScenarioController {
         productIO.appendRecord(*newProduct);
         delete newProduct; // free memory
 
-        cout << "The new product has been successfully added to the system." << endl;
-        cout << "ENTER <0> to go back to the main menu: ";
+        // step 4: confirm
         string input;
         do {
+            cout << "The new product has been successfully added to the system." << endl;
+            cout << "ENTER <0> to go back to the main menu: ";
             getline(cin, input);
-        } while (input != "0");
+
+            if(input == "0") return;
+
+            clearScreenAndShowError("Invalid Input.");
+        } while (true);
     }
 
+    // Use case 4: Assess new change items
     void assessNewChangeControl() {
-
-        // Select a change item
-        Change* selectedChange = selectChange("", "assess");
+        // Step 3: Select a change item
+        Change* selectedChange = selectChange("", Assess);
         if (selectedChange == nullptr) return;
 
         int changeID = selectedChange->getchangeID();
@@ -718,8 +838,8 @@ namespace ScenarioController {
         // Free memory
         delete selectedChange;
 
+        // Step 4: Select new status
         int statusSelection;
-        // Select new status
         cout << "=== Select Status ===" << endl;
         cout << "1) Assessed" << endl;
         cout << "2) Canceled" << endl;
@@ -730,7 +850,7 @@ namespace ScenarioController {
 
         Change::Status status = (statusSelection == 1) ? Change::Status::Assessed : Change::Status::Canceled;
 
-        // Get new description
+        // Step 5: Get new description  TODO: Fix to match user manual
         string description;
         cout << "ENTER a new description for the change [max 30 characters, leave blank to skip]" << endl;
         cout << "OR <0> to abort and exit to main menu:";
@@ -738,25 +858,37 @@ namespace ScenarioController {
         // Check for exit
         if(description == "0") return;
 
-        // Select product release
-        int productReleaseID = selectProductReleaseID(productName, "assess");
+        // Step 6: Select product release
+        int productReleaseID = selectProductReleaseID(productName, Assess);
         if (productReleaseID == -1) return;
 
-        // TODO: UPDATE RECORDS
+        // Step 7: confirm
+        string confirmSel;
+        do {
+            cout << "=== Updated Change Information ===" << endl;
+            cout << "Product: " << productName << endl;
+            cout << "Description: " << description << endl;
+            cout << "Anticipated Release: " << productReleaseID << endl;
+            cout << "Status: " << Change::statusToString(status) << endl;
+            cout << "Change ID: " << changeID << endl;
 
-        cout << "=== Updated Change Information ===" << endl;
-        cout << "Product: " << productName << endl;
-        cout << "Description: " << description << endl;
-        cout << "Anticipated Release: " << productReleaseID << endl;
-        cout << "Status: " << Change::statusToString(status) << endl;
-        cout << "Change ID: " << changeID << endl;
+            getline(cin, confirmSel);
+
+            if (confirmSel == "0") return; // abort
+            else if (confirmSel != "1") clearScreenAndShowError("Invalid Input");
+            cout << endl;
+        } while (confirmSel != "1");
+
+        // TODO: UPDATE RECORDS
+        // changeIO.updateRecord(selectedChange);
+        
     }
 
 
     void updateChangeItemControl() {
         // Fetch initial product list
         vector<Product*> products = productIO.readNRecords(maxRecordOutput);
-        Product* selectedProduct = selectProduct("");
+        Product* selectedProduct = selectProduct(Blank);
         
         if (!selectedProduct) return;  // Abort if no valid product selected
 
@@ -765,7 +897,7 @@ namespace ScenarioController {
 
         // Fetch initial change list
         vector<Change*> changes = changeIO.readNRecords(maxRecordOutput);
-        Change* selectedChange = selectChange(productName, "update");
+        Change* selectedChange = selectChange(productName, Update);
         
         if (!selectedChange) return;  // Abort if no valid change selected
 
@@ -793,7 +925,7 @@ namespace ScenarioController {
 
         // Fetch initial product release list
         vector<ProductRelease*> productReleases = productReleaseIO.readNRecords(maxRecordOutput);
-        int productReleaseID = selectProductReleaseID(productName, "update");
+        int productReleaseID = selectProductReleaseID(productName, Update);
 
         if (productReleaseID == 0) return;  // Abort if no valid product release selected
 
@@ -824,7 +956,7 @@ namespace ScenarioController {
             return;
         }
 
-        Product* selectedProduct = selectProduct("");
+        Product* selectedProduct = selectProduct(Blank);
 
         if (!selectedProduct) return;  // Abort if no valid product selected
         string productName = selectedProduct->getProductName();
@@ -834,7 +966,7 @@ namespace ScenarioController {
 
         // Step 2: Select a change item to inquire
         vector<Change*> changes = changeIO.readNRecords(changeIO.getRecordCount());
-        Change* selectedChange = selectChange("", "");
+        Change* selectedChange = selectChange("", Blank);
 
         if (!selectedChange) return;  // Abort if no valid change selected
 
@@ -878,14 +1010,14 @@ namespace ScenarioController {
     // Updated printScenario1Control using getProductReleaseRecords and getProductRecords
     void printScenario1Control() {
 
-        Product* selectedProduct = selectProduct("");
+        Product* selectedProduct = selectProduct(Blank);
 
         if (!selectedProduct) return;  // Abort if no valid product selected
 
         string productName = selectedProduct->getProductName();
         delete selectedProduct;
 
-        int selectedRelease = selectProductReleaseID(productName, "");
+        int selectedRelease = selectProductReleaseID(productName, Blank);
 
         if (selectedRelease == 0) {
             return;  // Abort if no valid product release selected
@@ -895,19 +1027,17 @@ namespace ScenarioController {
         PrintController::printProduct(productName, selectedRelease);
     }
 
-
     // Updated printScenario2Control using getProductRecords
     void printScenario2Control() {
         // Select product
-        Product* selectedProduct = selectProduct("");
+        Product* selectedProduct = selectProduct(Blank);
         if(selectedProduct==nullptr) return;
 
         string productName = selectedProduct->getProductName();
         delete selectedProduct;
 
         // select completed change
-        Change* change = selectChange(productName, "p2Control");
+        Change* change = selectChange(productName, P2Control);
 
     }
 }
-
