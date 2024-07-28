@@ -53,7 +53,7 @@ namespace PrintController {
 
     Return: None
     */
-    void printProduct(const ProductRelease &outputProductRelease);
+    void printProduct(string productName, int releaseID);
 
     // --------------------------------------------------------------------------------------------------------------------
 

@@ -33,7 +33,7 @@ namespace PrintController {
     // Print product information
     // Generates a report for a specified product release's change items.
     // -------------------------------------------------------------------------------------------------------------------
-    void printProduct(const ProductRelease &outputProductRelease) {
+    void printProduct(string productName, int releaseID) {
         // check to make sure the file is open 
         static int printItemCount = 0;
         if (!printFile.is_open()) {
@@ -51,8 +51,8 @@ namespace PrintController {
         // while the getChangeRecord has not returned a nullptr loop through the file 
         while(outputChangeItem != nullptr) {
             // check to see if the instance matches the Product release details 
-            if (outputChangeItem->getProductName() == outputProductRelease.getProductName() && 
-                outputChangeItem->getAnticipatedReleaseID() == outputProductRelease.getReleaseID()) {
+            if (outputChangeItem->getProductName() == productName && 
+                outputChangeItem->getAnticipatedReleaseID() == releaseID) {
                 
                 // Print header if its the first change item 
                 if (printItemCount == 0) {

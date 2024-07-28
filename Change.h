@@ -50,12 +50,11 @@ class Change {
         /* Parameterized Constructor to create a "Change" Object.
         This requires the input of all private data attributes of the "Change" class.
 
-        Parameter 1 (const int changeID): In parameter.
-        Parameter 2 (Status status): In parameter.
-        Parameter 3 (const char* productName): In parameter.
-        Parameter 4 (const int anticipatedReleaseID): In parameter.
-        Parameter 5 (const char* description): In parameter.
-        Parameter 6 (const int date): In parameter.
+        Parameter 1 (Status status): In parameter.
+        Parameter 2 (const char* productName): In parameter.
+        Parameter 3 (const int anticipatedReleaseID): In parameter.
+        Parameter 4 (const char* description): In parameter.
+        Parameter 5 (const int date): In parameter.
 
         Return: Does not return anything.
         */
