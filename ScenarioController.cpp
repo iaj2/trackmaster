@@ -97,7 +97,32 @@ string getName() {
 }
 
 string getDepartment() {
-    return getInput("ENTER the DEPARTMENT NAME of the requester (Length: max 12)\n***Must be left blank if requester is not an employee of the company***", Requester::MAX_DEPARTMENT_LENGTH);
+    string dep;
+    do {
+        cout << "ENTER the DEPARTMENT NAME of the requester (Length: max 12)" << endl;
+        cout << "***Must be left blank if requester is not an employee of the company***" << endl;
+        cout << "OR ENTER <0> to abort and exit to the main menu: ";
+
+        getline(cin, dep);
+
+        if (dep == "0") {
+            // Abort and exit to the main menu
+            return "";
+        }
+
+        if (dep.length() > Requester::MAX_DEPARTMENT_LENGTH) {
+            clearScreenAndShowError("Input too long.");
+        } else if (isBlank(dep) || dep.length() < 1) {
+            dep = "";
+            return dep;
+        } else {
+            // Valid input
+            return dep;
+        }
+
+    } while (true);
+
+    return dep; // This will never be reached, but is kept for completeness
 }
 
 
@@ -149,7 +174,7 @@ int countCustomers() {
         Requester* requester = requesterIO.readRecord();
 
         // if department is empty, must be a customer
-        if (requester != nullptr && requester->getDepartment() == "") {
+        if (requester != nullptr && isBlank(requester->getDepartment())) {
             count++;
         } else if (requester == nullptr) {
             break; // If readRecord returns nullptr, stop reading
@@ -167,7 +192,7 @@ int countEmployees() {
         Requester* requester = requesterIO.readRecord();
 
         // if department is not empty, must be an employee
-        if (requester != nullptr && requester->getDepartment() != "") {
+        if (requester != nullptr && !isBlank(requester->getDepartment())) {
             count++;
         } else if (requester == nullptr) {
             break; // If readRecord returns nullptr, stop reading
@@ -246,7 +271,7 @@ vector<Requester*> fetchNCustomers(int n, int recordIndex) {
         }
 
         // if department is empty, must be a customer
-        if (requester->getDepartment() == "") {
+        if (isBlank(requester->getDepartment())) {
             customers.push_back(requester);
             count++;
         } else {
@@ -271,7 +296,7 @@ vector<Requester*> fetchNEmployees(int n, int recordIndex) {
         }
 
         // if department is not empty, must be an employee
-        if (requester->getDepartment() != "") {
+        if (!isBlank(requester->getDepartment())) {
             employees.push_back(requester);
             count++;
         } else {
@@ -321,7 +346,6 @@ vector<Change*> fetchNChangeItems(int n, int recordIndex, string productName, st
 
         if(change == nullptr) break; // stop reading on null
 
-     
         if ((productName != "" && productName == change->getProductName()) || productName == "") {
             if ((status != "" && status == Change::statusToString(change->getStatus())) || status == "") {
             changeItems.push_back(change);
@@ -332,6 +356,8 @@ vector<Change*> fetchNChangeItems(int n, int recordIndex, string productName, st
         }
        
     }
+
+    return changeItems;
 }
 
 int selectProductReleaseID(string productName, scenarioState state) {
@@ -372,7 +398,6 @@ int selectProductReleaseID(string productName, scenarioState state) {
         printListOptions(recordIndex, recordCount, formatSelectionRange(1, recordCount));
 
         // get user input
-        cin.ignore(10000, '\n');
         getline(cin, selection);
 
         if (userSelectedNext(selection, recordIndex)) {
@@ -425,6 +450,7 @@ Requester* createNewRequester() {
         clearScreen();
 
         Requester* newRequester = new Requester(requesterEmail.c_str(), name.c_str(), phone, department.c_str());
+
         return newRequester;
 }
 
@@ -527,7 +553,6 @@ Product* selectProduct(scenarioState state) {
         printListOptions(recordIndex, recordCount, formatSelectionRange(1, maxSelection));
 
         // get user input
-        cin.ignore(10000, '\n');
         getline(cin, selection);
 
         if (userSelectedNext(selection, recordIndex)) {
@@ -547,6 +572,7 @@ Product* selectProduct(scenarioState state) {
                     if (state== Create && option  == maxSelection) {
                         // Handle creating a new item
                         selectedProduct = createNewProduct();
+                        productIO.appendRecord(*selectedProduct);
                         cout << "New Product created!" << endl << endl;
                         return selectedProduct; // Return new item
                     } else {
@@ -568,7 +594,6 @@ Requester* selectRequester(scenarioState state, string type) {
     clearScreen();
     // start of beginning of records
     int recordIndex = 0;
-    requesterIO.seekToStart();
 
     // get first set of records
     vector<Requester*> requesters;
@@ -594,18 +619,26 @@ Requester* selectRequester(scenarioState state, string type) {
     }
 
     while (true) {
-        cout << "=== Select";
+        cout << "=== Select ";
         if (type=="c") cout << "Customer";
         else cout << "Employee";
         cout << " ===" << endl;
+
+        // print column headers
+        cout << "  Name       " << "Email";
+        if(type=="e") {
+            cout << "       Department";
+        }
+        cout << endl;
 
         // print rows
         for(int i=0; i < requesters.size(); i++) {
             if (requesters[i] == nullptr) cout << "Record unavailable" << endl;
             else {
-                cout << requesters[i]->getName() << "   " << requesters[i]->getRequesterEmail();
+                cout << to_string(recordIndex+i+1) << ") ";
+                cout << requesters[i]->getName() << "       " << requesters[i]->getRequesterEmail();
                 // if employee, display department
-                if(type=="e") cout << "   " << requesters[i]->getDepartment();
+                if(type=="e") cout << "     " << requesters[i]->getDepartment();
                 cout << endl;
             }
         }
@@ -620,7 +653,6 @@ Requester* selectRequester(scenarioState state, string type) {
         printListOptions(recordIndex, recordCount, formatSelectionRange(1, maxSelection));
 
         // get user input
-        cin.ignore(10000, '\n');
         getline(cin, selection);
 
         // get next set of items
@@ -641,9 +673,10 @@ Requester* selectRequester(scenarioState state, string type) {
             if(isValidIntegerInRange(selection, 0, maxSelection)){
                 option = stoi(selection);
                 if (option == 0) return nullptr;
-                if (state==Create  && option  == maxSelection) {
+                if (state==scenarioState::Create && option  == maxSelection) {
                     // Handle creating a new item
                     selectedRequester = createNewRequester();
+                    requesterIO.appendRecord(*selectedRequester);
                     cout << "New Requester created!" << endl << endl;
                     return selectedRequester; // Return new item
                 } else {
@@ -689,7 +722,6 @@ Change* selectChange(string productName, scenarioState state) {
         maxSelection += 1;
     }
 
-
     while (true) {
         cout << "=== Select Change Item ===" << endl;
 
@@ -723,7 +755,6 @@ Change* selectChange(string productName, scenarioState state) {
         printListOptions(recordIndex, recordCount, formatSelectionRange(1, maxSelection));
 
         // get user input
-        cin.ignore(10000, '\n');
         getline(cin, selection);
 
         if (userSelectedNext(selection, recordIndex)) {
@@ -740,7 +771,7 @@ Change* selectChange(string productName, scenarioState state) {
 
                 if (option == 0) return nullptr;
 
-                if (state==Create  && option  == recordCount + 1) {
+                if (state==Create  && option == maxSelection) {
                     // Handle creating a new item
                     selectedChange = createNewChangeItem(productName);
                     cout << "New Change Item created!" << endl << endl;
@@ -849,7 +880,6 @@ namespace ScenarioController {
             cout << "OR ENTER <0> to abort and exit to the main menu" << endl;
 
             // get user input
-            cin.ignore(10000, '\n');
             getline(cin, reqTSelection); 
             
             if (reqTSelection == "0") return;
@@ -877,7 +907,6 @@ namespace ScenarioController {
             cout << "ENTER the DATE of the request (YYYY-MM-DD) OR ENTER <0> to abort and" << endl;
             cout << "exit to the main menu:";
 
-            cin.ignore(10000, '\n');
             getline(cin, date);
 
             if (date == "0") return;

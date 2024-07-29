@@ -1,6 +1,7 @@
 #include "UI.h"
 #include "ScenarioController.h"
 #include <iostream>
+#include <string>
 
 using namespace std;
 using namespace ScenarioController;
@@ -15,16 +16,11 @@ namespace UI {
         int print_choice;
 
         do {
-            // start on a blank screen
-            clearScreen();
-
             mainMenu();
             cout << "Enter Selection [0-5]: " << endl;
         
             cin >> main_choice;
-            cin.ignore(10000, '\n');
-            clearScreen();
-
+            
             switch (main_choice) {
                 // Create Sub-Menu
                 case 1:
@@ -121,13 +117,13 @@ namespace UI {
                     }
                     break;
 
-                // // Backup
-                // case 5:
-                //     backUpControl();
-                //     break;
+                // Backup
+                case 5:
+                    backupControl();
+                    break;
 
                 // Exit TrackMaster
-                case 6:
+                case 0:
                     cout << "Thank you for using TrackMaster" << endl;
                     break;
             }

@@ -119,7 +119,7 @@ namespace ScenarioController {
     
     Return: Does not return anything.
     */
-    void backUpControl();
+    void backupControl();
 
 // --------------------------------------------------------------------------------------------------------------------
 }
