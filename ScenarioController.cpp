@@ -55,9 +55,7 @@ string getInput(const string& prompt, int maxLength) {
     do {
         cout << prompt << endl;
         cout << "OR ENTER <0> to abort and exit to the main menu: ";
-        cin >> input;
-        cin.clear();
-        cin.ignore(10000,'\n');
+        getline(cin, input);
 
         if (input == "0") {
             return "0";
@@ -276,7 +274,7 @@ vector<Requester*> fetchNEmployees(int n, int recordIndex) {
 
 // gets n product releases by product name
 vector<ProductRelease*> fetchNProductReleases(int n, int recordIndex, string productName) {
-    vector<ProductRelease*> prs;
+    vector<ProductRelease*> prs = {nullptr};
     int count = 0;
 
     productReleaseIO.seekTo(recordIndex);
@@ -284,13 +282,20 @@ vector<ProductRelease*> fetchNProductReleases(int n, int recordIndex, string pro
     while (count < n) {
         ProductRelease* pr = productReleaseIO.readRecord();
 
-        if (pr != nullptr && pr->getProductName() == productName) {
+        if (pr == nullptr) {
+            // Handle the case where no more records are available
+            break;
+        }
+        if (pr->getProductName() == productName) {
             prs.push_back(pr);
             count++;
         } else {
-            break;
+            // If the product name does not match, continue to the next record
+            delete pr; // Clean up to prevent memory leaks
         }
     }
+
+    return prs;
 }
 
 // gets n change items by product name and status. if status left blank, get change item of any status
@@ -320,7 +325,6 @@ vector<Change*> fetchNChangeItems(int n, int recordIndex, string productName, st
 int selectProductReleaseID(string productName, scenarioState state) {
     // start at beginning of records
     int recordIndex = 0;
-    productReleaseIO.seekToStart();
 
     // get first set of records
     vector<ProductRelease*> productRels = fetchNProductReleases(maxRecordOutput, recordIndex, productName);
@@ -332,6 +336,8 @@ int selectProductReleaseID(string productName, scenarioState state) {
     string selection;
     int option;
     ProductRelease* selectedProductRel;
+
+    cout << productRels.size() << endl;
 
     while (true) {
         cout << "=== Select Product Release ===" << endl;
@@ -362,22 +368,21 @@ int selectProductReleaseID(string productName, scenarioState state) {
             recordIndex += maxRecordOutput;
             productRels = fetchNProductReleases(maxRecordOutput, recordIndex, productName);
         } else {
+            if(isValidIntegerInRange(selection, 0 , recordCount)) {
                 option = stoi(selection);
                 if (option == 0) return 0;
-
-                if (option > 0 && option <= recordCount) {
+                if (state==Assess && option  == recordCount + 1) {
+                    return -1; // signals skip
+                } else {
                     selectedProductRel = productRels[option - recordIndex - 1];
-                    for (ProductRelease* p : productRels) delete p;  // Free memory
+                    // for (ProductRelease* p : productRels) delete p;  // Free memory
                     return selectedProductRel->getReleaseID();
                 }
-                else if (state==Assess && option  == recordCount + 1) {
-                    return -1; // signals skip
-                }
-                else {
-                    clearScreenAndShowError("Option you entered does not exist on the list.");
-                    cout << endl;
-                }
+            } else {
+                clearScreenAndShowError("Option you entered does not exist on the list.");
+                cout << endl;
             }
+        }
     }
 }
 
@@ -422,6 +427,7 @@ Product* createNewProduct() {
     return newProduct;
 }
 
+// TODO: FIX THIS
 ProductRelease* createNewProductRelease() {
     clearScreen();
             
@@ -469,9 +475,9 @@ Change* createNewChangeItem(string productName) {
 Product* selectProduct(scenarioState state) {
     // start at beginning of records
     int recordIndex = 0;
-    productIO.seekToStart();
-
+    
     // get first set of records
+    productIO.seekToStart();
     vector<Product*> products = productIO.readNRecords(maxRecordOutput);
 
     // get record count
@@ -978,7 +984,6 @@ namespace ScenarioController {
         
     }
 
-
     void updateChangeItemControl() {
         // Fetch initial product list
         vector<Product*> products = productIO.readNRecords(maxRecordOutput);
@@ -1040,10 +1045,7 @@ namespace ScenarioController {
     void inquireChangeItemControl() {
         clearScreen();
 
-        // Step 1: Enter Inquire Menu
-        cout << "=== Inquire Menu ===" << endl;
-
-        // Fetch product records
+        // Step 1: select product
         vector<Product*> products = productIO.readNRecords(productIO.getRecordCount());
         if (products.empty()) {
             cout << "No products available for inquiry." << endl;

@@ -22,6 +22,9 @@ namespace UI {
             cout << "Enter Selection [0-5]: " << endl;
         
             cin >> main_choice;
+            cin.ignore(10000, '\n');
+            clearScreen();
+
             switch (main_choice) {
                 // Create Sub-Menu
                 case 1:
@@ -92,7 +95,7 @@ namespace UI {
                 // Print Sub-Menu
                 case 4:
                     printMenu();
-                    cout << "Enter selection number [0-2]: ";
+                    cout << "Enter selection [0-2]: ";
                     cin >> print_choice;
 
                     // Print Choices
@@ -184,7 +187,6 @@ namespace UI {
         cout << endl;
 
         cout << "0) Exit" << endl;
-        cout << "ENTER selection [0-2]: " << endl;
     }
 
     void clearScreen() {
