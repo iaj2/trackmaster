@@ -1118,12 +1118,12 @@ namespace ScenarioController {
 
         // Step 6: Select product release
         int productReleaseID = selectProductReleaseID(productName, Assess);
-        if (productReleaseID == -1) return;
+        if (productReleaseID == 0) return;
 
         // Step 7: confirm
         string confirmSel;
         do {
-            cout << "=== Updated Change Information ===" << endl;
+            cout << "=== Assessed Change Item Information ===" << endl;
             cout << "Product: " << productName << endl;
             cout << "Description: " << description << endl;
             cout << "Anticipated Release: " << productReleaseID << endl;
@@ -1138,10 +1138,14 @@ namespace ScenarioController {
         } while (confirmSel != "1");
 
         // TODO: UPDATE RECORDS
-        vector<Change*> changes = changeIO.readNRecords(maxRecordOutput);
-        Change* selectedChange = selectChange(productName, Update);
-        Change newChange(status, productName, productReleaseID, description, dateToInt(selectedChange->getDate()));
-        changeIO.updateRecord(getChangeIndex(*selectedChange), newChange);
+        // vector<Change*> changes = changeIO.readNRecords(maxRecordOutput);
+        // Change* selectedChange = selectChange(productName, Update);
+        // make relevant changes
+        selectedChange->setStatus(status);
+        if(!isBlank(description)) selectedChange->setDescription(description.c_str());
+        if(productReleaseID != -1) selectedChange->setAnticipatedReleaseID(productReleaseID);
+
+        changeIO.updateRecord(getChangeIndex(*selectedChange), *selectedChange);
         
     }
 
@@ -1197,7 +1201,7 @@ namespace ScenarioController {
         // Check for exit
         if(description == "0") return;
 
-        // TODO: UPDATE RECORDS
+        // TODO: FIX THIS
         vector<Change*> changes = changeIO.readNRecords(maxRecordOutput);
         Change* selectedChange = selectChange(productName, Update);
         Change newChange(status, productName, productReleaseID, description, dateToInt(selectedChange->getDate()));
