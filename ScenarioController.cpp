@@ -759,8 +759,60 @@ int selectPriority() {
 
 // USE CASES
 
-// Use case 1: Create Requester
 namespace ScenarioController {
+    // back up
+    void backupControl() {
+        cin.ignore(10000,'\n');
+        clearScreen();
+
+        char backupSelection;
+        do {
+            cout << "Your backed-up files will be stored in your external hard drive, please" << endl;
+            cout << "Make sure the drive is connected." << endl;
+            cout << "The back-up process can take up to 10 minutes. " << endl;
+            cout << "Do you wish to proceed with the back-up procedure ? (Y/N)" << endl;
+            cout << "ENTER Selection: " << endl;
+
+            cin >> backupSelection;
+            cin.ignore(10000,'\n');
+            
+            if (backupSelection == 'N') return;
+
+            else if (backupSelection != 'Y' && backupSelection != 'N') {
+                cout << "Error: Input is invalid. Re-enter input" << endl;
+                cout << "Enter 0 to abort and return to the main menu" << endl << endl;
+            }
+            cin.ignore();
+
+        } while (backupSelection != 'Y' && backupSelection != 'N');
+
+        clearScreen();
+
+        if (backupSelection == 'Y') {
+            std::vector<std::string> fileNames = {"change.dat", "product.dat", "productRelease.dat", "request.dat", "requester.dat"};
+
+            try {
+                initBackup(fileNames);
+                backup(fileNames);
+            }
+            catch (const std::runtime_error& e) {
+                std::cout << "Exception caught: " << e.what() << std::endl;
+            }
+        }
+
+        char backupReturn;
+        do {
+            cout << "The back-up procedure has completed successfully" << endl;
+            cout << "Enter <0> to go back to the main menu." << endl;
+            cout << "ENTER selection: " << endl;
+            
+            cin >> backupReturn;
+            cin.ignore(10000,'\n');
+
+        } while (backupReturn != '0');
+    }
+
+    // Use case 1: Create Requester
     void createRequestControl() {
         // Step 3: Get requester type from user
         string reqTSelection;
