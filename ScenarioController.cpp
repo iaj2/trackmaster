@@ -372,6 +372,7 @@ int selectProductReleaseID(string productName, scenarioState state) {
         printListOptions(recordIndex, recordCount, formatSelectionRange(1, recordCount));
 
         // get user input
+        cin.ignore(10000, '\n');
         getline(cin, selection);
 
         if (userSelectedNext(selection, recordIndex)) {
@@ -486,6 +487,7 @@ Change* createNewChangeItem(string productName) {
 
 // Select product from list
 Product* selectProduct(scenarioState state) {
+    clearScreen();
     // start at beginning of records
     int recordIndex = 0;
     
@@ -500,6 +502,11 @@ Product* selectProduct(scenarioState state) {
     string selection;
     int option;
     Product* selectedProduct;
+    // get what last option is based on state
+    int maxSelection = recordCount;
+    if(state == scenarioState::Create) {
+        maxSelection += 1;
+    }
 
     while (true) {
         cout << "=== Select Product ===" << endl;
@@ -517,9 +524,10 @@ Product* selectProduct(scenarioState state) {
         }
 
         // print options
-        printListOptions(recordIndex, recordCount, formatSelectionRange(1, recordCount));
+        printListOptions(recordIndex, recordCount, formatSelectionRange(1, maxSelection));
 
         // get user input
+        cin.ignore(10000, '\n');
         getline(cin, selection);
 
         if (userSelectedNext(selection, recordIndex)) {
@@ -533,10 +541,10 @@ Product* selectProduct(scenarioState state) {
             products = productIO.readNRecords(maxRecordOutput);
             clearScreen();
         } else {
-                if(isValidIntegerInRange(selection, 0, recordCount)){
+                if(isValidIntegerInRange(selection, 0, maxSelection)){
                     option = stoi(selection);
                     if (option == 0) return nullptr;
-                    if (state== Create && option  == recordCount + 1) {
+                    if (state== Create && option  == maxSelection) {
                         // Handle creating a new item
                         selectedProduct = createNewProduct();
                         cout << "New Product created!" << endl << endl;
@@ -557,6 +565,7 @@ Product* selectProduct(scenarioState state) {
 
 
 Requester* selectRequester(scenarioState state, string type) {
+    clearScreen();
     // start of beginning of records
     int recordIndex = 0;
     requesterIO.seekToStart();
@@ -578,6 +587,11 @@ Requester* selectRequester(scenarioState state, string type) {
     string selection;
     int option;
     Requester* selectedRequester;
+    // get what last option is based on state
+    int maxSelection = recordCount;
+    if(state == scenarioState::Create) {
+        maxSelection += 1;
+    }
 
     while (true) {
         cout << "=== Select";
@@ -603,9 +617,10 @@ Requester* selectRequester(scenarioState state, string type) {
         }
 
         // print options
-        printListOptions(recordIndex, recordCount, formatSelectionRange(1, recordCount));
+        printListOptions(recordIndex, recordCount, formatSelectionRange(1, maxSelection));
 
         // get user input
+        cin.ignore(10000, '\n');
         getline(cin, selection);
 
         // get next set of items
@@ -623,10 +638,10 @@ Requester* selectRequester(scenarioState state, string type) {
             clearScreen();
         // user selection
         } else {
-            if(isValidIntegerInRange(selection, 0, recordCount)){
+            if(isValidIntegerInRange(selection, 0, maxSelection)){
                 option = stoi(selection);
                 if (option == 0) return nullptr;
-                if (state==Create  && option  == recordCount + 1) {
+                if (state==Create  && option  == maxSelection) {
                     // Handle creating a new item
                     selectedRequester = createNewRequester();
                     cout << "New Requester created!" << endl << endl;
@@ -646,6 +661,7 @@ Requester* selectRequester(scenarioState state, string type) {
 
 // Select change item from list
 Change* selectChange(string productName, scenarioState state) {
+    clearScreen();
     // start at beginning of records
     int recordIndex = 0;
     changeIO.seekToStart();
@@ -667,6 +683,12 @@ Change* selectChange(string productName, scenarioState state) {
     string selection;
     int option;
     Change* selectedChange;
+    // get what last option is based on state
+    int maxSelection = recordCount;
+    if(state == scenarioState::Create) {
+        maxSelection += 1;
+    }
+
 
     while (true) {
         cout << "=== Select Change Item ===" << endl;
@@ -698,9 +720,10 @@ Change* selectChange(string productName, scenarioState state) {
         }
 
         // print options
-        printListOptions(recordIndex, recordCount, formatSelectionRange(1, recordCount));
+        printListOptions(recordIndex, recordCount, formatSelectionRange(1, maxSelection));
 
         // get user input
+        cin.ignore(10000, '\n');
         getline(cin, selection);
 
         if (userSelectedNext(selection, recordIndex)) {
@@ -712,7 +735,7 @@ Change* selectChange(string productName, scenarioState state) {
             changes = fetchNChangeItems(maxRecordOutput, recordIndex, productName, statusFilter);
             clearScreen();
         } else {
-            if (isValidIntegerInRange, selection, 0, recordCount) {
+            if (isValidIntegerInRange, selection, 0, maxSelection) {
                 option = stoi(selection);
 
                 if (option == 0) return nullptr;
@@ -735,6 +758,7 @@ Change* selectChange(string productName, scenarioState state) {
 }
 
 int selectPriority() {
+    clearScreen();
     string selection;
     do {
         cout << "=== Select a Priority ===" << endl;
@@ -817,12 +841,15 @@ namespace ScenarioController {
     // Use case 1: Create Requester
     void createRequestControl() {
         // Step 3: Get requester type from user
+        
         string reqTSelection;
         do {
             cout << "Is this request coming from a customer or an employee?" << endl;
             cout << "ENTER a selection [c - customer/e - employee]" << endl;
             cout << "OR ENTER <0> to abort and exit to the main menu" << endl;
 
+            // get user input
+            cin.ignore(10000, '\n');
             getline(cin, reqTSelection); 
             
             if (reqTSelection == "0") return;
@@ -850,9 +877,12 @@ namespace ScenarioController {
             cout << "ENTER the DATE of the request (YYYY-MM-DD) OR ENTER <0> to abort and" << endl;
             cout << "exit to the main menu:";
 
+            cin.ignore(10000, '\n');
             getline(cin, date);
 
             if (date == "0") return;
+
+            clearScreen();
 
         } while (date.empty());
 

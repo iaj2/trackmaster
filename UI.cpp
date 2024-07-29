@@ -31,6 +31,7 @@ namespace UI {
                     createMenu();
                     cout << "Enter selection number [0-4]: ";
                     cin >> create_choice;
+                    clearScreen();
 
                     // Create Choices
                     switch (create_choice) {
@@ -66,6 +67,7 @@ namespace UI {
                     updateMenu();
                     cout << "Enter selection number [0-2]: ";
                     cin >> update_choice;
+                    clearScreen();
 
                     // Update Choices
                     switch (update_choice) {
@@ -97,6 +99,7 @@ namespace UI {
                     printMenu();
                     cout << "Enter selection [0-2]: ";
                     cin >> print_choice;
+                    clearScreen();
 
                     // Print Choices
                     switch (print_choice) {
