@@ -309,7 +309,7 @@ vector<Requester*> fetchNEmployees(int n, int recordIndex) {
 
 // gets n product releases by product name
 vector<ProductRelease*> fetchNProductReleases(int n, int recordIndex, string productName) {
-    vector<ProductRelease*> prs = {nullptr};
+    vector<ProductRelease*> prs;
     int count = 0;
 
     productReleaseIO.seekTo(recordIndex);
@@ -375,17 +375,16 @@ int selectProductReleaseID(string productName, scenarioState state) {
     int option;
     ProductRelease* selectedProductRel;
 
-    cout << productRels.size() << endl;
-
     while (true) {
         cout << "=== Select Product Release ===" << endl;
 
         // print rows
         for(int i=0; i < productRels.size(); i++) {
-            if (productRels[i] == nullptr) cout << "Record unavailable" << endl;
+            if (productRels[i] != nullptr) {
+                cout << to_string(recordIndex + i + 1) << ") " << to_string(productRels[i]->getReleaseID()) << endl;
+            }
             else {
-                cout << to_string(recordIndex + i + 1) << ") ";
-                cout << to_string(productRels[i]->getReleaseID()) << endl;
+                cout << "Record unavailable" << endl;
             }
         }
         
@@ -538,10 +537,12 @@ Product* selectProduct(scenarioState state) {
         cout << "=== Select Product ===" << endl;
 
         // print rows
-        for(int i=0; i < maxRecordOutput; i++) {
-            if (products[i] == nullptr) cout << "Record unavailable" << endl;
-            else {
+        for(int i=0; i < products.size(); i++) {
+            if (products[i] != nullptr) {
                 cout << to_string(recordIndex+i+1) << ") " << products[i]->getProductName() << endl;
+            }
+            else {
+                cout << "Record unavailable" << endl;
             }
         }
         // Option to create a new item
@@ -633,13 +634,15 @@ Requester* selectRequester(scenarioState state, string type) {
 
         // print rows
         for(int i=0; i < requesters.size(); i++) {
-            if (requesters[i] == nullptr) cout << "Record unavailable" << endl;
-            else {
+            if (requesters[i] != nullptr) {
                 cout << to_string(recordIndex+i+1) << ") ";
                 cout << requesters[i]->getName() << "       " << requesters[i]->getRequesterEmail();
                 // if employee, display department
                 if(type=="e") cout << "     " << requesters[i]->getDepartment();
                 cout << endl;
+            } 
+            else {
+                cout << "Record unavailable" << endl;
             }
         }
         // Option to create a new item
@@ -727,8 +730,8 @@ Change* selectChange(string productName, scenarioState state) {
 
         // print rows
         for(int i=0; i < changes.size(); i++) {
-            if (changes[i] == nullptr) cout << "Record unavailable" << endl;
-            else {
+            if (changes[i] != nullptr){
+                cout << to_string(i+recordIndex+1) << ") ";
                 // create display
                 if(state == Create ){
                     cout << changes[i]->getDescription() << "   " << to_string(changes[i]->getchangeID());
@@ -743,6 +746,9 @@ Change* selectChange(string productName, scenarioState state) {
                     cout << changes[i]->getProductName() << "   " << changes[i]->getDescription();
                     cout << "   " << Change::statusToString(changes[i]->getStatus());
                 }
+            }
+            else {
+                cout << "Record unavailable" << endl;
             }
         }
 

@@ -62,8 +62,7 @@ vector<T*> EntityIO<T>::readNRecords(int n) {
         if (fileStream.read(reinterpret_cast<char*>(record), sizeof(T))) {
             records.push_back(record);
         } else {
-            delete record;
-            records.push_back(nullptr);
+            break;
         }
     }
     return records;
