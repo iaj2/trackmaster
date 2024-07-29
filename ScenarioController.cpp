@@ -48,9 +48,7 @@ string getInput(const string& prompt, int maxLength) {
     do {
         cout << prompt << endl;
         cout << "OR ENTER <0> to abort and exit to the main menu: ";
-        cin >> input; 
-        cin.clear();
-        cin.ignore(10000,'\n');
+        getline(cin, input);
 
         if (input == "0") {
             return "0";
@@ -209,6 +207,7 @@ T* selectFromList(EntityIO<T>& entityIO, const string& title, const vector<strin
 namespace ScenarioController {
 
     void backupControl() {
+        cin.ignore(10000,'\n');
         clearScreen();
 
         char backupSelection;
@@ -262,6 +261,7 @@ namespace ScenarioController {
 
     void createRequestControl() {
         // Get requester type from user
+        cin.ignore(10000,'\n');
         char reqTSelection;
         do {
             cout << "Is this request coming from a customer or an employee?" << endl;
@@ -334,6 +334,7 @@ namespace ScenarioController {
     }
 
     void createRequesterControl() {
+        cin.ignore(10000,'\n');
         clearScreen();
         
         string requesterEmail = getEmail();
@@ -369,6 +370,7 @@ namespace ScenarioController {
     }
 
     void createProductControl() {
+        cin.ignore(10000,'\n');
         clearScreen();
         
         string productName = getProductName();
@@ -437,6 +439,7 @@ namespace ScenarioController {
 
 
     void updateChangeItemControl() {
+        cin.ignore(10000,'\n');
         // Fetch initial product list
         vector<Product*> products = productIO.readNRecords(maxRecordOutput);
         Product* selectedProduct = selectFromList(productIO, "Product", noColHeader, printProductRow);
@@ -505,6 +508,7 @@ namespace ScenarioController {
 
 
     void inquireChangeItemControl() {
+        cin.ignore(10000,'\n');
         clearScreen();
 
         // Step 1: Enter Inquire Menu
