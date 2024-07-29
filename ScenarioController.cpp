@@ -484,11 +484,20 @@ namespace ScenarioController {
         delete selectedProductRelease;  // Free memory
 
         // TODO: GET DESCRIPTION
+        string description;
+        do {
+        cout << "ENTER a new description for the change (leave blank to skip) OR <0> to abort and exit to main menu [max 30 characters]:" << endl;
+        getline(cin, description);
+
+        if (description.length() > Change::MAX_DESCRIPTION_LENGTH) {
+            clearScreenAndShowError("Input is too long.");
+        } 
+        } while (description.length() > Change::MAX_DESCRIPTION_LENGTH);
 
         // Output updated change information
         cout << "=== Updated Change Information ===" << endl;
         cout << "Product: " << productName << endl;
-        cout << "Description: " << "THIS IS A PLACEHOLDER" << endl;
+        cout << "Description: " << description << endl;
         cout << "Anticipated Release: " << productReleaseID << endl;
         cout << "Status: " << Change::statusToString(status) << endl;
         cout << "Change ID: " << changeID << endl;
