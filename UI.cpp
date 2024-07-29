@@ -51,10 +51,10 @@ namespace UI {
                             createProductControl();
                             break;
 
-                        // // Create Product Release
-                        // case 4:
-                        //     createProductReleaseControl();
-                        //     break;
+                        // Create Product Release
+                        case 4:
+                            createProductReleaseControl();
+                            break;
                     }
                     break;
 
