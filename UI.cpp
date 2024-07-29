@@ -92,7 +92,7 @@ namespace UI {
                 // Print Sub-Menu
                 case 4:
                     printMenu();
-                    cout << "Enter selection number [0-2]: ";
+                    // cout << "Enter selection number [0-2]: ";
                     cin >> print_choice;
 
                     // Print Choices

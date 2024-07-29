@@ -317,6 +317,7 @@ int selectProductReleaseID(string productName, scenarioState state) {
 
     // Get record count
     int recordCount = countProductReleases(productName);
+    cout << "hi" << endl;
 
     //
     string selection;
@@ -327,13 +328,18 @@ int selectProductReleaseID(string productName, scenarioState state) {
         cout << "=== Select Product Release ===" << endl;
 
         // print rows
-        for(int i=0; i < maxRecordOutput; i++) {
-            if (productRels[i] == nullptr) cout << "Record unavailable" << endl;
-            else {
-                cout << to_string(productRels[i]->getReleaseID()) << endl;
+        if ( productRels.size() > 0 ){
+            for(int i=0; i < maxRecordOutput; i++) {
+                if (productRels[i] == nullptr) cout << "Record unavailable" << endl;
+
+                else {
+                    cout << to_string(productRels[i]->getReleaseID()) << endl;
+                }
             }
         }
+
         
+
         // Option to skip
         if ((state== Assess || state== Update) && (recordIndex + maxRecordOutput >= recordCount)) {
             cout << to_string(recordCount+1) << ") Skip" << endl;
@@ -343,7 +349,9 @@ int selectProductReleaseID(string productName, scenarioState state) {
         printListOptions(recordIndex, recordCount, formatSelectionRange(1, recordCount));
 
         // get user input
-        getline(cin, selection);
+        cin >> selection;
+        cin.clear();
+        cin.ignore(10000,'\n');
 
         if (userSelectedNext(selection, recordIndex)) {
                 recordIndex -= maxRecordOutput;
@@ -357,7 +365,7 @@ int selectProductReleaseID(string productName, scenarioState state) {
 
                 if (option > 0 && option <= recordCount) {
                     selectedProductRel = productRels[option - recordIndex - 1];
-                    for (ProductRelease* p : productRels) delete p;  // Free memory
+                    // for (ProductRelease* p : productRels) delete p;  // Free memory
                     return selectedProductRel->getReleaseID();
                 }
                 else if (state==Assess && option  == recordCount + 1) {
@@ -412,31 +420,6 @@ Product* createNewProduct() {
     return newProduct;
 }
 
-ProductRelease* createNewProductRelease() {
-    clearScreen();
-            
-    string productName = getProductName();
-    if (productName == "0") return nullptr;
-
-    clearScreen();
-
-    string ReleaseID = getReleaseIDData();
-    if (ReleaseID == "0") return nullptr;
-    int ReleaseIDNumber = stol(ReleaseID);
-    
-    clearScreen();
-
-    string date = getDateData();
-    if (date == "0") return nullptr;
-    int dateNumber = stol(date);
-
-    clearScreen();
-
-    ProductRelease* newProductRelease = new ProductRelease(productName.c_str(), ReleaseIDNumber, dateNumber);
-
-    return newProductRelease;
-}
-
 // Step 10-11 of the "Create Request" use case. Returns a new change based off user input
 Change* createNewChangeItem(string productName) {
     clearScreen();
@@ -479,7 +462,7 @@ Product* selectProduct(scenarioState state) {
         for(int i=0; i < maxRecordOutput; i++) {
             if (products[i] == nullptr) cout << "Record unavailable" << endl;
             else {
-                cout << products[i]->getProductName() << endl;
+                cout << i+1 << ") " << products[i]->getProductName() << endl;
             }
         }
         // Option to create a new item
@@ -491,7 +474,9 @@ Product* selectProduct(scenarioState state) {
         printListOptions(recordIndex, recordCount, formatSelectionRange(1, recordCount));
 
         // get user input
-        getline(cin, selection);
+        cin >> selection;
+        cin.clear();
+        cin.ignore(10000,'\n');
 
         if (userSelectedNext(selection, recordIndex)) {
                 recordIndex -= maxRecordOutput;
@@ -507,7 +492,7 @@ Product* selectProduct(scenarioState state) {
 
                 if (option > 0 && option <= recordCount) {
                     selectedProduct = products[option - recordIndex - 1];
-                    for (Product* product : products) delete product;  // Free memory
+                    // for (Product* product : products) delete product;  // Free memory
                     return selectedProduct;
                 }
                 else if (state== Create && option  == recordCount + 1) {
@@ -691,6 +676,35 @@ Change* selectChange(string productName, scenarioState state) {
             }
     }
 }
+
+ProductRelease* createNewProductRelease() {
+
+    Product* selectedProduct = selectProduct(Blank);
+
+    clearScreen();
+            
+    string productName = selectedProduct->getProductName();
+    // if (productName == "0") return nullptr;
+
+    clearScreen();
+
+    string ReleaseID = getReleaseIDData();
+    if (ReleaseID == "0") return nullptr;
+    int ReleaseIDNumber = stol(ReleaseID);
+    
+    clearScreen();
+
+    string date = getDateData();
+    if (date == "0") return nullptr;
+    int dateNumber = stol(date);
+
+    clearScreen();
+
+    ProductRelease* newProductRelease = new ProductRelease(productName.c_str(), ReleaseIDNumber, dateNumber);
+
+    return newProductRelease;
+}
+
 
 // check that a string can be converted to integer, and is within a range
 bool isValidIntegerInRange(const string& str, int min, int max) {
