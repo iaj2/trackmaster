@@ -22,6 +22,16 @@ namespace ScenarioController {
 
 // --------------------------------------------------------------------------------------------------------------------
     
+    /* Handles the user choice of backing up all data files.
+    
+    Parameters: None
+    
+    Return: Does not return anything.
+    */
+    void backupControl();
+
+// --------------------------------------------------------------------------------------------------------------------
+    
     /* Handles the user choice of creating a new Request.
     
     Parameters: None
@@ -110,16 +120,6 @@ namespace ScenarioController {
     Return: Does not return anything.
     */
      void printScenario2Control();
-
-// --------------------------------------------------------------------------------------------------------------------
-
-    /* Handles the user choice of backing up.
-    
-    Parameters: None
-    
-    Return: Does not return anything.
-    */
-    void backUpControl();
 
 // --------------------------------------------------------------------------------------------------------------------
 }
