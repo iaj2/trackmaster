@@ -239,12 +239,16 @@ vector<Requester*> fetchNCustomers(int n, int recordIndex) {
     while (count < n) {
         Requester* requester = requesterIO.readRecord();
 
+        if(requester == nullptr) {
+            break; // If readRecord returns nullptr, stop reading
+        }
+
         // if department is empty, must be a customer
-        if (requester != nullptr && requester->getDepartment() == "") {
+        if (requester->getDepartment() == "") {
             customers.push_back(requester);
             count++;
         } else {
-            break; // If readRecord returns nullptr, stop reading
+            delete requester;
         }
     }
     return customers;
@@ -260,12 +264,16 @@ vector<Requester*> fetchNEmployees(int n, int recordIndex) {
     while (count < n) {
         Requester* requester = requesterIO.readRecord();
 
+        if (requester == nullptr) {
+            break; // If readRecord returns nullptr, stop reading
+        }
+
         // if department is not empty, must be an employee
-        if (requester != nullptr && requester->getDepartment() != "") {
+        if (requester->getDepartment() != "") {
             employees.push_back(requester);
             count++;
         } else {
-            break; // If readRecord returns nullptr, stop reading
+            delete requester; 
         }
     }
 
@@ -309,16 +317,18 @@ vector<Change*> fetchNChangeItems(int n, int recordIndex, string productName, st
     while (count < n) {
         Change* change = changeIO.readRecord();
 
-        if (change != nullptr) {
-            if ((productName != "" && productName == change->getProductName()) || productName == "") {
-                if ((status != "" && status == Change::statusToString(change->getStatus())) || status == "") {
-                changeItems.push_back(change);
-                count++;
-                }
+        if(change == nullptr) break; // stop reading on null
+
+     
+        if ((productName != "" && productName == change->getProductName()) || productName == "") {
+            if ((status != "" && status == Change::statusToString(change->getStatus())) || status == "") {
+            changeItems.push_back(change);
+            count++;
             }
         } else {
-            break;
+            delete change;
         }
+       
     }
 }
 
@@ -346,6 +356,7 @@ int selectProductReleaseID(string productName, scenarioState state) {
         for(int i=0; i < productRels.size(); i++) {
             if (productRels[i] == nullptr) cout << "Record unavailable" << endl;
             else {
+                cout << to_string(recordIndex + i + 1) << ") ";
                 cout << to_string(productRels[i]->getReleaseID()) << endl;
             }
         }
