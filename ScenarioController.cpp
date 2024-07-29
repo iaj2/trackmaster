@@ -30,6 +30,16 @@ string formatSelectionRange(int start, int end) {
     return "[" + to_string(start) + "-" + to_string(end) + "]";
 }
 
+// check that a string can be converted to integer, and is within a range
+bool isValidIntegerInRange(const string& str, int min, int max) {
+    if (str.empty()) return false;
+    for (char c : str) {
+        if (!isdigit(c)) return false;
+    }
+    int value = stoi(str);
+    return value >= min && value <= max;
+}
+
 void clearScreenAndShowError(const string& errorMessage) {
     clearScreen();
     cout << "Error: " << errorMessage << " Please re-enter." << endl << endl;
@@ -130,7 +140,6 @@ string getDateData() {
     return dateInput;
 }
 
-
 // count customer type requesters
 int countCustomers() {
     int count = 0;
@@ -210,6 +219,7 @@ void printListOptions(int recordIndex, int recordCount, string range) {
     if (maxRecordOutput < recordCount) cout << "*..." << endl;
     if(recordIndex + maxRecordOutput < recordCount) cout << "n) display next items" << endl;
     if (recordIndex+1 > maxRecordOutput) cout << "p) display previous items" << endl;
+    cout << "ENTER selection " << range << " OR <0> to abort and exit to the main menu: ";
 }
 
 bool userSelectedNext(string selection, int recordIndex) {
@@ -327,7 +337,7 @@ int selectProductReleaseID(string productName, scenarioState state) {
         cout << "=== Select Product Release ===" << endl;
 
         // print rows
-        for(int i=0; i < maxRecordOutput; i++) {
+        for(int i=0; i < productRels.size(); i++) {
             if (productRels[i] == nullptr) cout << "Record unavailable" << endl;
             else {
                 cout << to_string(productRels[i]->getReleaseID()) << endl;
@@ -479,7 +489,7 @@ Product* selectProduct(scenarioState state) {
         for(int i=0; i < maxRecordOutput; i++) {
             if (products[i] == nullptr) cout << "Record unavailable" << endl;
             else {
-                cout << products[i]->getProductName() << endl;
+                cout << to_string(recordIndex+i+1) << ") " << products[i]->getProductName() << endl;
             }
         }
         // Option to create a new item
@@ -497,29 +507,31 @@ Product* selectProduct(scenarioState state) {
                 recordIndex -= maxRecordOutput;
                 productIO.seekTo(recordIndex);
                 products = productIO.readNRecords(maxRecordOutput);
+                clearScreen();
         } else if (userSelectedPrev(selection, recordIndex, recordCount)) {
             recordIndex += maxRecordOutput;
             productIO.seekTo(recordIndex);
             products = productIO.readNRecords(maxRecordOutput);
+            clearScreen();
         } else {
-                option = stoi(selection);
-                if (option == 0) return nullptr;
-
-                if (option > 0 && option <= recordCount) {
-                    selectedProduct = products[option - recordIndex - 1];
-                    for (Product* product : products) delete product;  // Free memory
-                    return selectedProduct;
+                if(isValidIntegerInRange(selection, 0, recordCount)){
+                    option = stoi(selection);
+                    if (option == 0) return nullptr;
+                    if (state== Create && option  == recordCount + 1) {
+                        // Handle creating a new item
+                        selectedProduct = createNewProduct();
+                        cout << "New Product created!" << endl << endl;
+                        return selectedProduct; // Return new item
+                    } else {
+                        selectedProduct = products[option - recordIndex - 1];
+                        // for (Product* product : products) delete product;  // Free memory
+                        return selectedProduct;
+                    } 
+                    
+                } else {
+                    clearScreenAndShowError("Invalid input.");
                 }
-                else if (state== Create && option  == recordCount + 1) {
-                    // Handle creating a new item
-                    selectedProduct = createNewProduct();
-                    cout << "New Product created!" << endl << endl;
-                    return selectedProduct; // Return new item
-                }
-                else {
-                    clearScreenAndShowError("Option you entered does not exist on the list.");
-                    cout << endl;
-                }
+                
             }
     }
 }
@@ -555,7 +567,7 @@ Requester* selectRequester(scenarioState state, string type) {
         cout << " ===" << endl;
 
         // print rows
-        for(int i=0; i < maxRecordOutput; i++) {
+        for(int i=0; i < requesters.size(); i++) {
             if (requesters[i] == nullptr) cout << "Record unavailable" << endl;
             else {
                 cout << requesters[i]->getName() << "   " << requesters[i]->getRequesterEmail();
@@ -580,34 +592,36 @@ Requester* selectRequester(scenarioState state, string type) {
         // get next set of items
         if (userSelectedNext(selection, recordIndex)) {
                 recordIndex -= maxRecordOutput;
-                if(type == "c")requesters = fetchNCustomers(maxRecordOutput, recordIndex); 
-                else requesters = fetchNEmployees(maxRecordOutput, recordIndex);
+                if(type == "c") {requesters = fetchNCustomers(maxRecordOutput, recordIndex); } 
+                else { requesters = fetchNEmployees(maxRecordOutput, recordIndex);}
+                clearScreen();
+                
         // get prev set of items
         } else if (userSelectedPrev(selection, recordIndex, recordCount)) {
             recordIndex += maxRecordOutput;
-            if(type == "c")requesters = fetchNCustomers(maxRecordOutput, recordIndex); 
-            else requesters = fetchNEmployees(maxRecordOutput, recordIndex);
+            if(type == "c") {requesters = fetchNCustomers(maxRecordOutput, recordIndex); }
+            else {requesters = fetchNEmployees(maxRecordOutput, recordIndex);};
+            clearScreen();
         // user selection
         } else {
+            if(isValidIntegerInRange(selection, 0, recordCount)){
                 option = stoi(selection);
                 if (option == 0) return nullptr;
-
-                if (option > 0 && option <= recordCount) {
-                    selectedRequester = requesters[option - recordIndex - 1];
-                    for (Requester* req : requesters) delete req;  // Free memory
-                    return selectedRequester;
-                }
-                else if (state==Create  && option  == recordCount + 1) {
+                if (state==Create  && option  == recordCount + 1) {
                     // Handle creating a new item
                     selectedRequester = createNewRequester();
                     cout << "New Requester created!" << endl << endl;
                     return selectedRequester; // Return new item
+                } else {
+                    selectedRequester = requesters[option - recordIndex - 1];
+                    // for (Requester* req : requesters) delete req;  // Free memory
+                    return selectedRequester;
                 }
-                else {
-                    clearScreenAndShowError("Option you entered does not exist on the list.");
-                    cout << endl;
-                }
+            } else{
+                clearScreenAndShowError("Invalid input.");
             }
+                
+        }
     }
 }
 
@@ -639,19 +653,26 @@ Change* selectChange(string productName, scenarioState state) {
         cout << "=== Select Change Item ===" << endl;
 
         // print rows
-        for(int i=0; i < maxRecordOutput; i++) {
+        for(int i=0; i < changes.size(); i++) {
             if (changes[i] == nullptr) cout << "Record unavailable" << endl;
             else {
                 // create display
-                if(state == Create ) cout << changes[i]->getDescription() << "   " << to_string(changes[i]->getchangeID());
+                if(state == Create ){
+                    cout << changes[i]->getDescription() << "   " << to_string(changes[i]->getchangeID());
+                } 
                 // assess display
-                else if (state == Assess || state == P2Control)cout << changes[i]->getDescription() << "   " \
-                    << Change::statusToString(changes[i]->getStatus()) << "   " << to_string(changes[i]->getchangeID());
+                else if (state == Assess || state == P2Control){
+                    cout << changes[i]->getDescription() << "   ";
+                    cout << Change::statusToString(changes[i]->getStatus()) << "   " << to_string(changes[i]->getchangeID());
+                }      
                 // update display
-                else cout << changes[i]->getProductName() << "   " << changes[i]->getDescription() \
-                    << "   " << Change::statusToString(changes[i]->getStatus());
+                else {
+                    cout << changes[i]->getProductName() << "   " << changes[i]->getDescription();
+                    cout << "   " << Change::statusToString(changes[i]->getStatus());
+                }
             }
         }
+
         // Option to create a new item
         if (state==Create  && (recordIndex + maxRecordOutput >= recordCount)) {
             cout << to_string(recordCount + 1) << ") New Change Item" << endl; 
@@ -664,42 +685,34 @@ Change* selectChange(string productName, scenarioState state) {
         getline(cin, selection);
 
         if (userSelectedNext(selection, recordIndex)) {
-                recordIndex -= maxRecordOutput;
-                changes = fetchNChangeItems(maxRecordOutput, recordIndex, productName, statusFilter);
+            recordIndex -= maxRecordOutput;
+            changes = fetchNChangeItems(maxRecordOutput, recordIndex, productName, statusFilter);
+            clearScreen();
         } else if (userSelectedPrev(selection, recordIndex, recordCount)) {
             recordIndex += maxRecordOutput;
             changes = fetchNChangeItems(maxRecordOutput, recordIndex, productName, statusFilter);
+            clearScreen();
         } else {
+            if (isValidIntegerInRange, selection, 0, recordCount) {
                 option = stoi(selection);
+
                 if (option == 0) return nullptr;
 
-                if (option > 0 && option <= recordCount) {
-                    selectedChange = changes[option - recordIndex - 1];
-                    for (Change* change : changes) delete change;  // Free memory
-                    return selectedChange;
-                }
-                else if (state==Create  && option  == recordCount + 1) {
+                if (state==Create  && option  == recordCount + 1) {
                     // Handle creating a new item
                     selectedChange = createNewChangeItem(productName);
                     cout << "New Change Item created!" << endl << endl;
                     return selectedChange; // Return new item
+                } else {
+                    selectedChange = changes[option - recordIndex - 1];
+                    // for (Change* change : changes) delete change;  // Free memory
+                    return selectedChange;
                 }
-                else {
-                    clearScreenAndShowError("Option you entered does not exist on the list.");
-                    cout << endl;
-                }
+            } else {
+                clearScreenAndShowError("Invalid input.");
             }
+        }
     }
-}
-
-// check that a string can be converted to integer, and is within a range
-bool isValidIntegerInRange(const string& str, int min, int max) {
-    if (str.empty()) return false;
-    for (char c : str) {
-        if (!isdigit(c)) return false;
-    }
-    int value = stoi(str);
-    return value >= min && value <= max;
 }
 
 int selectPriority() {
