@@ -8,6 +8,7 @@
 #include "UI.h"
 #include "EntityIO.h"
 #include "globalEntities.h"
+#include "Backup.h"
 #include <iostream>
 #include <cstdlib>
 #include <string.h>
@@ -18,6 +19,7 @@
 
 using namespace std;
 using namespace UI;
+using namespace Backup;
 
 // Some global constants
 const int maxRecordOutput = 5; 
