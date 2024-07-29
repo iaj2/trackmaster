@@ -1193,7 +1193,7 @@ namespace ScenarioController {
 
         if (productReleaseID == 0) return;  // Abort if no valid product release selected
 
-        // TODO: GET DESCRIPTION
+        // TODO: do while loop here
         string description;
         cout << "ENTER a new description for the change [max 30 characters, leave blank to skip]" << endl;
         cout << "OR <0> to abort and exit to main menu:";
@@ -1202,10 +1202,15 @@ namespace ScenarioController {
         if(description == "0") return;
 
         // TODO: FIX THIS
-        vector<Change*> changes = changeIO.readNRecords(maxRecordOutput);
-        Change* selectedChange = selectChange(productName, Update);
-        Change newChange(status, productName, productReleaseID, description, dateToInt(selectedChange->getDate()));
-        changeIO.updateRecord(getChangeIndex(*selectedChange), newChange);
+        // vector<Change*> changes = changeIO.readNRecords(maxRecordOutput);
+        // Change* selectedChange = selectChange(productName, Update);
+        // Change newChange(status, productName, productReleaseID, description, dateToInt(selectedChange->getDate()));
+
+        // update information
+        selectedChange->setStatus(status);
+        if(!isBlank) selectedChange->setDescription(description.c_str());
+        if(productReleaseID != -1) selectedChange->setAnticipatedReleaseID(productReleaseID);
+        changeIO.updateRecord(getChangeIndex(*selectedChange), *selectedChange);
 
         // Output updated change information
         cout << "=== Updated Change Information ===" << endl;
