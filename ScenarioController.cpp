@@ -45,7 +45,9 @@ string getInput(const string& prompt, int maxLength) {
     do {
         cout << prompt << endl;
         cout << "OR ENTER <0> to abort and exit to the main menu: ";
-        getline(cin, input);
+        cin >> input;
+        cin.clear();
+        cin.ignore(10000,'\n');
 
         if (input == "0") {
             return "0";
@@ -92,6 +94,42 @@ string getDepartment() {
 string getProductName() {
     return getInput("ENTER the PRODUCT NAME (Length: max 10)", Product::MAX_PRODUCT_NAME_LENGTH);
 }
+
+
+string getReleaseIDData() {
+    string releaseIDInput;
+    do {
+        cout << "ENTER the release ID of the Product Release (integrs, Length: at most 4)" << endl;
+        cout << "OR ENTER <0> to abort and exit to the main menu: ";
+        cin >> releaseIDInput;
+        cin.clear();
+        cin.ignore(10000,'\n');
+        if (releaseIDInput == "0") {
+            return "0";
+        } else if (releaseIDInput.length() > 4) {
+            clearScreenAndShowError(".");
+        }
+    } while (releaseIDInput.length() > 4);
+    return releaseIDInput;
+}
+
+string getDateData() {
+    string dateInput;
+    do {
+        cout << "ENTER the DATE of the request (integers YYYYMMDD) OR ENTER <0> to abort and" << endl;
+        cout << "exit to the main menu:";
+        cin >> dateInput;
+        cin.clear();
+        cin.ignore(10000,'\n');
+        if (dateInput == "0") {
+            return "0";
+        } else if (dateInput.length() > 8) {
+            clearScreenAndShowError(".");
+        }
+    } while (dateInput.length() > 8);
+    return dateInput;
+}
+
 
 // count customer type requesters
 int countCustomers() {
@@ -166,6 +204,20 @@ int countChangeItems(const string& productName, const string& status = "") {
         }
     }
     return count;
+}
+
+void printListOptions(int recordIndex, int recordCount, string range) {
+    if (maxRecordOutput < recordCount) cout << "*..." << endl;
+    if(recordIndex + maxRecordOutput < recordCount) cout << "n) display next items" << endl;
+    if (recordIndex+1 > maxRecordOutput) cout << "p) display previous items" << endl;
+}
+
+bool userSelectedNext(string selection, int recordIndex) {
+    return (selection == "p" && recordIndex - maxRecordOutput >= 0);
+}
+
+bool userSelectedPrev(string selection, int recordIndex, int recordCount) {
+    return (selection == "n" && recordIndex + maxRecordOutput < recordCount);
 }
 
 
@@ -255,6 +307,70 @@ vector<Change*> fetchNChangeItems(int n, int recordIndex, string productName, st
     }
 }
 
+int selectProductReleaseID(string productName, scenarioState state) {
+    // start at beginning of records
+    int recordIndex = 0;
+    productReleaseIO.seekToStart();
+
+    // get first set of records
+    vector<ProductRelease*> productRels = fetchNProductReleases(maxRecordOutput, recordIndex, productName);
+
+    // Get record count
+    int recordCount = countProductReleases(productName);
+
+    //
+    string selection;
+    int option;
+    ProductRelease* selectedProductRel;
+
+    while (true) {
+        cout << "=== Select Product Release ===" << endl;
+
+        // print rows
+        for(int i=0; i < maxRecordOutput; i++) {
+            if (productRels[i] == nullptr) cout << "Record unavailable" << endl;
+            else {
+                cout << to_string(productRels[i]->getReleaseID()) << endl;
+            }
+        }
+        
+        // Option to skip
+        if ((state== Assess || state== Update) && (recordIndex + maxRecordOutput >= recordCount)) {
+            cout << to_string(recordCount+1) << ") Skip" << endl;
+        }
+
+        // print options
+        printListOptions(recordIndex, recordCount, formatSelectionRange(1, recordCount));
+
+        // get user input
+        getline(cin, selection);
+
+        if (userSelectedNext(selection, recordIndex)) {
+                recordIndex -= maxRecordOutput;
+                productRels = fetchNProductReleases(maxRecordOutput, recordIndex, productName);
+        } else if (userSelectedPrev(selection, recordIndex, recordCount)) {
+            recordIndex += maxRecordOutput;
+            productRels = fetchNProductReleases(maxRecordOutput, recordIndex, productName);
+        } else {
+                option = stoi(selection);
+                if (option == 0) return 0;
+
+                if (option > 0 && option <= recordCount) {
+                    selectedProductRel = productRels[option - recordIndex - 1];
+                    for (ProductRelease* p : productRels) delete p;  // Free memory
+                    return selectedProductRel->getReleaseID();
+                }
+                else if (state==Assess && option  == recordCount + 1) {
+                    return -1; // signals skip
+                }
+                else {
+                    clearScreenAndShowError("Option you entered does not exist on the list.");
+                    cout << endl;
+                }
+            }
+    }
+}
+
 // Covers steps 2-6 of the "Create Requester" use case. Returns a new requester based off user input
 Requester* createNewRequester() {
         clearScreen();
@@ -296,6 +412,31 @@ Product* createNewProduct() {
     return newProduct;
 }
 
+ProductRelease* createNewProductRelease() {
+    clearScreen();
+            
+    string productName = getProductName();
+    if (productName == "0") return nullptr;
+
+    clearScreen();
+
+    string ReleaseID = getReleaseIDData();
+    if (ReleaseID == "0") return nullptr;
+    int ReleaseIDNumber = stol(ReleaseID);
+    
+    clearScreen();
+
+    string date = getDateData();
+    if (date == "0") return nullptr;
+    int dateNumber = stol(date);
+
+    clearScreen();
+
+    ProductRelease* newProductRelease = new ProductRelease(productName.c_str(), ReleaseIDNumber, dateNumber);
+
+    return newProductRelease;
+}
+
 // Step 10-11 of the "Create Request" use case. Returns a new change based off user input
 Change* createNewChangeItem(string productName) {
     clearScreen();
@@ -314,19 +455,6 @@ Change* createNewChangeItem(string productName) {
     return newChangeItem;
 }
 
-void printListOptions(int recordIndex, int recordCount, string range) {
-    if (maxRecordOutput < recordCount) cout << "*..." << endl;
-    if(recordIndex + maxRecordOutput < recordCount) cout << "n) display next items" << endl;
-    if (recordIndex+1 > maxRecordOutput) cout << "p) display previous items" << endl;
-}
-
-bool userSelectedNext(string selection, int recordIndex) {
-    return (selection == "p" && recordIndex - maxRecordOutput >= 0);
-}
-
-bool userSelectedPrev(string selection, int recordIndex, int recordCount) {
-    return (selection == "n" && recordIndex + maxRecordOutput < recordCount);
-}
 // Select product from list
 Product* selectProduct(scenarioState state) {
     // start at beginning of records
@@ -396,69 +524,6 @@ Product* selectProduct(scenarioState state) {
     }
 }
 
-int selectProductReleaseID(string productName, scenarioState state) {
-    // start at beginning of records
-    int recordIndex = 0;
-    productReleaseIO.seekToStart();
-
-    // get first set of records
-    vector<ProductRelease*> productRels = fetchNProductReleases(maxRecordOutput, recordIndex, productName);
-
-    // Get record count
-    int recordCount = countProductReleases(productName);
-
-    //
-    string selection;
-    int option;
-    ProductRelease* selectedProductRel;
-
-    while (true) {
-        cout << "=== Select Product Release ===" << endl;
-
-        // print rows
-        for(int i=0; i < maxRecordOutput; i++) {
-            if (productRels[i] == nullptr) cout << "Record unavailable" << endl;
-            else {
-                cout << to_string(productRels[i]->getReleaseID()) << endl;
-            }
-        }
-        
-        // Option to skip
-        if ((state== Assess || state== Update) && (recordIndex + maxRecordOutput >= recordCount)) {
-            cout << to_string(recordCount+1) << ") Skip" << endl;
-        }
-
-        // print options
-        printListOptions(recordIndex, recordCount, formatSelectionRange(1, recordCount));
-
-        // get user input
-        getline(cin, selection);
-
-        if (userSelectedNext(selection, recordIndex)) {
-                recordIndex -= maxRecordOutput;
-                productRels = fetchNProductReleases(maxRecordOutput, recordIndex, productName);
-        } else if (userSelectedPrev(selection, recordIndex, recordCount)) {
-            recordIndex += maxRecordOutput;
-            productRels = fetchNProductReleases(maxRecordOutput, recordIndex, productName);
-        } else {
-                option = stoi(selection);
-                if (option == 0) return 0;
-
-                if (option > 0 && option <= recordCount) {
-                    selectedProductRel = productRels[option - recordIndex - 1];
-                    for (ProductRelease* p : productRels) delete p;  // Free memory
-                    return selectedProductRel->getReleaseID();
-                }
-                else if (state==Assess && option  == recordCount + 1) {
-                    return -1; // signals skip
-                }
-                else {
-                    clearScreenAndShowError("Option you entered does not exist on the list.");
-                    cout << endl;
-                }
-            }
-    }
-}
 
 Requester* selectRequester(scenarioState state, string type) {
     // start of beginning of records
@@ -824,6 +889,22 @@ namespace ScenarioController {
 
             clearScreenAndShowError("Invalid Input.");
         } while (true);
+    }
+
+    void createProductReleaseControl() {
+        
+        ProductRelease* newProductRelease = createNewProductRelease();
+        
+        if (newProductRelease == nullptr) return;
+        
+        productReleaseIO.appendRecord(*newProductRelease);
+
+        cout << "The new product release has been successfully added to the system." << endl;
+        cout << "ENTER <0> to go back to the main menu: ";
+        string input;
+        do {
+            getline(cin, input);
+        } while (input != "0");
     }
 
     // Use case 4: Assess new change items
