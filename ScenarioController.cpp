@@ -240,6 +240,34 @@ int countChangeItems(const string& productName, const string& status = "") {
     return count;
 }
 
+int getChangeIndex(const Change selectedchange) {
+    int count = 0;
+    changeIO.seekToStart();
+
+    while (true) {
+        Change* change = changeIO.readRecord();
+
+        if (change != nullptr) {
+           if (change->getchangeID() == selectedchange.getchangeID()) {
+            return count;
+           }
+        } else {
+            break; // Record assumed exists 
+        }
+        count++;
+    }
+    return count;
+}
+
+int dateToInt(const char* date) {
+    std::string dateStr(date);
+    // Remove the dashes
+    dateStr.erase(remove(dateStr.begin(), dateStr.end(), '-'), dateStr.end());
+    // Convert the string to an integer
+    int dateInt = std::stoi(dateStr);
+    return dateInt;
+}
+
 void printListOptions(int recordIndex, int recordCount, string range) {
     if (maxRecordOutput < recordCount) cout << "*..." << endl;
     if(recordIndex + maxRecordOutput < recordCount) cout << "n) display next items" << endl;
@@ -1110,7 +1138,10 @@ namespace ScenarioController {
         } while (confirmSel != "1");
 
         // TODO: UPDATE RECORDS
-        // changeIO.updateRecord(selectedChange);
+        vector<Change*> changes = changeIO.readNRecords(maxRecordOutput);
+        Change* selectedChange = selectChange(productName, Update);
+        Change newChange(status, productName, productReleaseID, description, dateToInt(selectedChange->getDate()));
+        changeIO.updateRecord(getChangeIndex(*selectedChange), newChange);
         
     }
 
@@ -1159,13 +1190,23 @@ namespace ScenarioController {
         if (productReleaseID == 0) return;  // Abort if no valid product release selected
 
         // TODO: GET DESCRIPTION
+        string description;
+        cout << "ENTER a new description for the change [max 30 characters, leave blank to skip]" << endl;
+        cout << "OR <0> to abort and exit to main menu:";
+        getline(cin >> ws, description); // `ws` is used to ignore leading whitespace
+        // Check for exit
+        if(description == "0") return;
 
         // TODO: UPDATE RECORDS
+        vector<Change*> changes = changeIO.readNRecords(maxRecordOutput);
+        Change* selectedChange = selectChange(productName, Update);
+        Change newChange(status, productName, productReleaseID, description, dateToInt(selectedChange->getDate()));
+        changeIO.updateRecord(getChangeIndex(*selectedChange), newChange);
 
         // Output updated change information
         cout << "=== Updated Change Information ===" << endl;
         cout << "Product: " << productName << endl;
-        cout << "Description: " << "THIS IS A PLACEHOLDER" << endl; // TODO: REPLACE PLACEHOLDER
+        cout << "Description: " << description << endl; // TODO: REPLACE PLACEHOLDER
         cout << "Anticipated Release: " << productReleaseID << endl;
         cout << "Status: " << Change::statusToString(status) << endl;
         cout << "Change ID: " << changeID << endl;
