@@ -862,14 +862,20 @@ int selectPriority() {
     } while (true);
 }
 
-// USE CASES
+// -------------------------------------------------------------------------------------------------------------------
+// Scenario Control name space: includes all of the exported functions for scenario control 
+// -------------------------------------------------------------------------------------------------------------------
 
 namespace ScenarioController {
-    // back up
+    // -------------------------------------------------------------------------------------------------------------------
+    // backupControl: Back up scenario controller 
+    // -------------------------------------------------------------------------------------------------------------------
     void backupControl() {
+        // clear the input buffer 
         cin.ignore(10000,'\n');
         clearScreen();
 
+        // loop to get user input selection in the backup menu 
         char backupSelection;
         do {
             cout << "Your backed-up files will be stored in your external hard drive, please" << endl;
@@ -893,6 +899,7 @@ namespace ScenarioController {
 
         clearScreen();
 
+        // assess the input and innitiate the backup 
         if (backupSelection == 'Y') {
             std::vector<std::string> fileNames = {"change.dat", "product.dat", "productRelease.dat", "request.dat", "requester.dat"};
 
@@ -905,6 +912,7 @@ namespace ScenarioController {
             }
         }
 
+        // loop to get user input selection in the backup menu 
         char backupReturn;
         do {
             cout << "The back-up procedure has completed successfully" << endl;
@@ -916,12 +924,14 @@ namespace ScenarioController {
 
         } while (backupReturn != '0');
     }
-
-    // Use case 1: Create Requester
+    // -------------------------------------------------------------------------------------------------------------------
+    // createRequestControl: creating a request scenario controller 
+    // -------------------------------------------------------------------------------------------------------------------
     void createRequestControl() {
-        // Step 3: Get requester type from user
+        // clear the input buffer
         cin.ignore(); 
         
+        // loop to get user input selection 
         string reqTSelection;
         do {
             cout << "Is this request coming from a customer or an employee?" << endl;
@@ -940,7 +950,7 @@ namespace ScenarioController {
 
         clearScreen();
 
-        // Step 4: Get requester from user
+        // Get requester from user
         Requester* requester = selectRequester(scenarioState::Create, reqTSelection);
 
         if (requester == nullptr) return;
@@ -950,7 +960,7 @@ namespace ScenarioController {
 
         delete requester;
 
-        // Step 5: Get date information
+        // Loop to Get date information
         string date;
         do {
             cout << "ENTER the DATE of the request (YYYY-MM-DD) OR ENTER <0> to abort and" << endl;
@@ -964,17 +974,17 @@ namespace ScenarioController {
 
         } while (date.empty());
 
-        // Step 6: Get product information
+        // Get product information
         Product* product = selectProduct(scenarioState::Create);
         if (product == nullptr) return;
         string productName = product->getProductName();
         delete product;
 
-        // Step 7: get product release id
+        // get product release id
         int productReleaseID = selectProductReleaseID(productName, scenarioState::Create);
         if (productReleaseID == 0) return;
 
-        // Step 8: get priority
+        // get priority
         int selectedPriority = selectPriority();
         Request::Priority priority;
         string priorityStr;
@@ -1001,7 +1011,7 @@ namespace ScenarioController {
                 break;
         }
 
-        // Step 9 (and 10-11 if creating new change): get change information
+        // get change information
         Change* change = selectChange(productName, Create);
         if (change == nullptr) return;
         int changeID = change->getchangeID();
@@ -1009,10 +1019,11 @@ namespace ScenarioController {
         string changeDesc = change->getDescription();
         delete change;
 
-        // Step 12: confirm new request
+        // confirm new request
         string confirmSel;
         string reqType = (reqTSelection == "c") ? "customer" : "employee";
 
+        // loop to present the change to the screen  
         do {
             cout << "=== New Request Information ===" << endl;
             cout << "Requester (" << reqType << "): " << requesterName << " - " << requesterEmail << endl;
@@ -1035,18 +1046,23 @@ namespace ScenarioController {
         
     }
 
-    // Use case 2: Create Requester
+// -------------------------------------------------------------------------------------------------------------------
+// createRequesterControl: scenario controller for creating a requester
+// -------------------------------------------------------------------------------------------------------------------
     void createRequesterControl() {
+        // clear the input buffer 
         cin.ignore();
-        // Step 2-6
+        // call create requester function 
         Requester* newRequester = createNewRequester();
-
+        
+        // make it is not null 
         if (newRequester == nullptr) return;
 
+        // append to memory 
         requesterIO.appendRecord(*newRequester);
         delete newRequester; // free memory
 
-        // Step 7: confirm
+        // loop to get user input selection upon exit 
         string input;
         do {
             cout << "The new requester has been successfully added to the system." << endl;
@@ -1061,18 +1077,22 @@ namespace ScenarioController {
         } while (true);
     }
 
-    // Use case 3: create product
+    // -------------------------------------------------------------------------------------------------------------------
+    // createProductControl: scenario controller for creating a new product 
+    // -------------------------------------------------------------------------------------------------------------------
     void createProductControl() {
         cin.ignore(); 
-        // step 3
+        // call create new product helper function 
         Product* newProduct = createNewProduct();
         
+        // make sure the return is valid 
         if (newProduct == nullptr) return;
 
+        // append to memory 
         productIO.appendRecord(*newProduct);
         delete newProduct; // free memory
 
-        // step 4: confirm
+        // loop to get user input selection upon exit 
         string input;
         do {
             cout << "The new product has been successfully added to the system." << endl;
@@ -1085,28 +1105,41 @@ namespace ScenarioController {
         } while (true);
     }
 
+    // -------------------------------------------------------------------------------------------------------------------
+    // createProductReleaseControl: Scenario controller for creating a new product release 
+    // -------------------------------------------------------------------------------------------------------------------
     void createProductReleaseControl() {
+        // clear the input buffer 
         cin.ignore();
         
+        // call create new product release helper function 
         ProductRelease* newProductRelease = createNewProductRelease();
         
+        // check to make sure the return is valid 
         if (newProductRelease == nullptr) return;
         
+        // append the record 
         productReleaseIO.appendRecord(*newProductRelease);
 
         cout << "The new product release has been successfully added to the system." << endl;
         cout << "ENTER <0> to go back to the main menu: ";
+
+        // loop to get user input selection upon exit 
         string input;
         do {
             getline(cin, input);
         } while (input != "0");
     }
 
-    // Use case 4: Assess new change items
+    // -------------------------------------------------------------------------------------------------------------------
+    // assessNewChangeControl: Scenario controller for assessing a change item 
+    // -------------------------------------------------------------------------------------------------------------------
     void assessNewChangeControl() {
         cin.ignore();
-        // Step 3: Select a change item
+        
+        // get the change item using a helper function 
         Change* selectedChange = selectChange("", Assess);
+        // make sure the return is valid 
         if (selectedChange == nullptr) return;
 
         int changeID = selectedChange->getchangeID();
@@ -1115,7 +1148,7 @@ namespace ScenarioController {
         // Free memory
         delete selectedChange;
 
-        // Step 4: Select new status
+        // Select new status
         int statusSelection;
         cout << "=== Select Status ===" << endl;
         cout << "1) Assessed" << endl;
@@ -1127,7 +1160,7 @@ namespace ScenarioController {
 
         Change::Status status = (statusSelection == 1) ? Change::Status::Assessed : Change::Status::Canceled;
 
-        // Step 5: Get new description  TODO: Fix to match user manual
+        // Get new description  TODO: Fix to match user manual
         string description;
         cout << "ENTER a new description for the change [max 30 characters, leave blank to skip]" << endl;
         cout << "OR <0> to abort and exit to main menu:";
@@ -1135,11 +1168,11 @@ namespace ScenarioController {
         // Check for exit
         if(description == "0") return;
 
-        // Step 6: Select product release
+        // Select product release
         int productReleaseID = selectProductReleaseID(productName, Assess);
         if (productReleaseID == 0) return;
 
-        // Step 7: confirm
+        // confirm
         string confirmSel;
         do {
             cout << "=== Assessed Change Item Information ===" << endl;
@@ -1168,6 +1201,9 @@ namespace ScenarioController {
         
     }
 
+    // -------------------------------------------------------------------------------------------------------------------
+    // updateChangeItemControl: scenario controller for updating a change item 
+    // -------------------------------------------------------------------------------------------------------------------
     void updateChangeItemControl() {
         // Fetch initial product list
         vector<Product*> products = productIO.readNRecords(maxRecordOutput);
@@ -1240,17 +1276,20 @@ namespace ScenarioController {
         cout << "Change ID: " << changeID << endl;
     }
 
-
+    // -------------------------------------------------------------------------------------------------------------------
+    // inquireChangeItemControl: scenario controller for inquiring a change item 
+    // -------------------------------------------------------------------------------------------------------------------
     void inquireChangeItemControl() {
         clearScreen();
 
-        // Step 1: select product
+        // select product
         vector<Product*> products = productIO.readNRecords(productIO.getRecordCount());
         if (products.empty()) {
             cout << "No products available for inquiry." << endl;
             return;
         }
 
+        // use select product helper function to get the product
         Product* selectedProduct = selectProduct(Blank);
 
         if (!selectedProduct) return;  // Abort if no valid product selected
@@ -1259,7 +1298,7 @@ namespace ScenarioController {
 
         clearScreen();
 
-        // Step 2: Select a change item to inquire
+        // Select a change item to inquire
         vector<Change*> changes = changeIO.readNRecords(changeIO.getRecordCount());
         Change* selectedChange = selectChange("", Blank);
 
@@ -1281,6 +1320,7 @@ namespace ScenarioController {
         cout << "Enter <0> to go back to the main menu." << endl;
         cout << "ENTER Selection: ";
 
+        // loop to get user input selection for continuation 
         int continueOption;
         do {
             cin >> continueOption;
@@ -1302,39 +1342,54 @@ namespace ScenarioController {
     }
 
 
-    // Updated printScenario1Control using getProductReleaseRecords and getProductRecords
+    // -------------------------------------------------------------------------------------------------------------------
+    // printScenario1Control: scenario controller for printing the change items for a specific product release 
+    // -------------------------------------------------------------------------------------------------------------------
     void printScenario1Control() {
-
+        
+        // select the product using a helper function
         Product* selectedProduct = selectProduct(Blank);
 
         if (!selectedProduct) return;  // Abort if no valid product selected
 
+        // get the name 
         string productName = selectedProduct->getProductName();
         delete selectedProduct;
 
+        // select the product release using a helper function
         int selectedRelease = selectProductReleaseID(productName, Blank);
 
         if (selectedRelease == 0) {
             return;  // Abort if no valid product release selected
         }
 
-        // Call PrintController method with selected product and release
+        // Call PrintController with selected product and release
         PrintController::initPrintController(); 
         PrintController::printProduct(productName, selectedRelease);
         PrintController::exitPrint(); 
     }
 
-    // Updated printScenario2Control using getProductRecords
+    // -------------------------------------------------------------------------------------------------------------------
+    // printScenario2Control: scenario controller for printing completed change item for a specific product release 
+    // -------------------------------------------------------------------------------------------------------------------
     void printScenario2Control() {
-        // Select product
+
+        // select the product using a helper function
         Product* selectedProduct = selectProduct(Blank);
+        // make sure the return is valid 
         if(selectedProduct==nullptr) return;
 
+        // get the name
         string productName = selectedProduct->getProductName();
         delete selectedProduct;
 
         // select completed change
         Change* change = selectChange(productName, P2Control);
+
+        // Call PrintController with selected change item
+        PrintController::initPrintController(); 
+        PrintController::printCompletedChangeItems(*change); 
+        PrintController::exitPrint(); 
 
     }
 }
