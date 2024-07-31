@@ -459,9 +459,10 @@ bool userSelectedNext(string selection, int recordIndex, int recordCount) {
 vector<Requester*> fetchNCustomers(int n, int recordIndex) {
     vector<Requester*> customers; // Vector to hold customer requesters
     int count = 0; // Counter to keep track of the number of customers fetched
+    int i = 0; // Counter for current index of CUSTOMER records
 
-    // Set the position to start reading records from the given index
-    requesterIO.seekTo(recordIndex);
+    // Set the position to start of file
+    requesterIO.seekToStart();
     
     // Loop until 'n' customers are retrieved or until there are no more records
     while (count < n) {
@@ -473,8 +474,11 @@ vector<Requester*> fetchNCustomers(int n, int recordIndex) {
 
         // Check if the requester is a customer (i.e., department is empty)
         if (isBlank(requester->getDepartment())) {
-            customers.push_back(requester); // Add the customer to the vector
-            count++; // Increment the count of customers fetched
+            if(i >= recordIndex) {
+                customers.push_back(requester); // Add the customer to the vector
+                count++; // Increment the count of customers fetched
+            }
+            i++; // increment current index counter
         } else {
             delete requester; // If not a customer, delete the requester object to free memory
         }
@@ -489,9 +493,10 @@ vector<Requester*> fetchNCustomers(int n, int recordIndex) {
 vector<Requester*> fetchNEmployees(int n, int recordIndex) {
     vector<Requester*> employees; // Vector to hold employee requesters
     int count = 0; // Counter to keep track of the number of employees fetched
+    int i = 0; // Counter for current record index of EMPLOYEE records
 
-    // Set the position to start reading records from the given index
-    requesterIO.seekTo(recordIndex);
+    // Set the position to start of file
+    requesterIO.seekToStart();
     
     // Loop until 'n' employees are retrieved or until there are no more records
     while (count < n) {
@@ -503,8 +508,11 @@ vector<Requester*> fetchNEmployees(int n, int recordIndex) {
 
         // Check if the requester is an employee (i.e., department is not empty)
         if (!isBlank(requester->getDepartment())) {
-            employees.push_back(requester); // Add the employee to the vector
-            count++; // Increment the count of employees fetched
+            if (i >= recordIndex ) {
+                employees.push_back(requester); // Add the employee to the vector
+                count++; // Increment the count of employees fetched
+            }
+            i++; // increment current index counter
         } else {
             delete requester; // If not an employee, delete the requester object to free memory
         }
@@ -520,9 +528,10 @@ vector<Requester*> fetchNEmployees(int n, int recordIndex) {
 vector<ProductRelease*> fetchNProductReleases(int n, int recordIndex, string productName) {
     vector<ProductRelease*> prs; // Vector to hold product release records
     int count = 0; // Counter to keep track of the number of releases fetched
+    int i = 0; // Counter for index of current relevent product releases
 
     // Set the position to start reading records from the given index
-    productReleaseIO.seekTo(recordIndex);
+    productReleaseIO.seekToStart();
 
     // Loop until 'n' product releases are retrieved or until there are no more records
     while (count < n) {
@@ -535,8 +544,11 @@ vector<ProductRelease*> fetchNProductReleases(int n, int recordIndex, string pro
 
         // Check if the product release matches the specified product name
         if (pr->getProductName() == productName) {
-            prs.push_back(pr); // Add the matching product release to the vector
-            count++; // Increment the count of releases fetched
+            if (i >= recordIndex) {
+                prs.push_back(pr); // Add the matching product release to the vector
+                count++; // Increment the count of releases fetched
+            }
+            i++;
         } else {
             // If the product name does not match, clean up the object to prevent memory leaks
             delete pr; // Delete the non-matching record to free memory
@@ -555,8 +567,9 @@ vector<ProductRelease*> fetchNProductReleases(int n, int recordIndex, string pro
 vector<Change*> fetchNChangeItems(int n, int recordIndex, string productName, string status = "") {
     vector<Change*> changeItems; // Vector to store the fetched change items
     int count = 0; // Counter to keep track of the number of fetched change items
+    int i = 0; // Counter for index of change relevant change items
 
-    changeIO.seekTo(recordIndex); // Set the read position to the given record index
+    changeIO.seekToStart(); // Set the read position to the given record index
 
     while (count < n) {
         Change* change = changeIO.readRecord(); // Read a record from the IO
@@ -567,8 +580,13 @@ vector<Change*> fetchNChangeItems(int n, int recordIndex, string productName, st
         if ((productName != "" && productName == change->getProductName()) || productName == "") {
             // Check if the status matches the filter criteria or if the status filter is blank
             if ((status != "" && status == Change::statusToString(change->getStatus())) || status == "") {
-                changeItems.push_back(change); // Add the change item to the vector
-                count++; // Increment the counter
+                // check that on correct index
+                if (i >= recordIndex) {
+                    changeItems.push_back(change); // Add the change item to the vector
+                    count++; // Increment the counter
+                }
+                i++; // increment current index
+                
             }
         } else {
             delete change; // Delete the change item to prevent memory leaks
@@ -971,6 +989,7 @@ Requester* selectRequester(scenarioState state, string type) {
                 if (state==scenarioState::Create && option  == maxSelection) {
                     // Handle creating a new requester
                     selectedRequester = createNewRequester();
+                    if(!selectedRequester) return nullptr; // check for abort
                     requesterIO.appendRecord(*selectedRequester);  // Save the new requester
                     cout << "New Requester created!" << endl << endl;
                     return selectedRequester;  // Return the newly created requester
@@ -1302,6 +1321,7 @@ namespace ScenarioController {
         delete product;
 
         // get product release id
+        clearScreen();
         int productReleaseID = selectProductReleaseID(productName, scenarioState::Create);
         if (productReleaseID == 0) return;
 
@@ -1345,6 +1365,7 @@ namespace ScenarioController {
         string reqType = (reqTSelection == "c") ? "customer" : "employee";
 
         // loop to present the change to the screen  
+        clearScreen();
         do {
             cout << "=== New Request Information ===" << endl;
             cout << "Requester (" << reqType << "): " << requesterName << " - " << requesterEmail << endl;
