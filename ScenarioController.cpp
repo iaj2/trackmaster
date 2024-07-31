@@ -781,7 +781,10 @@ Change* createNewChangeItem(string productName) {
     return newChangeItem; // Return the newly created Change object
 }
 
-
+// -------------------------------------------------------------------------------------------------------------------
+// This function allows the user to select a product from a list of available products.
+// Depending on the scenario state, the user may also have the option to create a new product.
+// -------------------------------------------------------------------------------------------------------------------
 Product* selectProduct(scenarioState state) {
     clearScreen();  // Clear the screen to start fresh
 
@@ -985,7 +988,10 @@ Requester* selectRequester(scenarioState state, string type) {
     }
 }
 
-// Select change item from list
+// -------------------------------------------------------------------------------------------------------------------
+// This function allows the user to select a requester from a list of available customers or employees.
+// Depending on the scenario state, the user may also have the option to create a new requester.
+// -------------------------------------------------------------------------------------------------------------------
 Change* selectChange(string productName, scenarioState state) {
     clearScreen();  // Clear the screen for a fresh display
 
@@ -1089,7 +1095,9 @@ Change* selectChange(string productName, scenarioState state) {
     }
 }
 
+// -------------------------------------------------------------------------------------------------------------------
 // Prompts the user to select a priority level from a predefined list
+// -------------------------------------------------------------------------------------------------------------------
 int selectPriority() {
     clearScreen();  // Clear the screen for a fresh display
     string selection;  // To hold user input
