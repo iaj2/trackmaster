@@ -1025,13 +1025,13 @@ Change* selectChange(string productName, scenarioState state) {
 
         // print headers
         if(state == scenarioState::Create) {
-            cout << "Description            " << "ChandeID" << endl;
+            cout << "   Description                   " << "ChangeID" << endl;
         }
         else if(state == scenarioState::Assess) {
-            cout << "Product        " << "Description       " << "Status" << endl; 
+            cout << "   Product        " << "Description                   " << "Status" << endl; 
         }
         else {
-            cout << "Description        " << "Status        " << "ChangeID" << endl;
+            cout << "   Description                   " << "Status     " << "ChangeID" << endl;
         }
 
         // Print the list of change items
@@ -1040,18 +1040,51 @@ Change* selectChange(string productName, scenarioState state) {
                 cout << to_string(i + recordIndex + 1) << ") ";
                 // Display details based on the state
                 if (state == Create) {
-                    cout << changes[i]->getDescription() << "   " << to_string(changes[i]->getchangeID());
+                    cout << changes[i]->getDescription();    
+
+                const char * tempDescription = changes[i]->getDescription();
+                for(int j = 0; j < (Change::MAX_DESCRIPTION_LENGTH - strlen(tempDescription)); j++ ){
+                    cout << " "; 
+                }
+
+                    cout << to_string(changes[i]->getchangeID());
                 } 
                 // assess display
                 else if (state == Assess){
-                    cout << changes[i]->getProductName() << "   " << changes[i]->getDescription();
-                    cout << "   " << Change::statusToString(changes[i]->getStatus());
+                    cout << changes[i]->getProductName(); 
+
+                    const char * tempName = changes[i]->getProductName();
+                    for(int j = 0; j < (Change::MAX_PRODUCT_NAME_LENGTH - strlen(tempName)); j++ ){
+                        cout << " "; 
+                    }
+
+                    cout << changes[i]->getDescription();
+
+                    const char * tempDescription = changes[i]->getDescription();
+                    for(int j = 0; j < (Change::MAX_DESCRIPTION_LENGTH - strlen(tempDescription)); j++ ){
+                        cout << " "; 
+                    }
+
+                    cout << Change::statusToString(changes[i]->getStatus());
                 }      
                 // update, print display
                 else {
                     
-                    cout << changes[i]->getDescription() << "   ";
-                    cout << Change::statusToString(changes[i]->getStatus()) << "   " << to_string(changes[i]->getchangeID());
+                    cout << changes[i]->getDescription();
+
+                    const char * tempDescription = changes[i]->getDescription();
+                    for(int j = 0; j < (Change::MAX_DESCRIPTION_LENGTH - strlen(tempDescription)); j++ ){
+                        cout << " "; 
+                    }
+
+                    cout << Change::statusToString(changes[i]->getStatus()) ;
+
+                    const char * tempStatues = Change::statusToString(changes[i]->getStatus()).c_str();
+                    for(int j = 0; j < (11 - strlen(tempStatues)); j++ ){
+                        cout << " "; 
+                    } 
+                    
+                    cout << to_string(changes[i]->getchangeID());
                 }
             }
             else {
