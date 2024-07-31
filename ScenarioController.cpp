@@ -1207,7 +1207,7 @@ namespace ScenarioController {
     // -------------------------------------------------------------------------------------------------------------------
     void backupControl() {
         // clear the input buffer 
-        cin.ignore(10000,'\n');
+        cin.ignore();
         clearScreen();
 
         // loop to get user input selection in the backup menu 
@@ -1220,7 +1220,7 @@ namespace ScenarioController {
             cout << "ENTER Selection: " << endl;
 
             cin >> backupSelection;
-            cin.ignore(10000,'\n');
+            //cin.ignore(10000,'\n');
             
             if (backupSelection == 'N') return;
 
@@ -1247,6 +1247,7 @@ namespace ScenarioController {
             }
         }
 
+        //cin.ignore();
         // loop to get user input selection in the backup menu 
         char backupReturn;
         do {
@@ -1255,7 +1256,7 @@ namespace ScenarioController {
             cout << "ENTER selection: " << endl;
             
             cin >> backupReturn;
-            cin.ignore(10000,'\n');
+            // cin.ignore(10000,'\n');
 
             if(backupReturn != '0') {
                 clearScreen();
