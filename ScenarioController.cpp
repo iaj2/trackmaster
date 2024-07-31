@@ -616,6 +616,12 @@ int selectProductReleaseID(string productName, scenarioState state) {
     int option; // Option chosen by the user
     ProductRelease* selectedProductRel; // Pointer to the selected product release
 
+    int maxSelection = recordCount;
+    // check for allowing a skip option
+    if(state == scenarioState::Assess || state == scenarioState::Update) {
+        maxSelection += 1;
+    }
+
     while (true) {
         cout << "=== Select Product Release ===" << endl;
 
@@ -630,11 +636,11 @@ int selectProductReleaseID(string productName, scenarioState state) {
 
         // Option to skip if in Assess or Update state and at the end of the list
         if ((state == Assess || state == Update) && (recordIndex + maxRecordOutput >= recordCount)) {
-            cout << to_string(recordCount + 1) << ") Skip" << endl;
+            cout << to_string(maxSelection) << ") Skip" << endl;
         }
 
         // Print options for navigation and selection
-        printListOptions(recordIndex, recordCount, formatSelectionRange(1, recordCount));
+        printListOptions(recordIndex, recordCount, formatSelectionRange(1, maxSelection));
 
         // Get user input
         getline(cin, selection);
@@ -651,10 +657,10 @@ int selectProductReleaseID(string productName, scenarioState state) {
         } 
         // Handle user selection for specific option or skip
         else {
-            if (isValidIntegerInRange(selection, 0, recordCount)) {
+            if (isValidIntegerInRange(selection, 0, maxSelection)) {
                 option = stoi(selection);
                 if (option == 0) return 0; // Abort and exit to the main menu
-                if (state == Assess && option == recordCount + 1) {
+                if ((state == Assess || state == Update) && option == maxSelection) {
                     return -1; // Skip option
                 } else {
                     selectedProductRel = productRels[option - recordIndex - 1]; // Get selected product release
@@ -1449,10 +1455,22 @@ namespace ScenarioController {
 
         // Select new status
         int statusSelection;
-        cout << "=== Select Status ===" << endl;
-        cout << "1) Assessed" << endl;
-        cout << "2) Canceled" << endl;
-        cin >> statusSelection;
+
+        do {
+            clearScreen();
+            cout << "=== Select Status ===" << endl;
+            cout << "1) Assessed" << endl;
+            cout << "2) Canceled" << endl;
+            cout << "ENTER selection [1-2] OR <0> to abort and exit to main menu: ";
+            cin >> statusSelection;
+            cin.ignore();  // To ignore the newline character left in the buffer
+
+            if(!(statusSelection >=0 && statusSelection <=2)) {
+                clearScreenAndShowError("Invalid Input");
+            }
+
+        } while (!(statusSelection >=0 && statusSelection <=2));
+        
 
         // Check for exit
         if(statusSelection == 0) return;
@@ -1472,13 +1490,17 @@ namespace ScenarioController {
         if (productReleaseID == 0) return;
 
         // confirm
+        selectedChange->setStatus(status);
+        if(!isBlank(description)) selectedChange->setDescription(description.c_str());
+        if(productReleaseID != -1) selectedChange->setAnticipatedReleaseID(productReleaseID);
+
         string confirmSel;
         do {
             cout << "=== Assessed Change Item Information ===" << endl;
             cout << "Product: " << productName << endl;
-            cout << "Description: " << description << endl;
-            cout << "Anticipated Release: " << productReleaseID << endl;
-            cout << "Status: " << Change::statusToString(status) << endl;
+            cout << "Description: " << selectedChange->getDescription() << endl;
+            cout << "Anticipated Release: " << to_string(selectedChange->getAnticipatedReleaseID()) << endl;
+            cout << "Status: " << Change::statusToString(selectedChange->getStatus()) << endl;
             cout << "Change ID: " << changeID << endl;
             cout << "ENTER <1> to confirm OR <0> to abort and exit to main menu: ";
 
@@ -1493,9 +1515,6 @@ namespace ScenarioController {
         // vector<Change*> changes = changeIO.readNRecords(maxRecordOutput);
         // Change* selectedChange = selectChange(productName, Update);
         // make relevant changes
-        selectedChange->setStatus(status);
-        if(!isBlank(description)) selectedChange->setDescription(description.c_str());
-        if(productReleaseID != -1) selectedChange->setAnticipatedReleaseID(productReleaseID);
 
         changeIO.updateRecord(getChangeIndex(*selectedChange), *selectedChange);
 
@@ -1519,22 +1538,31 @@ namespace ScenarioController {
         delete selectedProduct;  // Free memory
 
         // Fetch initial change list
-        vector<Change*> changes = changeIO.readNRecords(maxRecordOutput);
         Change* selectedChange = selectChange(productName, Update);
         
         if (!selectedChange) return;  // Abort if no valid change selected
 
         int changeID = selectedChange->getchangeID();
-        delete selectedChange;  // Free memory
 
         // Select status
         int statusSelection;
-        cout << "=== Select Status ===" << endl;
-        cout << "1) In Progress" << endl;
-        cout << "2) Done" << endl;
-        cout << "3) Canceled" << endl;
-        cin >> statusSelection;
-        cin.ignore();  // To ignore the newline character left in the buffer
+        do {
+            clearScreen();
+            cout << "=== Select Status ===" << endl;
+            cout << "1) In Progress" << endl;
+            cout << "2) Done" << endl;
+            cout << "3) Canceled" << endl;
+            cout << "4) Skip" << endl;
+            cout << "ENTER selection [1-4] OR <0> to abort and exit to main menu: ";
+            cin >> statusSelection;
+            cin.ignore();  // To ignore the newline character left in the buffer
+
+            if(!(statusSelection >=0 && statusSelection <=4)) {
+                clearScreenAndShowError("Invalid Input");
+            }
+
+        } while (!(statusSelection >=0 && statusSelection <=4));
+        
 
         if (statusSelection == 0) return;  // Abort if exit
 
@@ -1547,7 +1575,7 @@ namespace ScenarioController {
         }
 
         // Fetch initial product release list
-        vector<ProductRelease*> productReleases = productReleaseIO.readNRecords(maxRecordOutput);
+        clearScreen();
         int productReleaseID = selectProductReleaseID(productName, Update);
 
         if (productReleaseID == 0) return;  // Abort if no valid product release selected
@@ -1560,24 +1588,33 @@ namespace ScenarioController {
         // Check for exit
         if(description == "0") return;
 
-        // TODO: FIX THIS
-        // vector<Change*> changes = changeIO.readNRecords(maxRecordOutput);
-        // Change* selectedChange = selectChange(productName, Update);
-        // Change newChange(status, productName, productReleaseID, description, dateToInt(selectedChange->getDate()));
-
         // update information
-        selectedChange->setStatus(status);
+        if(!statusSelection == 4) selectedChange->setStatus(status);
         if(!isBlank) selectedChange->setDescription(description.c_str());
         if(productReleaseID != -1) selectedChange->setAnticipatedReleaseID(productReleaseID);
         changeIO.updateRecord(getChangeIndex(*selectedChange), *selectedChange);
 
-        // Output updated change information
-        cout << "=== Updated Change Information ===" << endl;
-        cout << "Product: " << productName << endl;
-        cout << "Description: " << description << endl; // TODO: REPLACE PLACEHOLDER
-        cout << "Anticipated Release: " << productReleaseID << endl;
-        cout << "Status: " << Change::statusToString(status) << endl;
-        cout << "Change ID: " << changeID << endl;
+        // confirm
+        string confirmSel;
+        do {
+            cout << "=== Updated Change Information ===" << endl;
+            cout << "Product: " << productName << endl;
+            cout << "Description: " << selectedChange->getDescription() << endl;
+            cout << "Anticipated Release: " << to_string(selectedChange->getAnticipatedReleaseID()) << endl;
+            cout << "Status: " << Change::statusToString(selectedChange->getStatus()) << endl;
+            cout << "Change ID: " << changeID << endl;
+            cout << "ENTER <1> to confirm OR <0> to abort and exit to main menu: ";
+
+            getline(cin, confirmSel);
+
+            if (confirmSel == "0") return; // abort
+            else if (confirmSel != "1") clearScreenAndShowError("Invalid Input");
+            cout << endl;
+
+        } while (confirmSel != "1");
+       
+
+        delete selectedChange;  // Free memory
     }
 
     // -------------------------------------------------------------------------------------------------------------------
