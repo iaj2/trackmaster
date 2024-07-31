@@ -53,6 +53,7 @@ bool isBlank(const string& str) {
 }
 
 string getInput(const string& prompt, int maxLength) {
+    cin.ignore();
     string input;
     do {
         cout << prompt << endl;
@@ -103,6 +104,7 @@ string getDepartment() {
         cout << "***Must be left blank if requester is not an employee of the company***" << endl;
         cout << "OR ENTER <0> to abort and exit to the main menu: ";
 
+        cin.ignore();
         getline(cin, dep);
 
         if (dep == "0") {
@@ -134,7 +136,7 @@ string getProductName() {
 string getReleaseIDData() {
     string releaseIDInput;
     do {
-        cout << "ENTER the release ID of the Product Release (integrs, Length: at most 4)" << endl;
+        cout << "ENTER the release ID of the Product Release (integers, Length: at most 4)" << endl;
         cout << "OR ENTER <0> to abort and exit to the main menu: ";
         cin >> releaseIDInput;
         cin.clear();
@@ -425,6 +427,7 @@ int selectProductReleaseID(string productName, scenarioState state) {
         printListOptions(recordIndex, recordCount, formatSelectionRange(1, recordCount));
 
         // get user input
+        cin.ignore();
         getline(cin, selection);
 
         if (userSelectedNext(selection, recordIndex)) {
@@ -582,6 +585,7 @@ Product* selectProduct(scenarioState state) {
         printListOptions(recordIndex, recordCount, formatSelectionRange(1, maxSelection));
 
         // get user input
+        cin.ignore();
         getline(cin, selection);
 
         if (userSelectedNext(selection, recordIndex)) {
@@ -654,9 +658,9 @@ Requester* selectRequester(scenarioState state, string type) {
         cout << " ===" << endl;
 
         // print column headers
-        cout << "  Name       " << "Email";
+        cout << "   Name       " << "    Email";
         if(type=="e") {
-            cout << "       Department";
+            cout << "                         Department";
         }
         cout << endl;
 
@@ -664,9 +668,21 @@ Requester* selectRequester(scenarioState state, string type) {
         for(int i=0; i < requesters.size(); i++) {
             if (requesters[i] != nullptr) {
                 cout << to_string(recordIndex+i+1) << ") ";
-                cout << requesters[i]->getName() << "       " << requesters[i]->getRequesterEmail();
+                cout << requesters[i]->getName(); 
+
+                const char * tempName = requesters[i]->getName();
+                for(int i = 0; i < (Requester::MAX_NAME_LENGTH - strlen(tempName)); i++ ){
+                    cout << " "; 
+                }
+                
+                cout << requesters[i]->getRequesterEmail();
+
+                const char * tempEmail = requesters[i]->getRequesterEmail();
+                for(int i = 0; i < (Requester::MAX_EMAIL_LENGTH - strlen(tempEmail)); i++ ){
+                    cout << " "; 
+                }
                 // if employee, display department
-                if(type=="e") cout << "     " << requesters[i]->getDepartment();
+                if(type=="e") cout << requesters[i]->getDepartment();
                 cout << endl;
             } 
             else {
@@ -683,7 +699,8 @@ Requester* selectRequester(scenarioState state, string type) {
         // print options
         printListOptions(recordIndex, recordCount, formatSelectionRange(1, maxSelection));
 
-        // get user input
+        // get user input    
+        cin.ignore();
         getline(cin, selection);
 
         // get next set of items
@@ -789,6 +806,7 @@ Change* selectChange(string productName, scenarioState state) {
         printListOptions(recordIndex, recordCount, formatSelectionRange(1, maxSelection));
 
         // get user input
+        cin.ignore();
         getline(cin, selection);
 
         if (userSelectedNext(selection, recordIndex)) {
@@ -834,6 +852,7 @@ int selectPriority() {
         cout << "5) Highest" << endl;
         cout << "ENTER selection [1-5] OR <0> to abort and exit to the main menu: ";
 
+        cin.ignore();
         getline(cin, selection);
 
         if (selection == "0") {
@@ -906,6 +925,7 @@ namespace ScenarioController {
     // Use case 1: Create Requester
     void createRequestControl() {
         // Step 3: Get requester type from user
+        cin.ignore(); 
         
         string reqTSelection;
         do {
@@ -914,6 +934,7 @@ namespace ScenarioController {
             cout << "OR ENTER <0> to abort and exit to the main menu" << endl;
 
             // get user input
+            cin.ignore();
             getline(cin, reqTSelection); 
             
             if (reqTSelection == "0") return;
@@ -940,7 +961,8 @@ namespace ScenarioController {
         do {
             cout << "ENTER the DATE of the request (YYYY-MM-DD) OR ENTER <0> to abort and" << endl;
             cout << "exit to the main menu:";
-
+            
+            cin.ignore();
             getline(cin, date);
 
             if (date == "0") return;
@@ -1006,7 +1028,8 @@ namespace ScenarioController {
             cout << "Priority: " << priorityStr << endl;
             cout << "Change ID: " << to_string(changeID);
             cout << "ENTER <1> to confirm OR <0> to abort and exit to main menu: ";
-
+            
+            cin.ignore();
             getline(cin, confirmSel);
 
             if (confirmSel == "0") return; // abort
@@ -1022,6 +1045,7 @@ namespace ScenarioController {
 
     // Use case 2: Create Requester
     void createRequesterControl() {
+        cin.ignore();
         // Step 2-6
         Requester* newRequester = createNewRequester();
 
@@ -1035,7 +1059,8 @@ namespace ScenarioController {
         do {
             cout << "The new requester has been successfully added to the system." << endl;
             cout << "ENTER <0> to go back to the main menu: ";
-        
+
+            cin.ignore();
             getline(cin, input);
 
             if (input == "0") return;
@@ -1047,6 +1072,7 @@ namespace ScenarioController {
 
     // Use case 3: create product
     void createProductControl() {
+        cin.ignore(); 
         // step 3
         Product* newProduct = createNewProduct();
         
@@ -1069,6 +1095,7 @@ namespace ScenarioController {
     }
 
     void createProductReleaseControl() {
+        cin.ignore();
         
         ProductRelease* newProductRelease = createNewProductRelease();
         
@@ -1086,6 +1113,7 @@ namespace ScenarioController {
 
     // Use case 4: Assess new change items
     void assessNewChangeControl() {
+        cin.ignore();
         // Step 3: Select a change item
         Change* selectedChange = selectChange("", Assess);
         if (selectedChange == nullptr) return;
@@ -1130,6 +1158,7 @@ namespace ScenarioController {
             cout << "Status: " << Change::statusToString(status) << endl;
             cout << "Change ID: " << changeID << endl;
 
+            cin.ignore();
             getline(cin, confirmSel);
 
             if (confirmSel == "0") return; // abort
@@ -1197,6 +1226,7 @@ namespace ScenarioController {
         string description;
         cout << "ENTER a new description for the change [max 30 characters, leave blank to skip]" << endl;
         cout << "OR <0> to abort and exit to main menu:";
+        cin.ignore();
         getline(cin >> ws, description); // `ws` is used to ignore leading whitespace
         // Check for exit
         if(description == "0") return;
@@ -1300,7 +1330,9 @@ namespace ScenarioController {
         }
 
         // Call PrintController method with selected product and release
+        PrintController::initPrintController(); 
         PrintController::printProduct(productName, selectedRelease);
+        PrintController::exitPrint(); 
     }
 
     // Updated printScenario2Control using getProductRecords
