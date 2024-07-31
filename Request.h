@@ -1,31 +1,20 @@
-
-
 /*
-
 Request.h
 --------------------------------------------------------------------------------------------------------------------
-
 Revision History:
 Rev. 1 - 2024/06/29 Original by Bowen Jin and Isaac James
-
+Rev. 2 - 2024/07/30
 --------------------------------------------------------------------------------------------------------------------
-
 This module contains the class for the "Request" entity. This contains the following private data attributes:
-
 Primary Attributes:
 1. changeID         (foreign key to "Change" entity)
 2. requesterEmail   (foreign key to "Requester" entity)
-
 Non-Primary Attributes:
 3. productName      (foreign key to "ProductRelease" entity)
 4. productReleaseID (foreign key to "ProductRelease" entity)
 5. priority
-
-
 This exported class contains public functions that allow the user to retrieve the attributes above, as well as set the priority of the request.
-
 --------------------------------------------------------------------------------------------------------------------
-
 */
 
 #ifndef REQUEST_H

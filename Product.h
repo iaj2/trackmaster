@@ -1,30 +1,20 @@
 /*
-
 Product.h
 --------------------------------------------------------------------------------------------------------------------
-
 Revision History:
 Rev. 1 - 2024/06/29 Original by Bowen Jin and Isaac James
-Rev. 2 - 2024/07/16 Added function implementations 
-
+Rev. 2 - 2024/07/30
 --------------------------------------------------------------------------------------------------------------------
-
 This module contains the class for the "Product" entity. This is designed to encapsulate data and operations related to a single "Product". This contains the following private data attributes:
-
 Primary Attributes:
 1. productName            (foreign key to "ProductRelease" and "Change" entity)
-
-
 This exported class contains public functions that allow the user to:
     1. Initialize
     2. Record
     3. Report
 Products.
-
 The class restricts direct access to the private "productName" attribute, ensuring only controlled modification via private setter methods.
-
 --------------------------------------------------------------------------------------------------------------------
-
 */
 
 #ifndef PRODUCT_H

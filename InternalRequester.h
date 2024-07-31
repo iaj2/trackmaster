@@ -1,19 +1,13 @@
 /*
-
 InternalRequester.h
 --------------------------------------------------------------------------------------------------------------------
-
 Revision History:
 Rev. 1 - 2024/07/02 Original by Bowen Jin and Isaac James
-
+Rev. 2 - 2024/07/30 
 --------------------------------------------------------------------------------------------------------------------
-
 This module contains the class for the "InternalRequester" entity, which is a subclass of the "Requester" class. This contains the additional private data attribute "department".
-
 This exported class contains public functions that allow the user to retrieve and set the additional attribute.
-
 --------------------------------------------------------------------------------------------------------------------
-
 */
 
 #ifndef INTERNALREQUESTER_H

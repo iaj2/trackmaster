@@ -20,10 +20,6 @@ int main() {
     shutDownSystem();
 };
 
-
-
-
-
 /* 
 
 Writing Conventions:
@@ -43,22 +39,16 @@ The parameter descriptions will show if the parameters are inputs/outputs.
 - Opening braces will appear on the same line that starts the function/block.
 - Classes must have public members first, then protected, then private.
 
-
 There are 2 following examples (ExampleModule.h and ExampleModule.cpp):
-
 
 ExampleModule.h
 --------------------------------------------------------------------------------------------------------------------
-
 Revision History:
 Rev. 1 - 2024/06/29 Original by Bowen Jin
-
+Rev. 2 - 2024/07/30
 --------------------------------------------------------------------------------------------------------------------
-
 This module contains the declarations for a sorting function used on integer arrays. This exported function calls on other sorting algorithms depending on the "sortedness" of the array and hides the implementation of the sorting algorithm it chooses to use. Please note that the sorting algorithms may be subject to change in the future, depending on the size of the data.
-
 --------------------------------------------------------------------------------------------------------------------
-
 #include "sorting.h"
 using namespace std;
 

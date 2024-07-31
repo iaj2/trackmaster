@@ -1,31 +1,20 @@
 
 /*
-
 ProductRelease.h
 --------------------------------------------------------------------------------------------------------------------
-
 Revision History:
 Rev. 1 - 2024/06/29 Original by Bowen Jin and Isaac James
 Rev. 2 - 2024/07/16 Added the Function Implementations 
-
 --------------------------------------------------------------------------------------------------------------------
-
 This module contains the class for the "Product" entity. This represents a specific release of a product.
-
 This contains the following private data attributes:
-
 Primary Attributes:
 1. productName            (foreign key to "Product", "Request", and "Change" entity)
 2. releaseID              (foreign key to "Change" entity)
-
 Non-Primary Attributes:
 3. releaseDate
-
-
 This exported class contains public functions that allow the user to retrieve the attributes above as well as set the releaseID and releaseDate
-
 --------------------------------------------------------------------------------------------------------------------
-
 */
 
 #ifndef PRODUCTRELEASE_H

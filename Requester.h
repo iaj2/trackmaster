@@ -1,30 +1,18 @@
-
-
 /*
-
 Requester.h
 --------------------------------------------------------------------------------------------------------------------
-
 Revision History:
 Rev. 1 - 2024/06/29 Original by Bowen Jin and Isaac James
 Rev. 2 - 2024/07/14 by Kwan Wai Sit
-
 --------------------------------------------------------------------------------------------------------------------
-
 This module contains the class for the "Requester" entity. This contains the following private data attributes:
-
 Primary Attributes:
 1. requesterEmail            (foreign key to "Request" entity)
-
 Non-Primary Attributes:
 2. name
 3. phone
-
-
 This exported class contains public functions that allow the user to retrieve and set the attributes above.
-
 --------------------------------------------------------------------------------------------------------------------
-
 */
 
 #ifndef REQUESTER_H
