@@ -1699,6 +1699,7 @@ namespace ScenarioController {
     // printScenario1Control: scenario controller for printing the change items for a specific product release 
     // -------------------------------------------------------------------------------------------------------------------
     void printScenario1Control() {
+        cin.ignore();
         
         // select the product using a helper function
         Product* selectedProduct = selectProduct(Blank);
@@ -1720,12 +1721,27 @@ namespace ScenarioController {
         PrintController::initPrintController(); 
         PrintController::printProduct(productName, selectedRelease);
         PrintController::exitPrint(); 
+
+        clearScreen();
+        string continueOption;
+        // wait for user to exit to main menu
+        do {
+            cout << "Report has been successfully printed" << endl;
+            cout << "ENTER <0> to go back to the main menu: ";
+            getline(cin, continueOption);
+
+            if(continueOption != "0") {
+                clearScreenAndShowError("Invalid Input.");
+            }
+            
+        } while(continueOption != "0");
     }
 
     // -------------------------------------------------------------------------------------------------------------------
     // printScenario2Control: scenario controller for printing completed change item for a specific product release 
     // -------------------------------------------------------------------------------------------------------------------
     void printScenario2Control() {
+        cin.ignore();
 
         // select the product using a helper function
         Product* selectedProduct = selectProduct(Blank);
@@ -1745,6 +1761,20 @@ namespace ScenarioController {
         PrintController::initPrintController(); 
         PrintController::printCompletedChangeItems(*change); 
         PrintController::exitPrint(); 
+
+        clearScreen();
+        string continueOption;
+        // wait for user to exit to main menu
+        do {
+            cout << "Report has been successfully printed" << endl;
+            cout << "ENTER <0> to go back to the main menu: ";
+            getline(cin, continueOption);
+
+            if(continueOption != "0") {
+                clearScreenAndShowError("Invalid Input.");
+            }
+            
+        } while(continueOption != "0");
 
     }
 }
