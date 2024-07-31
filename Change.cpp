@@ -142,6 +142,8 @@ string Change::statusToString(Change::Status status) {
             return "Canceled";
         case Change::Status::In_Progress:
             return "In Progress";
+        case Change::Status::Done:
+            return "Done";
         default:
             return "";
     }
