@@ -1504,7 +1504,11 @@ namespace ScenarioController {
         string description;
         cout << "ENTER a new description for the change [max 30 characters, leave blank to skip]" << endl;
         cout << "OR <0> to abort and exit to main menu:";
-        getline(cin >> ws, description); // `ws` is used to ignore leading whitespace
+        cin.ignore();
+        getline(cin, description); // `ws` is used to ignore leading whitespace
+        if (description == "") {
+            description = selectedChange->getDescription();
+        }
         // Check for exit
         if(description == "0") return;
 
