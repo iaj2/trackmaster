@@ -196,7 +196,7 @@ string getReleaseIDData() {
     // Loop to get the user input
     do {
         // Prompt the user for the release ID
-        cout << "ENTER the release ID of the Product Release (integers, Length: at most 4)" << endl;
+        cout << "ENTER the release ID of the Product Release (4 Digit integer DDDD)" << endl;
         cout << "OR ENTER <0> to abort and exit to the main menu: ";
         
         // Read the user input
