@@ -1,23 +1,18 @@
 
 /*
 LifeCycleController.h
-
 --------------------------------------------------------------------------------------------------------------------
-
 Revision History:
 Rev. 1 - 2024/07/02 Original by Bowen Jin and Isaac James
-
+Rev. 2 - 2024/07/30 
 --------------------------------------------------------------------------------------------------------------------
-
 This module contains the declarations for the LifeCycleController class, which manages the:
     1. Initialization
     2. Startup
     3. Shutdown
     4. Exit
 processes of the system. The implementation details of these functions are hidden from the user.
-
 This class is responsible for controlling all other modules of the system, and ensures that all necessary resources are properly managed throughout the system's lifecycle.
-
 */
 
 #ifndef LIFECYCLECONTROLLER_H
@@ -33,7 +28,7 @@ namespace LifeCycleController {
 
     Return: None
     */
-    static void startUpSystem();
+    void startUpSystem();
 
     // --------------------------------------------------------------------------------------------------------------------
 
@@ -45,10 +40,10 @@ namespace LifeCycleController {
 
     Return: None
     */
-    static void shutDownSystem();
+    void shutDownSystem();
 
     // --------------------------------------------------------------------------------------------------------------------
 
 }
 
-#endif
+#endif // LIFECYCLECONTROLLER_H

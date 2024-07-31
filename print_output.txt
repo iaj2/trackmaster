@@ -1,0 +1,11 @@
+
+Report for "freddy" release "1234"
+Change item report 1:
+ Product Name: freddy
+ Change ID: 0
+ First Reported: 0000/12/31
+ Status: Assessed
+ Anticipated Release: 1234
+ Description: haha
+
+

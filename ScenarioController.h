@@ -1,34 +1,19 @@
 
 /*
-
 ScenarioController.h
 --------------------------------------------------------------------------------------------------------------------
-
 Revision History:
 Rev. 1 - 2024/06/29 Original by Bowen Jin and Isaac James
-
+Rev. 2 - 2024/07/30
 --------------------------------------------------------------------------------------------------------------------
-
 This module contains the class for the "ScenarioController" entity. It encapsulates the functionalities for managing certain user scenarios offered by the operations of TrackMaster such as creating a new Request or assessing change items. This class is meant to be a controller for managing various user interactions specified in our use cases.
-
---------------------------------------------------------------------------------------------------------------------
-
+------------------------------------------------------------------------------------------------------------------
 */
 
 #ifndef SCENARIOCONTROLLER_H
 #define SCENARIOCONTROLLER_H
 
 namespace ScenarioController {
-    
-// --------------------------------------------------------------------------------------------------------------------
-    
-    /* Initializes the "ScenarioController" object with default values by calling the default constructor.
-    
-    Parameters: None
-    
-    Return: Does not return anything.
-    */
-    void initScenarioController();
 
 // --------------------------------------------------------------------------------------------------------------------
     
@@ -129,9 +114,9 @@ namespace ScenarioController {
     
     Return: Does not return anything.
     */
-    void backUpControl();
+    void backupControl();
 
 // --------------------------------------------------------------------------------------------------------------------
 }
 
-#endif
+#endif // SCENARIOCONTROLLER_H

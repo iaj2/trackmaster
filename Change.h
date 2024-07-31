@@ -1,15 +1,10 @@
-
-
 /*
-
 Change.h
 --------------------------------------------------------------------------------------------------------------------
-
 Revision History:
 Rev. 1 - 2024/06/29 Original by Bowen Jin and Isaac James
-
+Rev. 2 - 2024/07/30 
 --------------------------------------------------------------------------------------------------------------------
-
 This module contains the class for the "Change" entity. This contains the following private data attributes:
 
 Primary Attributes:
@@ -22,115 +17,42 @@ Non-Primary Attributes:
 5. description
 6. date
 
-
 This exported class contains public functions that allow the user to retrieve the attributes and set all except for productName.
-
 --------------------------------------------------------------------------------------------------------------------
-
 */
 
 #ifndef CHANGE_H
 #define CHANGE_H
 
-enum class Status {Open, Assessed, In_Progress, Done, Canceled};
+#include <fstream>
+#include <iostream>
+#include <string>
+
+using namespace std;
 
 class Change {
 
     public:
+        enum class Status {Open, Assessed, In_Progress, Done, Canceled};
 
     // --------------------------------------------------------------------------------------------------------------------
-
-        /* Opens the necessary files relevant for "Change" records.
-
-        This function is static, therefore it does not require an instance of the class to be called.
-
-        Parameters: None
-
-        Return: Does not return anything.
+        /* Default constructor to create an unanitialized "Change" object
         */
-        static void initChange();
+        Change();
 
     // --------------------------------------------------------------------------------------------------------------------
-
-        /* Seeks to start of the change file.
-
-        Parameters: None
-
-        Return: Does not return anything.
-        
-        */
-        static void startOfChangeFile();
-
-    // --------------------------------------------------------------------------------------------------------------------
-    
-        /* Gets change record currently pointed to in file.
-        
-        Parameters: None
-        
-        Return: reference to the change record or nullptr if end of file.
-        
-        */
-        static Change* getChangeRecord();
-
-    // --------------------------------------------------------------------------------------------------------------------
-
-        /* Takes in a "Change" object to write to file.
-
-        Parameters: Change newChange. In parameter.
-
-        Return: Does not return anything.
-        */
-        static void recordChange(Change newChange);
-
-    // --------------------------------------------------------------------------------------------------------------------
-
-        /* Generates a report for a specific change.
-
-        Parameters: Change change. In parameter.
-
-        Return: Does not return anything.
-        */
-        void reportChange(Change change);
-
-    // --------------------------------------------------------------------------------------------------------------------
-
-        /* Generates a report for all changes.
-
-        Parameters: None
-
-        Return: Does not return anything.
-        */
-        void reportAllChanges();
-
-    // --------------------------------------------------------------------------------------------------------------------
-
-        /* Exits the Change Operation.
-
-        Parameters: None
-
-        Return: Does not return anything.
-        */
-        void exitChange();
-
-    // --------------------------------------------------------------------------------------------------------------------
-
-    private:
-
-    // --------------------------------------------------------------------------------------------------------------------
-
         /* Parameterized Constructor to create a "Change" Object.
         This requires the input of all private data attributes of the "Change" class.
 
-        Parameter 1 (const int changeID): In parameter.
-        Parameter 2 (Status status): In parameter.
-        Parameter 3 (const char* productName): In parameter.
-        Parameter 4 (const int anticipatedReleaseID): In parameter.
-        Parameter 5 (const char* description): In parameter.
-        Parameter 6 (const int date): In parameter.
+        Parameter 1 (Status status): In parameter.
+        Parameter 2 (const char* productName): In parameter.
+        Parameter 3 (const int anticipatedReleaseID): In parameter.
+        Parameter 4 (const char* description): In parameter.
+        Parameter 5 (const int date): In parameter.
 
         Return: Does not return anything.
         */
-        Change(const int changeID, Status status, const char* productName, const int anticipatedReleaseID, const char* description, const int date);
+        Change(Status status, const char* productName, const int anticipatedReleaseID, const char* description, const int date);
 
     // --------------------------------------------------------------------------------------------------------------------
 
@@ -160,7 +82,7 @@ class Change {
 
         Return: "Change" object's productName as an character array of maximum size 15.
         */
-        char* getProductName() const;
+        const char* getProductName() const;
 
     // --------------------------------------------------------------------------------------------------------------------
 
@@ -180,7 +102,7 @@ class Change {
 
         Return: "Change" object's description as an character array of maximum size 30.
         */
-        char* getDescription() const;
+        const char* getDescription() const;
 
     // --------------------------------------------------------------------------------------------------------------------
 
@@ -191,16 +113,6 @@ class Change {
         Return: "Change" object's date as an 8-digit integer formatted in YYYY/MM/DD
         */
         char* getDate() const;
-
-    // --------------------------------------------------------------------------------------------------------------------
-
-        /* Function to set the "Change" object's changeID.
-
-        Parameter 1 (const char* newChangeID): In parameter (must be unique combination of integers).
-
-        Return: Does not return anything.
-        */
-        void setchangeID(const int newChangeID);
 
     // --------------------------------------------------------------------------------------------------------------------
 
@@ -243,10 +155,28 @@ class Change {
         void setDate(const int newDate);
 
     // --------------------------------------------------------------------------------------------------------------------
+        /* Function to get status as a string 
+        
+        Paramater 1 (Status status): In parameter
+
+        Return: status formatted as a string
+        */
+        static string statusToString(Status status);
 
         static const int MAX_PRODUCT_NAME_LENGTH = 15;
         static const int MAX_DESCRIPTION_LENGTH = 30;
 
+    private:
+
+       // --------------------------------------------------------------------------------------------------------------------
+
+        /* Function to set the "Change" object's changeID.
+
+        No parameters
+
+        Return: Does not return anything.
+        */
+        void setchangeID();
 
         int changeID;
         Status status;
@@ -256,4 +186,4 @@ class Change {
         int date;
 };
 
-#endif
+#endif // CHANGE_H

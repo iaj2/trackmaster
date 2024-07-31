@@ -1,18 +1,13 @@
 
 /*
-
 UI.h
 --------------------------------------------------------------------------------------------------------------------
-
 Revision History:
 Rev. 1 - 2024/07/02 Original by Bowen Jin and Isaac James
-
+Rev. 2 - 2024/07/30
 --------------------------------------------------------------------------------------------------------------------
-
 This module contains the class for the "UI" entity. It encapsulates the menus and submenus in public functions that will be displayed to the user.
-
 --------------------------------------------------------------------------------------------------------------------
-
 */
 
 #ifndef UI_H
@@ -71,7 +66,17 @@ namespace UI {
   void printMenu();
 
 // --------------------------------------------------------------------------------------------------------------------
+  /* Clears the terminal screen.
+  
+  Parameters: None
+  
+  Return: Does not return anything.
+  */
+  void clearScreen();
+
+// --------------------------------------------------------------------------------------------------------------------
+
 
 }
 
-#endif
+#endif // UI_H

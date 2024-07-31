@@ -1,31 +1,20 @@
-
-
 /*
-
 Request.h
 --------------------------------------------------------------------------------------------------------------------
-
 Revision History:
 Rev. 1 - 2024/06/29 Original by Bowen Jin and Isaac James
-
+Rev. 2 - 2024/07/30
 --------------------------------------------------------------------------------------------------------------------
-
 This module contains the class for the "Request" entity. This contains the following private data attributes:
-
 Primary Attributes:
 1. changeID         (foreign key to "Change" entity)
 2. requesterEmail   (foreign key to "Requester" entity)
-
 Non-Primary Attributes:
 3. productName      (foreign key to "ProductRelease" entity)
 4. productReleaseID (foreign key to "ProductRelease" entity)
 5. priority
-
-
 This exported class contains public functions that allow the user to retrieve the attributes above, as well as set the priority of the request.
-
 --------------------------------------------------------------------------------------------------------------------
-
 */
 
 #ifndef REQUEST_H
@@ -40,75 +29,19 @@ class Request {
 
     // --------------------------------------------------------------------------------------------------------------------
 
-        /* Opens the necessary files relevant for "Request" records.
-
-        Parameters: None
-
+        /* Default Constructor to create a Request Object.
+    
         Return: Does not return anything.
         */
-        static void initRequest();
-
+        Request();
+    
     // --------------------------------------------------------------------------------------------------------------------
 
-        /* Seeks to start of the request file.
-
-        Parameters: None
-
-        Return: Does not return anything.
-
-        */
-        static void startOfProductFile();
-
-    // --------------------------------------------------------------------------------------------------------------------
-
-        /* Gets request record currently pointed to in file.
-
-        Parameters: None
-
-        Return: reference to the request record or nullptr if end of file.
-
-        */
-        static Request* getRequestRecord();
-    // --------------------------------------------------------------------------------------------------------------------
-
-        /* Takes in the created "Request" object to write to file.
-
-        Parameters (Request newRequest): In parameter.
-
+        /* copy Constructor to create a Request Object.
+    
         Return: Does not return anything.
         */
-
-        static void recordRequest(Request newRequest);
-
-    // --------------------------------------------------------------------------------------------------------------------
-
-        /* Generates a report for a specific request.
-
-        Parameters: None
-
-        Return: Does not return anything.
-        */
-        void reportRequest();
-
-    // --------------------------------------------------------------------------------------------------------------------
-
-        /* Generates a report for all requests.
-
-        Parameters: None
-
-        Return: Does not return anything.
-        */
-        void reportAllRequests();
-
-    // --------------------------------------------------------------------------------------------------------------------
-
-        /* Exits the Request Operation.
-
-        Parameters: None
-
-        Return: Does not return anything.
-        */
-        static void exitRequest();
+        Request(const Request& other);
 
     // --------------------------------------------------------------------------------------------------------------------
 
@@ -125,8 +58,6 @@ class Request {
         Request(const int changeID, const char* requesterEmail, const char* productName, const int productReleaseID, Priority priority);
     
     // --------------------------------------------------------------------------------------------------------------------
-
-    private:
 
     // --------------------------------------------------------------------------------------------------------------------
 
@@ -146,7 +77,7 @@ class Request {
 
         Return: "Request" object's requesterEmail as an character array of maximum size 30.
         */
-        char* getRequesterEmail() const;
+        const char* getRequesterEmail() const;
 
     // --------------------------------------------------------------------------------------------------------------------
 
@@ -156,7 +87,7 @@ class Request {
 
         Return: "Request" object's productName as an character array of maximum size 15.
         */
-        char* getProductName() const;
+        const char* getProductName() const;
 
     // --------------------------------------------------------------------------------------------------------------------
 
@@ -193,6 +124,7 @@ class Request {
         static const int MAX_EMAIL_LENGTH = 30;
         static const int MAX_PRODUCT_NAME_LENGTH = 15;
 
+    private:
         int changeID;
         char requesterEmail[MAX_EMAIL_LENGTH + 1];
         char productName[MAX_PRODUCT_NAME_LENGTH + 1];
@@ -200,4 +132,4 @@ class Request {
         Priority priority;
 };
 
-#endif
+#endif // REQUEST_H

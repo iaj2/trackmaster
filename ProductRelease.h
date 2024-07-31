@@ -1,34 +1,28 @@
 
 /*
-
 ProductRelease.h
 --------------------------------------------------------------------------------------------------------------------
-
 Revision History:
 Rev. 1 - 2024/06/29 Original by Bowen Jin and Isaac James
-
+Rev. 2 - 2024/07/16 Added the Function Implementations 
 --------------------------------------------------------------------------------------------------------------------
-
 This module contains the class for the "Product" entity. This represents a specific release of a product.
-
 This contains the following private data attributes:
-
 Primary Attributes:
 1. productName            (foreign key to "Product", "Request", and "Change" entity)
 2. releaseID              (foreign key to "Change" entity)
-
 Non-Primary Attributes:
 3. releaseDate
-
-
 This exported class contains public functions that allow the user to retrieve the attributes above as well as set the releaseID and releaseDate
-
 --------------------------------------------------------------------------------------------------------------------
-
 */
 
 #ifndef PRODUCTRELEASE_H
 #define PRODUCTRELEASE_H
+
+#include "FileNotOpenException.h"
+#include "FileOpenFailedException.h"
+#include "RecordNotFoundException.h"
 
 class ProductRelease {
 
@@ -36,64 +30,14 @@ class ProductRelease {
 
     // --------------------------------------------------------------------------------------------------------------------
 
-        /* Opens the necessary files relevant for "ProductRelease" records.
+        /* Default constructor.
 
         Parameters: None
 
-        Return: Does not return anything.
+        Return: Returns a pointer to a product object.
         */
-        void initProductRelease();
 
-    // --------------------------------------------------------------------------------------------------------------------
-
-        /* Seeks to start of the product release file.
-
-        Parameters: None
-
-        Return: Does not return anything.
-
-        */
-        static void startOfProductReleaseFile();
-
-    // --------------------------------------------------------------------------------------------------------------------
-
-        /* Gets product release record currently pointed to in file.
-
-        Parameters: None
-
-        Return: reference to the product release record or nullptr if end of file.
-
-        */
-        static ProductRelease* getProductReleaseRecord();
-    // --------------------------------------------------------------------------------------------------------------------
-
-        /* Takes in the created "ProductRelease" object to write to file.
-        
-        Parameters (ProductRelease newProductRelease): In parameter.
-        
-        Return: Does not return anything.
-        */
-        static void recordProductRelease(ProductRelease newProductRelease);
-
-    // --------------------------------------------------------------------------------------------------------------------
-
-    /* Generates a report for a specific product release.
-
-        Parameters: None
-
-        Return: Does not return anything.
-        */
-        void reportProductRelease();
-
-    // --------------------------------------------------------------------------------------------------------------------
-
-    /* Exits the ProductRelease Operation.
-
-        Parameters: None
-
-        Return: Does not return anything.
-        */
-        void exitProductRelease();
+        ProductRelease();
 
     // --------------------------------------------------------------------------------------------------------------------
 
@@ -104,10 +48,6 @@ class ProductRelease {
         Return: Does not return anything.
         */
         ProductRelease(const char* productName, int releaseID, int releaseDate);
-    
-    // --------------------------------------------------------------------------------------------------------------------
-    
-    private:
 
     // --------------------------------------------------------------------------------------------------------------------
         
@@ -160,14 +100,16 @@ class ProductRelease {
         */
         void setReleaseDate(const int newReleaseDate);
 
+        void setProductName(const char* newProductName);
+
     // --------------------------------------------------------------------------------------------------------------------
 
-    private:
-        static const int MAX_PRODUCT_NAME_LENGTH = 15;
+    static const int MAX_PRODUCT_NAME_LENGTH = 15;
 
+    private:
         char productName[MAX_PRODUCT_NAME_LENGTH + 1];
         int releaseID;
         int releaseDate;
 };
 
-#endif
+#endif // PRODUCTRELEASE_H

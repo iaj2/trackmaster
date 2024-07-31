@@ -1,32 +1,30 @@
-
-
 /*
-
 PrintController.h
 --------------------------------------------------------------------------------------------------------------------
-
 Revision History:
 Rev. 1 - 2024/06/29 Original by Bowen Jin
-
+Rev. 2 - 2024/07/30 
 --------------------------------------------------------------------------------------------------------------------
-
 This module encapsulates the functionality of the PrintController class, which:
 1. Stores specified objects/records that the user wishes to print
 2. Writes them together onto a text file
 3. Prints
-
 Please note that the class assumes proper initialization and configuration of external printing resources
 (that are beyong its scope, such as printers)
-
 --------------------------------------------------------------------------------------------------------------------
-
 */
 
 #ifndef PRINTCONTROLLER_H
 #define PRINTCONTROLLER_H
 
+#include "Change.h"
+#include "ProductRelease.h"
+#include "FileNotOpenException.h"
+#include "FileOpenFailedException.h"
+
 
 namespace PrintController {
+
 
     // --------------------------------------------------------------------------------------------------------------------
 
@@ -46,7 +44,7 @@ namespace PrintController {
 
     Return: None
     */
-    void printProduct();
+    void printProduct(string productName, int releaseID);
 
     // --------------------------------------------------------------------------------------------------------------------
 
@@ -56,7 +54,7 @@ namespace PrintController {
 
     Return: None
     */
-    void printCompletedChangeItems();
+    void printCompletedChangeItems(const Change &outputChangeItem);
 
     // --------------------------------------------------------------------------------------------------------------------
 
@@ -72,4 +70,4 @@ namespace PrintController {
 
 };
 
-#endif
+#endif // PRINTCONTROLLER_H
