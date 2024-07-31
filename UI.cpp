@@ -26,7 +26,6 @@ namespace UI {
                 // Create Sub-Menu
                 case 1:
                     createMenu();
-                    cin.ignore();
                     cout << "Enter selection number [0-4]: ";
                     // Ignore any remaining characters in the buffer up to a newline or a large number of characters
                     cin >> create_choice;
