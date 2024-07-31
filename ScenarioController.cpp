@@ -276,7 +276,7 @@ int countCustomers() {
             count++;
         } 
         // If no more records to read, exit the loop
-        else if (requester == nullptr) {
+        else if (!requester) {
             break;
         }
     }
@@ -306,7 +306,7 @@ int countEmployees() {
             count++;
         } 
         // If no more records to read, exit the loop
-        else if (requester == nullptr) {
+        else if (!requester) {
             break;
         }
     }
@@ -336,7 +336,7 @@ int countProductReleases(const string& productName) {
             count++;
         } 
         // If no more records to read, exit the loop
-        else if (pr == nullptr) {
+        else if (!pr) {
             break;
         }
     }
@@ -438,17 +438,17 @@ void printListOptions(int recordIndex, int recordCount, string range) {
 }
 
 // -------------------------------------------------------------------------------------------------------------------
-//  userSelectedNext: Determines if the user selected the option to display the next set of records
+//  userSelectedPrev: Determines if the user selected the option to display the next set of records
 // -------------------------------------------------------------------------------------------------------------------
-bool userSelectedNext(string selection, int recordIndex) {
+bool userSelectedPrev(string selection, int recordIndex) {
     // Check if the user selection is "p" (previous) and if there are previous records to show
     return (selection == "p" && recordIndex - maxRecordOutput >= 0);
 }
 
 // -------------------------------------------------------------------------------------------------------------------
-//  userSelectedPrev: Determines if the user selected the option to display the previous set of records
+//  userSelectedNext: Determines if the user selected the option to display the previous set of records
 // -------------------------------------------------------------------------------------------------------------------
-bool userSelectedPrev(string selection, int recordIndex, int recordCount) {
+bool userSelectedNext(string selection, int recordIndex, int recordCount) {
     // Check if the user selection is "n" (next) and if there are more records to show
     return (selection == "n" && recordIndex + maxRecordOutput < recordCount);
 }
@@ -467,7 +467,7 @@ vector<Requester*> fetchNCustomers(int n, int recordIndex) {
     while (count < n) {
         Requester* requester = requesterIO.readRecord(); // Read a record from the IO
 
-        if(requester == nullptr) {
+        if(!requester) {
             break; // If readRecord returns nullptr, stop reading as there are no more records
         }
 
@@ -497,7 +497,7 @@ vector<Requester*> fetchNEmployees(int n, int recordIndex) {
     while (count < n) {
         Requester* requester = requesterIO.readRecord(); // Read a record from the IO
 
-        if (requester == nullptr) {
+        if (!requester) {
             break; // If readRecord returns nullptr, stop reading as there are no more records
         }
 
@@ -528,7 +528,7 @@ vector<ProductRelease*> fetchNProductReleases(int n, int recordIndex, string pro
     while (count < n) {
         ProductRelease* pr = productReleaseIO.readRecord(); // Read a record from the IO
 
-        if (pr == nullptr) {
+        if (!pr) {
             // Handle the case where no more records are available
             break;
         }
@@ -561,7 +561,7 @@ vector<Change*> fetchNChangeItems(int n, int recordIndex, string productName, st
     while (count < n) {
         Change* change = changeIO.readRecord(); // Read a record from the IO
 
-        if (change == nullptr) break; // Stop reading if no more records are available
+        if (!change) break; // Stop reading if no more records are available
 
         // Check if the product name matches the filter criteria or if the product name filter is blank
         if ((productName != "" && productName == change->getProductName()) || productName == "") {
@@ -622,12 +622,12 @@ int selectProductReleaseID(string productName, scenarioState state) {
         getline(cin, selection);
 
         // Handle user selection for next page
-        if (userSelectedNext(selection, recordIndex)) {
+        if (userSelectedPrev(selection, recordIndex)) {
             recordIndex -= maxRecordOutput; // Move to the previous page
             productRels = fetchNProductReleases(maxRecordOutput, recordIndex, productName);
         } 
         // Handle user selection for previous page
-        else if (userSelectedPrev(selection, recordIndex, recordCount)) {
+        else if (userSelectedNext(selection, recordIndex, recordCount)) {
             recordIndex += maxRecordOutput; // Move to the next page
             productRels = fetchNProductReleases(maxRecordOutput, recordIndex, productName);
         } 
@@ -735,7 +735,7 @@ ProductRelease* createNewProductRelease() {
     string date;
     // Loop to get a valid date input from the user
     do {
-        cout << "ENTER the DATE of the request (YYYY-MM-DD) OR ENTER <0> to abort and" << endl;
+        cout << "ENTER the DATE of the release (YYYY-MM-DD) OR ENTER <0> to abort and" << endl;
         cout << "exit to the main menu:";
 
         getline(cin, date);
@@ -817,7 +817,7 @@ Product* selectProduct(scenarioState state) {
 
         // If in 'Create' state and at the end of the list, provide option to create a new product
         if (state== Create && (recordIndex + maxRecordOutput >= recordCount)) {
-            cout << to_string(recordCount + 1) << ") New Product" << endl; 
+            cout << to_string(maxSelection) << ") New Product" << endl; 
         }
 
         // Display navigation options
@@ -826,13 +826,13 @@ Product* selectProduct(scenarioState state) {
         // get user input
         getline(cin, selection);
         
-        if (userSelectedNext(selection, recordIndex)) {
+        if (userSelectedPrev(selection, recordIndex)) {
             // User selected 'next', adjust recordIndex and fetch next set of records
             recordIndex -= maxRecordOutput;
             productIO.seekTo(recordIndex);
             products = productIO.readNRecords(maxRecordOutput);
             clearScreen();
-        } else if (userSelectedPrev(selection, recordIndex, recordCount)) {
+        } else if (userSelectedNext(selection, recordIndex, recordCount)) {
             // User selected 'previous', adjust recordIndex and fetch previous set of records
             recordIndex += maxRecordOutput;
             productIO.seekTo(recordIndex);
@@ -935,7 +935,7 @@ Requester* selectRequester(scenarioState state, string type) {
 
         // Option to create a new requester
         if (state == Create  && (recordIndex + maxRecordOutput >= recordCount)) {
-            cout << to_string(recordCount + 1) << ") New ";
+            cout << to_string(maxSelection) << ") New ";
             if (type == "c") cout << "Customer" << endl;
             else cout << "Employee" << endl;
         }
@@ -947,14 +947,14 @@ Requester* selectRequester(scenarioState state, string type) {
         getline(cin, selection);
 
         // Handle user selection for next set of items
-        if (userSelectedNext(selection, recordIndex)) {
+        if (userSelectedPrev(selection, recordIndex)) {
             recordIndex -= maxRecordOutput;
             if(type == "c") { requesters = fetchNCustomers(maxRecordOutput, recordIndex); } 
             else { requesters = fetchNEmployees(maxRecordOutput, recordIndex); }
             clearScreen();
-                
+        
         // Handle user selection for previous set of items
-        } else if (userSelectedPrev(selection, recordIndex, recordCount)) {
+        } else if (userSelectedNext(selection, recordIndex, recordCount)) {
             recordIndex += maxRecordOutput;
             if(type == "c") { requesters = fetchNCustomers(maxRecordOutput, recordIndex); }
             else { requesters = fetchNEmployees(maxRecordOutput, recordIndex); }
@@ -1028,19 +1028,6 @@ Change* selectChange(string productName, scenarioState state) {
             cout << "Description        " << "Status        " << "ChangeID" << endl;
         }
 
-
-        // print headers
-        if(state == scenarioState::Create) {
-            cout << "Description            " << "ChandeID" << endl;
-        }
-        else if(state == scenarioState::Assess) {
-            cout << "Product        " << "Description       " << "Status" << endl; 
-        }
-        else {
-            cout << "Description        " << "Status        " << "ChangeID" << endl;
-        }
-
-
         // Print the list of change items
         for(int i=0; i < changes.size(); i++) {
             if (changes[i] != nullptr) {
@@ -1069,7 +1056,7 @@ Change* selectChange(string productName, scenarioState state) {
 
         // Option to create a new change item
         if (state == Create && (recordIndex + maxRecordOutput >= recordCount)) {
-            cout << to_string(recordCount + 1) << ") New Change Item" << endl; 
+            cout << to_string(maxSelection) << ") New Change Item" << endl; 
         }
 
         // Display navigation and selection options
@@ -1079,13 +1066,13 @@ Change* selectChange(string productName, scenarioState state) {
         getline(cin, selection);
 
         // Handle user selection for next set of items
-        if (userSelectedNext(selection, recordIndex)) {
+        if (userSelectedPrev(selection, recordIndex)) {
             recordIndex -= maxRecordOutput;
             changes = fetchNChangeItems(maxRecordOutput, recordIndex, productName, statusFilter);
             clearScreen();
         
         // Handle user selection for previous set of items
-        } else if (userSelectedPrev(selection, recordIndex, recordCount)) {
+        } else if (userSelectedNext(selection, recordIndex, recordCount)) {
             recordIndex += maxRecordOutput;
             changes = fetchNChangeItems(maxRecordOutput, recordIndex, productName, statusFilter);
             clearScreen();
@@ -1241,12 +1228,11 @@ namespace ScenarioController {
 
         } while (reqTSelection != "c" && reqTSelection != "e");
 
-        clearScreen();
-
         // Get requester from user
+        clearScreen();
         Requester* requester = selectRequester(scenarioState::Create, reqTSelection);
 
-        if (requester == nullptr) return;
+        if (!requester) return;
 
         string requesterName = requester->getName();
         string requesterEmail = requester->getRequesterEmail();
@@ -1254,6 +1240,7 @@ namespace ScenarioController {
         delete requester;
 
         // Loop to Get date information
+        clearScreen();
         string date;
         do {
             cout << "ENTER the DATE of the request (YYYY-MM-DD) OR ENTER <0> to abort and" << endl;
@@ -1269,7 +1256,7 @@ namespace ScenarioController {
 
         // Get product information
         Product* product = selectProduct(scenarioState::Create);
-        if (product == nullptr) return;
+        if (!product) return;
         string productName = product->getProductName();
         delete product;
 
@@ -1306,7 +1293,7 @@ namespace ScenarioController {
 
         // get change information
         Change* change = selectChange(productName, Create);
-        if (change == nullptr) return;
+        if (!change) return;
         int changeID = change->getchangeID();
         string changeDate = change->getDate();
         string changeDesc = change->getDescription();
@@ -1349,7 +1336,7 @@ namespace ScenarioController {
         Requester* newRequester = createNewRequester();
         
         // make it is not null 
-        if (newRequester == nullptr) return;
+        if (!newRequester) return;
 
         // append to memory 
         requesterIO.appendRecord(*newRequester);
@@ -1379,7 +1366,7 @@ namespace ScenarioController {
         Product* newProduct = createNewProduct();
         
         // make sure the return is valid 
-        if (newProduct == nullptr) return;
+        if (!newProduct) return;
 
         // append to memory 
         productIO.appendRecord(*newProduct);
@@ -1409,7 +1396,7 @@ namespace ScenarioController {
         ProductRelease* newProductRelease = createNewProductRelease();
         
         // check to make sure the return is valid 
-        if (newProductRelease == nullptr) return;
+        if (!newProductRelease) return;
         
         // append the record 
         productReleaseIO.appendRecord(*newProductRelease);
@@ -1433,7 +1420,7 @@ namespace ScenarioController {
         // get the change item using a helper function 
         Change* selectedChange = selectChange("", Assess);
         // make sure the return is valid 
-        if (selectedChange == nullptr) return;
+        if (!selectedChange) return;
 
         int changeID = selectedChange->getchangeID();
         string productName = selectedChange->getProductName();
@@ -1576,6 +1563,7 @@ namespace ScenarioController {
     // inquireChangeItemControl: scenario controller for inquiring a change item 
     // -------------------------------------------------------------------------------------------------------------------
     void inquireChangeItemControl() {
+        cin.ignore();
         clearScreen();
 
         // select product
@@ -1673,7 +1661,7 @@ namespace ScenarioController {
         // select the product using a helper function
         Product* selectedProduct = selectProduct(Blank);
         // make sure the return is valid 
-        if(selectedProduct==nullptr) return;
+        if(!selectedProduct) return;
 
         // get the name
         string productName = selectedProduct->getProductName();
@@ -1681,6 +1669,8 @@ namespace ScenarioController {
 
         // select completed change
         Change* change = selectChange(productName, P2Control);
+
+        if (!change) return;
 
         // Call PrintController with selected change item
         PrintController::initPrintController(); 
