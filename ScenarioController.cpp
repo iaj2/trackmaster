@@ -919,9 +919,9 @@ Requester* selectRequester(scenarioState state, string type) {
         cout << " ===" << endl;
 
         // Print column headers
-        cout << "   Name       " << "    Email";
+        cout << "   Name       " << "     Email";
         if(type=="e") {
-            cout << "                         Department";  // Display department for employees
+            cout << "                          Department";  // Display department for employees
         }
         cout << endl;
 
@@ -933,7 +933,7 @@ Requester* selectRequester(scenarioState state, string type) {
 
                 // Align the name field
                 const char * tempName = requesters[i]->getName();
-                for(int j = 0; j < (Requester::MAX_NAME_LENGTH - strlen(tempName)); j++ ){
+                for(int j = 0; j < (Requester::MAX_NAME_LENGTH + 1 - strlen(tempName)); j++ ){
                     cout << " "; 
                 }
                 
@@ -941,7 +941,7 @@ Requester* selectRequester(scenarioState state, string type) {
 
                 // Align the email field
                 const char * tempEmail = requesters[i]->getRequesterEmail();
-                for(int j = 0; j < (Requester::MAX_EMAIL_LENGTH - strlen(tempEmail)); j++ ){
+                for(int j = 0; j < (Requester::MAX_EMAIL_LENGTH + 1 - strlen(tempEmail)); j++ ){
                     cout << " "; 
                 }
                 
@@ -1044,13 +1044,13 @@ Change* selectChange(string productName, scenarioState state) {
 
         // print headers
         if(state == scenarioState::Create) {
-            cout << "   Description                   " << "ChangeID" << endl;
+            cout << "   Description                    " << "ChangeID" << endl;
         }
         else if(state == scenarioState::Assess) {
-            cout << "   Product        " << "Description                   " << "Status" << endl; 
+            cout << "   Product         " << "Description                    " << "Status" << endl; 
         }
         else {
-            cout << "   Description                   " << "Status     " << "ChangeID" << endl;
+            cout << "   Description                    " << "Status      " << "ChangeID" << endl;
         }
 
         // Print the list of change items
@@ -1062,7 +1062,7 @@ Change* selectChange(string productName, scenarioState state) {
                     cout << changes[i]->getDescription();    
 
                 const char * tempDescription = changes[i]->getDescription();
-                for(int j = 0; j < (Change::MAX_DESCRIPTION_LENGTH - strlen(tempDescription)); j++ ){
+                for(int j = 0; j < (Change::MAX_DESCRIPTION_LENGTH + 1 - strlen(tempDescription)); j++ ){
                     cout << " "; 
                 }
 
@@ -1073,14 +1073,14 @@ Change* selectChange(string productName, scenarioState state) {
                     cout << changes[i]->getProductName(); 
 
                     const char * tempName = changes[i]->getProductName();
-                    for(int j = 0; j < (Change::MAX_PRODUCT_NAME_LENGTH - strlen(tempName)); j++ ){
+                    for(int j = 0; j < (Change::MAX_PRODUCT_NAME_LENGTH + 1 - strlen(tempName)); j++ ){
                         cout << " "; 
                     }
 
                     cout << changes[i]->getDescription();
 
                     const char * tempDescription = changes[i]->getDescription();
-                    for(int j = 0; j < (Change::MAX_DESCRIPTION_LENGTH - strlen(tempDescription)); j++ ){
+                    for(int j = 0; j < (Change::MAX_DESCRIPTION_LENGTH + 1 - strlen(tempDescription)); j++ ){
                         cout << " "; 
                     }
 
@@ -1092,14 +1092,14 @@ Change* selectChange(string productName, scenarioState state) {
                     cout << changes[i]->getDescription();
 
                     const char * tempDescription = changes[i]->getDescription();
-                    for(int j = 0; j < (Change::MAX_DESCRIPTION_LENGTH - strlen(tempDescription)); j++ ){
+                    for(int j = 0; j < (Change::MAX_DESCRIPTION_LENGTH + 1 - strlen(tempDescription)); j++ ){
                         cout << " "; 
                     }
 
                     cout << Change::statusToString(changes[i]->getStatus()) ;
 
                     const char * tempStatues = Change::statusToString(changes[i]->getStatus()).c_str();
-                    for(int j = 0; j < (11 - strlen(tempStatues)); j++ ){
+                    for(int j = 0; j < (12 - strlen(tempStatues)); j++ ){
                         cout << " "; 
                     } 
                     

@@ -1,13 +1,10 @@
 /*
-
 Change.h
 --------------------------------------------------------------------------------------------------------------------
-
 Revision History:
 Rev. 1 - 2024/06/29 Original by Bowen Jin and Isaac James
-
+Rev. 2 - 2024/07/30 
 --------------------------------------------------------------------------------------------------------------------
-
 This module contains the class for the "Change" entity. This contains the following private data attributes:
 
 Primary Attributes:
@@ -20,11 +17,8 @@ Non-Primary Attributes:
 5. description
 6. date
 
-
 This exported class contains public functions that allow the user to retrieve the attributes and set all except for productName.
-
 --------------------------------------------------------------------------------------------------------------------
-
 */
 
 #ifndef CHANGE_H
