@@ -1204,11 +1204,11 @@ int selectPriority() {
     
     do {
         cout << "=== Select a Priority ===" << endl;
-        cout << "1) Lowest" << endl;
-        cout << "2) Low" << endl;
-        cout << "3) Medium" << endl;
-        cout << "4) High" << endl;
-        cout << "5) Highest" << endl;
+        cout << "1) Low" << endl;
+        cout << "2) Medium" << endl;
+        cout << "3) High" << endl;
+        cout << "4) Very High" << endl;
+        cout << "5) Critical" << endl;
         cout << "ENTER selection [1-5] OR <0> to abort and exit to the main menu: ";
 
         getline(cin, selection);  // Get user input
@@ -1710,40 +1710,27 @@ namespace ScenarioController {
         if (!selectedChange) return;  // Abort if no valid change selected
 
         // Output change item details
-        cout << "Change Item Report:" << endl;
-        cout << "Product name: " << productName << endl;
-        cout << "ChangeID: " << selectedChange->getchangeID() << endl;
-        cout << "First Reported: " << selectedChange->getDate() << endl;
-        cout << "Status: " << Change::statusToString(selectedChange->getStatus()) << endl;
-        cout << "Anticipated release: " << selectedChange->getAnticipatedReleaseID() << endl;
-        cout << "Description: " << selectedChange->getDescription() << endl << endl;
-
-        delete selectedChange;
-
-        // Step 4: Ask for further inquiry or return to main menu
-        cout << "Enter <1> to inquire about another change item." << endl;
-        cout << "Enter <0> to go back to the main menu." << endl;
-        cout << "ENTER Selection: ";
-
-        // loop to get user input selection for continuation 
-        int continueOption;
+        string continueOption;
+        clearScreen();
         do {
-            cin >> continueOption;
+            cout << "Change Item Report:" << endl;
+            cout << "Product name: " << productName << endl;
+            cout << "ChangeID: " << selectedChange->getchangeID() << endl;
+            cout << "First Reported: " << selectedChange->getDate() << endl;
+            cout << "Status: " << Change::statusToString(selectedChange->getStatus()) << endl;
+            cout << "Anticipated release: " << selectedChange->getAnticipatedReleaseID() << endl;
+            cout << "Description: " << selectedChange->getDescription() << endl << endl;
+            cout << "ENTER <0> to go back to the main menu." << endl;
 
-            if (continueOption == 0) {
-                clearScreen();
-                return; // Return to main menu
-            } else if (continueOption != 1) {
-                clearScreen();
-                cout << "Error: Invalid input. Please enter 0 or 1." << endl;
-                cout << "Enter <1> to inquire about another change item." << endl;
-                cout << "Enter <0> to go back to the main menu." << endl;
-                cout << "ENTER Selection: ";
+            getline(cin, continueOption);
+
+            if(continueOption != "0") {
+                clearScreenAndShowError("Invalid Input");
             }
 
-        } while (continueOption != 0 && continueOption != 1);
+        } while (continueOption != "0");
 
-        clearScreen();
+        delete selectedChange;
     }
 
 
