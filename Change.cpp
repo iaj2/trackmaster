@@ -1,3 +1,14 @@
+/*
+Change.cpp
+--------------------------------------------------------------------------------------------------------------------
+Revision History:
+Rev. 1 - 2024/07/13 Original by Bowen Jin
+Rev. 2 - 2024/07/30 
+--------------------------------------------------------------------------------------------------------------------
+This Cpp file includes all the implemntaions related to the header file 
+--------------------------------------------------------------------------------------------------------------------
+*/
+
 #include "Change.h"
 #include "FileOpenFailedException.h"
 #include "FileNotOpenException.h"
@@ -25,7 +36,7 @@ Change::Change(
   ) : changeID(changeID), status(status), anticipatedReleaseID(anticipatedReleaseID), date(date) 
   {
     // set auto-generated change id
-
+    setchangeID();
 
     // Take product name up to its max length
     strncpy(this->productName, productName, MAX_PRODUCT_NAME_LENGTH);

@@ -1,18 +1,12 @@
-
 /*
-
 Backup.h
 --------------------------------------------------------------------------------------------------------------------
-
 Revision History:
 Rev. 1 - 2024/07/13 Original by Bowen Jin
-
+Rev. 2 - 2024/07/30 
 --------------------------------------------------------------------------------------------------------------------
-
 This header file defines a namespace "Backup" that encapsulates functions necessary for performing backup operations. It includes declarations for initializing the backup process, executing the backup, and exiting the backup operation. The purpose of this header file is to provide an interface for managing backup tasks in a system, ensuring that necessary files are opened, the backup is created, and resources are properly closed after the operation. There are no parameters or return values for the functions defined, and all functions are declared as "static", indicating they are intended for use within the compilation unit that includes this header file.
-
 --------------------------------------------------------------------------------------------------------------------
-
 */
 
 #ifndef BACKUP_H

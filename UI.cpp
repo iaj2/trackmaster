@@ -1,6 +1,18 @@
+/*
+UI.cpp
+--------------------------------------------------------------------------------------------------------------------
+Revision History:
+Rev. 1 - 2024/07/13 Original by Bowen Jin
+Rev. 2 - 2024/07/30 
+--------------------------------------------------------------------------------------------------------------------
+This Cpp file includes all the implemntaions related to the header file 
+--------------------------------------------------------------------------------------------------------------------
+*/
+
 #include "UI.h"
 #include "ScenarioController.h"
 #include <iostream>
+#include <limits>
 #include <string>
 
 using namespace std;
@@ -26,6 +38,7 @@ namespace UI {
                 case 1:
                     createMenu();
                     cout << "Enter selection number [0-4]: ";
+                    // Ignore any remaining characters in the buffer up to a newline or a large number of characters
                     cin >> create_choice;
                     clearScreen();
 
@@ -125,6 +138,10 @@ namespace UI {
                 // Exit TrackMaster
                 case 0:
                     cout << "Thank you for using TrackMaster" << endl;
+                    break;
+
+                default:
+                    cout << "Invalid Input. Try Again" << endl << endl;
                     break;
             }
         } while (main_choice != 0);

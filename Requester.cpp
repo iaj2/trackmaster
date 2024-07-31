@@ -1,3 +1,13 @@
+/*
+Requester.cpp
+--------------------------------------------------------------------------------------------------------------------
+Revision History:
+Rev. 1 - 2024/07/13 Original by Bowen Jin
+Rev. 2 - 2024/07/30 
+--------------------------------------------------------------------------------------------------------------------
+This Cpp file includes all the implemntaions related to the header file 
+--------------------------------------------------------------------------------------------------------------------
+*/
 #include "Requester.h"
 #include "FileNotOpenException.h"
 #include "FileOpenFailedException.h"

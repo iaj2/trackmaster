@@ -1,3 +1,13 @@
+/* 
+GlobalEntities.h
+--------------------------------------------------------------------------------------------------------------------
+Rev. 1 - 2024/07/23 Original by Isaac James
+--------------------------------------------------------------------------------------------------------------------
+This header file declares global instances of the EntityIO class template for different entity types.
+These global instances are used to perform I/O operations on various entities throughout the application.
+*/
+
+
 #ifndef GLOBALENTITIES_H
 #define GLOBALENTITIES_H
 
