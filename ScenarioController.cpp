@@ -247,42 +247,6 @@ string getReleaseIDData() {
     return releaseIDInput;
 }
 
-
-// -------------------------------------------------------------------------------------------------------------------
-//  getDateData: Function to get the date of the request from the user
-// -------------------------------------------------------------------------------------------------------------------
-string getDateData() {
-    // Initialize the variable to store the user input
-    string dateInput;
-
-    // Loop to get the user input
-    do {
-        // Prompt the user for the date
-        cout << "ENTER the DATE of the request (integers YYYYMMDD) OR ENTER <0> to abort and" << endl;
-        cout << "exit to the main menu: ";
-        
-        // Read the user input
-        cin >> dateInput;
-        
-        // Clear the input stream to handle any invalid inputs
-        cin.clear();
-        cin.ignore(10000, '\n');
-        
-        // Check if the user wants to abort
-        if (dateInput == "0") {
-            return "0";
-        } 
-        // Check if the input length exceeds the allowed limit
-        else if (dateInput.length() > 8) {
-            clearScreenAndShowError("Input too long.");
-        }
-    } while (dateInput.length() > 8);  // Loop until a valid input is provided
-    
-    // Return the valid input
-    return dateInput;
-}
-
-
 // -------------------------------------------------------------------------------------------------------------------
 //  countCustomers: Function to count the number of customer-type requesters
 // -------------------------------------------------------------------------------------------------------------------
@@ -765,75 +729,6 @@ Product* createNewProduct() {
 }
 
 // -------------------------------------------------------------------------------------------------------------------
-//  createNewProductRelease: Covers steps to create a new ProductRelease object based on user input. 
-//  Prompts the user for product details and validates input before creating and returning a new ProductRelease object.
-// -------------------------------------------------------------------------------------------------------------------
-ProductRelease* createNewProductRelease() {
-    clearScreen(); // Clear the screen before user input
-    
-    // Get the product name
-    string productName = getProductName();
-    if (productName == "0") return nullptr; // Abort if user chooses to exit
-
-    clearScreen(); // Clear the screen before the next input
-
-    // Get the release ID
-    string ReleaseID = getReleaseIDData();
-    if (ReleaseID == "0") return nullptr; // Abort if user chooses to exit
-    int ReleaseIDNumber = stol(ReleaseID); // Convert release ID to integer
-    
-    clearScreen(); // Clear the screen before the next input
-
-    string date;
-    // Loop to get a valid date input from the user
-    do {
-        cout << "ENTER the DATE of the release (YYYY-MM-DD) OR ENTER <0> to abort and" << endl;
-        cout << "exit to the main menu:";
-
-        getline(cin, date);
-
-        if (date == "0") return nullptr; // Abort if user chooses to exit
-
-        clearScreen(); // Clear the screen before validating the input
-
-    } while (date.empty()); // Ensure date is not empty
-
-    const char* dateChar = date.c_str(); // Convert string to C-string
-    int dateNumber = dateToInt(dateChar); // Convert date to integer representation
-
-    clearScreen(); // Clear the screen before finalizing
-
-    // Create and return a new ProductRelease object
-    ProductRelease* newProductRelease = new ProductRelease(productName.c_str(), ReleaseIDNumber, dateNumber);
-
-    return newProductRelease;
-}
-
-// -------------------------------------------------------------------------------------------------------------------
-//  createNewChangeItem: Covers steps to create a new Change object based on user input.
-//  Prompts the user for change details and validates input before creating and returning a new Change object.
-// -------------------------------------------------------------------------------------------------------------------
-Change* createNewChangeItem(string productName) {
-    clearScreen(); // Clear the screen before user input
-
-    // Get the change description
-    string changeDescription = getInput("ENTER a description for a new change (30 char. max)", Change::MAX_DESCRIPTION_LENGTH);
-    if (changeDescription == "0") return nullptr; // Abort if user chooses to exit
-
-    clearScreen(); // Clear the screen before the next input
-
-    // Prompt the user to select a product release
-    cout << "Select a product release that the change is anticipated to be completed for" << endl;
-    int productRelease = selectProductReleaseID(productName, Blank);
-
-    // TODO: Implement date input
-    Change* newChangeItem = new Change(Change::Status::Open, productName.c_str(), productRelease, 
-                                        changeDescription.c_str(), 1231); // Placeholder date value
-
-    return newChangeItem; // Return the newly created Change object
-}
-
-// -------------------------------------------------------------------------------------------------------------------
 // This function allows the user to select a product from a list of available products.
 // Depending on the scenario state, the user may also have the option to create a new product.
 // -------------------------------------------------------------------------------------------------------------------
@@ -917,6 +812,78 @@ Product* selectProduct(scenarioState state) {
     }
 }
 
+// -------------------------------------------------------------------------------------------------------------------
+//  createNewProductRelease: Covers steps to create a new ProductRelease object based on user input. 
+//  Prompts the user for product details and validates input before creating and returning a new ProductRelease object.
+// -------------------------------------------------------------------------------------------------------------------
+ProductRelease* createNewProductRelease() {
+    clearScreen(); // Clear the screen before user input
+    
+    // Get the product name
+    Product* selectedProduct = selectProduct(Blank);
+
+    if(!selectedProduct) return nullptr; // check exit
+
+    string productName = selectedProduct->getProductName();
+    delete selectedProduct;
+
+    clearScreen(); // Clear the screen before the next input
+
+    // Get the release ID
+    string ReleaseID = getReleaseIDData();
+    if (ReleaseID == "0") return nullptr; // Abort if user chooses to exit
+    int ReleaseIDNumber = stol(ReleaseID); // Convert release ID to integer
+    
+    clearScreen(); // Clear the screen before the next input
+
+    string date;
+    // Loop to get a valid date input from the user
+    do {
+        cout << "ENTER the DATE of the release (YYYY-MM-DD) OR ENTER <0> to abort and" << endl;
+        cout << "exit to the main menu:";
+
+        getline(cin, date);
+
+        if (date == "0") return nullptr; // Abort if user chooses to exit
+
+        clearScreen(); // Clear the screen before validating the input
+
+    } while (date.empty()); // Ensure date is not empty
+
+    const char* dateChar = date.c_str(); // Convert string to C-string
+    int dateNumber = dateToInt(dateChar); // Convert date to integer representation
+
+    clearScreen(); // Clear the screen before finalizing
+
+    // Create and return a new ProductRelease object
+    ProductRelease* newProductRelease = new ProductRelease(productName.c_str(), ReleaseIDNumber, dateNumber);
+
+    return newProductRelease;
+}
+
+// -------------------------------------------------------------------------------------------------------------------
+//  createNewChangeItem: Covers steps to create a new Change object based on user input.
+//  Prompts the user for change details and validates input before creating and returning a new Change object.
+// -------------------------------------------------------------------------------------------------------------------
+Change* createNewChangeItem(string productName) {
+    clearScreen(); // Clear the screen before user input
+
+    // Get the change description
+    string changeDescription = getInput("ENTER a description for a new change (30 char. max)", Change::MAX_DESCRIPTION_LENGTH);
+    if (changeDescription == "0") return nullptr; // Abort if user chooses to exit
+
+    clearScreen(); // Clear the screen before the next input
+
+    // Prompt the user to select a product release
+    cout << "Select a product release that the change is anticipated to be completed for" << endl;
+    int productRelease = selectProductReleaseID(productName, Blank);
+
+    // TODO: Implement date input
+    Change* newChangeItem = new Change(Change::Status::Open, productName.c_str(), productRelease, 
+                                        changeDescription.c_str(), 1231); // Placeholder date value
+
+    return newChangeItem; // Return the newly created Change object
+}
 
 Requester* selectRequester(scenarioState state, string type) {
     clearScreen();  // Clear the screen for a fresh display
