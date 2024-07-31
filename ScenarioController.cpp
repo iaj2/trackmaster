@@ -53,7 +53,6 @@ bool isBlank(const string& str) {
 }
 
 string getInput(const string& prompt, int maxLength) {
-    cin.ignore();
     string input;
     do {
         cout << prompt << endl;
@@ -104,7 +103,6 @@ string getDepartment() {
         cout << "***Must be left blank if requester is not an employee of the company***" << endl;
         cout << "OR ENTER <0> to abort and exit to the main menu: ";
 
-        cin.ignore();
         getline(cin, dep);
 
         if (dep == "0") {
@@ -427,7 +425,6 @@ int selectProductReleaseID(string productName, scenarioState state) {
         printListOptions(recordIndex, recordCount, formatSelectionRange(1, recordCount));
 
         // get user input
-        cin.ignore();
         getline(cin, selection);
 
         if (userSelectedNext(selection, recordIndex)) {
@@ -699,8 +696,7 @@ Requester* selectRequester(scenarioState state, string type) {
         // print options
         printListOptions(recordIndex, recordCount, formatSelectionRange(1, maxSelection));
 
-        // get user input    
-        cin.ignore();
+        // get user input
         getline(cin, selection);
 
         // get next set of items
@@ -852,7 +848,6 @@ int selectPriority() {
         cout << "5) Highest" << endl;
         cout << "ENTER selection [1-5] OR <0> to abort and exit to the main menu: ";
 
-        cin.ignore();
         getline(cin, selection);
 
         if (selection == "0") {
@@ -934,7 +929,6 @@ namespace ScenarioController {
             cout << "OR ENTER <0> to abort and exit to the main menu" << endl;
 
             // get user input
-            cin.ignore();
             getline(cin, reqTSelection); 
             
             if (reqTSelection == "0") return;
@@ -961,8 +955,7 @@ namespace ScenarioController {
         do {
             cout << "ENTER the DATE of the request (YYYY-MM-DD) OR ENTER <0> to abort and" << endl;
             cout << "exit to the main menu:";
-            
-            cin.ignore();
+
             getline(cin, date);
 
             if (date == "0") return;
@@ -1028,8 +1021,7 @@ namespace ScenarioController {
             cout << "Priority: " << priorityStr << endl;
             cout << "Change ID: " << to_string(changeID);
             cout << "ENTER <1> to confirm OR <0> to abort and exit to main menu: ";
-            
-            cin.ignore();
+
             getline(cin, confirmSel);
 
             if (confirmSel == "0") return; // abort
@@ -1059,8 +1051,7 @@ namespace ScenarioController {
         do {
             cout << "The new requester has been successfully added to the system." << endl;
             cout << "ENTER <0> to go back to the main menu: ";
-
-            cin.ignore();
+        
             getline(cin, input);
 
             if (input == "0") return;
@@ -1158,7 +1149,6 @@ namespace ScenarioController {
             cout << "Status: " << Change::statusToString(status) << endl;
             cout << "Change ID: " << changeID << endl;
 
-            cin.ignore();
             getline(cin, confirmSel);
 
             if (confirmSel == "0") return; // abort
@@ -1226,7 +1216,6 @@ namespace ScenarioController {
         string description;
         cout << "ENTER a new description for the change [max 30 characters, leave blank to skip]" << endl;
         cout << "OR <0> to abort and exit to main menu:";
-        cin.ignore();
         getline(cin >> ws, description); // `ws` is used to ignore leading whitespace
         // Check for exit
         if(description == "0") return;
