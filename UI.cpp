@@ -18,6 +18,7 @@ namespace UI {
 
         do {
             mainMenu();
+            cin.ignore();
             cout << "Enter Selection [0-5]: " << endl;
         
             cin >> main_choice;
