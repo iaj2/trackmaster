@@ -582,9 +582,8 @@ Product* selectProduct(scenarioState state) {
         printListOptions(recordIndex, recordCount, formatSelectionRange(1, maxSelection));
 
         // get user input
-        cin.ignore();
         getline(cin, selection);
-
+        
         if (userSelectedNext(selection, recordIndex)) {
                 recordIndex -= maxRecordOutput;
                 productIO.seekTo(recordIndex);
@@ -714,7 +713,7 @@ Requester* selectRequester(scenarioState state, string type) {
             clearScreen();
         // user selection
         } else {
-            if(isValidIntegerInRange(selection, 0, maxSelection)){
+            if(isValidIntegerInRange(selection, 0, maxSelection)) {
                 option = stoi(selection);
                 if (option == 0) return nullptr;
                 if (state==scenarioState::Create && option  == maxSelection) {
@@ -748,7 +747,7 @@ Change* selectChange(string productName, scenarioState state) {
     if (state == Assess) statusFilter = "Open";
     else if (state == Update) statusFilter = "Assessed";
     else if (state == P2Control) statusFilter = "Done";
-    else statusFilter == "";
+    else statusFilter = "";
 
     // get first set of records
     vector<Change*> changes = fetchNChangeItems(maxRecordOutput, recordIndex, productName, statusFilter);
@@ -769,6 +768,18 @@ Change* selectChange(string productName, scenarioState state) {
     while (true) {
         cout << "=== Select Change Item ===" << endl;
 
+        // print headers
+        if(state == scenarioState::Create) {
+            cout << "Description            " << "ChandeID" << endl;
+        }
+        else if(state == scenarioState::Assess) {
+            cout << "Product        " << "Description       " << "Status" << endl; 
+        }
+        else {
+            cout << "Description        " << "Status        " << "ChangeID" << endl;
+        }
+
+
         // print rows
         for(int i=0; i < changes.size(); i++) {
             if (changes[i] != nullptr){
@@ -778,19 +789,21 @@ Change* selectChange(string productName, scenarioState state) {
                     cout << changes[i]->getDescription() << "   " << to_string(changes[i]->getchangeID());
                 } 
                 // assess display
-                else if (state == Assess || state == P2Control){
-                    cout << changes[i]->getDescription() << "   ";
-                    cout << Change::statusToString(changes[i]->getStatus()) << "   " << to_string(changes[i]->getchangeID());
-                }      
-                // update display
-                else {
+                else if (state == Assess){
                     cout << changes[i]->getProductName() << "   " << changes[i]->getDescription();
                     cout << "   " << Change::statusToString(changes[i]->getStatus());
+                }      
+                // update, print display
+                else {
+                    
+                    cout << changes[i]->getDescription() << "   ";
+                    cout << Change::statusToString(changes[i]->getStatus()) << "   " << to_string(changes[i]->getchangeID());
                 }
             }
             else {
-                cout << "Record unavailable" << endl;
+                cout << "Record unavailable";
             }
+            cout << endl;
         }
 
         // Option to create a new item
@@ -802,7 +815,6 @@ Change* selectChange(string productName, scenarioState state) {
         printListOptions(recordIndex, recordCount, formatSelectionRange(1, maxSelection));
 
         // get user input
-        cin.ignore();
         getline(cin, selection);
 
         if (userSelectedNext(selection, recordIndex)) {
@@ -814,7 +826,7 @@ Change* selectChange(string productName, scenarioState state) {
             changes = fetchNChangeItems(maxRecordOutput, recordIndex, productName, statusFilter);
             clearScreen();
         } else {
-            if (isValidIntegerInRange, selection, 0, maxSelection) {
+            if (isValidIntegerInRange(selection, 0, maxSelection)) {
                 option = stoi(selection);
 
                 if (option == 0) return nullptr;
@@ -822,6 +834,7 @@ Change* selectChange(string productName, scenarioState state) {
                 if (state==Create  && option == maxSelection) {
                     // Handle creating a new item
                     selectedChange = createNewChangeItem(productName);
+                    changeIO.appendRecord(*selectedChange);
                     cout << "New Change Item created!" << endl << endl;
                     return selectedChange; // Return new item
                 } else {
@@ -894,8 +907,8 @@ namespace ScenarioController {
             if (backupSelection == 'N') return;
 
             else if (backupSelection != 'Y' && backupSelection != 'N') {
-                cout << "Error: Input is invalid. Re-enter input" << endl;
-                cout << "Enter 0 to abort and return to the main menu" << endl << endl;
+                clearScreen();
+                cout << "Error: Input is invalid. Re-enter input" << endl << endl;
             }
             cin.ignore();
 
@@ -925,6 +938,11 @@ namespace ScenarioController {
             
             cin >> backupReturn;
             cin.ignore(10000,'\n');
+
+            if(backupReturn != '0') {
+                clearScreen();
+                cout << "Invalid Input." << endl << endl;
+            }
 
         } while (backupReturn != '0');
     }
@@ -1149,8 +1167,6 @@ namespace ScenarioController {
         int changeID = selectedChange->getchangeID();
         string productName = selectedChange->getProductName();
         
-        // Free memory
-        delete selectedChange;
 
         // Select new status
         int statusSelection;
@@ -1185,6 +1201,7 @@ namespace ScenarioController {
             cout << "Anticipated Release: " << productReleaseID << endl;
             cout << "Status: " << Change::statusToString(status) << endl;
             cout << "Change ID: " << changeID << endl;
+            cout << "ENTER <1> to confirm OR <0> to abort and exit to main menu: ";
 
             getline(cin, confirmSel);
 
@@ -1202,13 +1219,17 @@ namespace ScenarioController {
         if(productReleaseID != -1) selectedChange->setAnticipatedReleaseID(productReleaseID);
 
         changeIO.updateRecord(getChangeIndex(*selectedChange), *selectedChange);
-        
+
+        // Free memory
+        delete selectedChange;
     }
 
     // -------------------------------------------------------------------------------------------------------------------
     // updateChangeItemControl: scenario controller for updating a change item 
     // -------------------------------------------------------------------------------------------------------------------
     void updateChangeItemControl() {
+        cin.ignore();
+
         // Fetch initial product list
         vector<Product*> products = productIO.readNRecords(maxRecordOutput);
         Product* selectedProduct = selectProduct(Blank);
