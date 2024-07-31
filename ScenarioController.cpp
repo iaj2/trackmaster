@@ -97,6 +97,33 @@ string getInput(const string& prompt, int maxLength) {
 }
 
 // -------------------------------------------------------------------------------------------------------------------
+//  getNewDescription: Function to get updated change description from user
+// -------------------------------------------------------------------------------------------------------------------
+string getNewDescription() {
+    clearScreen();
+    string description = "";
+    do {
+        cout << "ENTER a new description for the change [max 30 characters, leave blank to skip]" << endl;
+        cout << "OR <0> to abort and exit to main menu: ";
+        getline(cin, description); 
+
+        // Check for exit
+        if (description == "0") {
+            return "0";
+        }
+
+        // Validate input length
+        if (description.length() > 30) {
+            clearScreenAndShowError("Invalid Input.");
+        } else {
+            break; // Valid input or blank input
+        }
+    } while (true);
+
+    return description;
+}
+
+// -------------------------------------------------------------------------------------------------------------------
 //  getEmail: Function to get an email input from the user using the getInput helper function 
 // -------------------------------------------------------------------------------------------------------------------
 string getEmail() {
@@ -603,6 +630,7 @@ vector<Change*> fetchNChangeItems(int n, int recordIndex, string productName, st
 //  or -1 to skip (when in Assess or Update state and the skip option is selected).
 // -------------------------------------------------------------------------------------------------------------------
 int selectProductReleaseID(string productName, scenarioState state) {
+    clearScreen();
     // Initialize record index to start from the beginning
     int recordIndex = 0;
 
@@ -1286,7 +1314,6 @@ namespace ScenarioController {
         delete product;
 
         // get product release id
-        clearScreen();
         int productReleaseID = selectProductReleaseID(productName, scenarioState::Create);
         if (productReleaseID == 0) return;
 
@@ -1477,12 +1504,9 @@ namespace ScenarioController {
 
         Change::Status status = (statusSelection == 1) ? Change::Status::Assessed : Change::Status::Canceled;
 
-        // Get new description  TODO: Fix to match user manual
-        string description;
-        cout << "ENTER a new description for the change [max 30 characters, leave blank to skip]" << endl;
-        cout << "OR <0> to abort and exit to main menu:";
-        getline(cin >> ws, description); // `ws` is used to ignore leading whitespace
-        // Check for exit
+        // Get new description
+        string description = getNewDescription();
+
         if(description == "0") return;
 
         // Select product release
@@ -1496,6 +1520,7 @@ namespace ScenarioController {
 
         string confirmSel;
         do {
+            clearScreen();
             cout << "=== Assessed Change Item Information ===" << endl;
             cout << "Product: " << productName << endl;
             cout << "Description: " << selectedChange->getDescription() << endl;
@@ -1575,21 +1600,17 @@ namespace ScenarioController {
         }
 
         // Fetch initial product release list
-        clearScreen();
         int productReleaseID = selectProductReleaseID(productName, Update);
 
         if (productReleaseID == 0) return;  // Abort if no valid product release selected
 
-        // TODO: do while loop here
-        string description;
-        cout << "ENTER a new description for the change [max 30 characters, leave blank to skip]" << endl;
-        cout << "OR <0> to abort and exit to main menu:";
-        getline(cin >> ws, description); // `ws` is used to ignore leading whitespace
-        // Check for exit
+        // Get new description
+        string description = getNewDescription();
+
         if(description == "0") return;
 
         // update information
-        if(!statusSelection == 4) selectedChange->setStatus(status);
+        if(statusSelection != 4) selectedChange->setStatus(status);
         if(!isBlank) selectedChange->setDescription(description.c_str());
         if(productReleaseID != -1) selectedChange->setAnticipatedReleaseID(productReleaseID);
         changeIO.updateRecord(getChangeIndex(*selectedChange), *selectedChange);
@@ -1597,6 +1618,7 @@ namespace ScenarioController {
         // confirm
         string confirmSel;
         do {
+            clearScreen();
             cout << "=== Updated Change Information ===" << endl;
             cout << "Product: " << productName << endl;
             cout << "Description: " << selectedChange->getDescription() << endl;
