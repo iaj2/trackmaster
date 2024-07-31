@@ -1372,7 +1372,7 @@ namespace ScenarioController {
             cout << "Product: " << productName << endl;
             cout << "Release: " << to_string(productReleaseID) << endl;
             cout << "Priority: " << priorityStr << endl;
-            cout << "Change ID: " << to_string(changeID);
+            cout << "Change ID: " << to_string(changeID) << endl;
             cout << "ENTER <1> to confirm OR <0> to abort and exit to main menu: ";
 
             getline(cin, confirmSel);
