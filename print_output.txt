@@ -1,11 +1,10 @@
 
-Report for "freddy" release "1234"
-Change item report 1:
+Report for "freddy"
  Product Name: freddy
- Change ID: 0
+ Change ID: 1519
  First Reported: 0000/12/31
- Status: Assessed
+ Status: Done
  Anticipated Release: 1234
- Description: haha
+ Description: paoiwjd
 
 
