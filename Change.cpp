@@ -36,7 +36,7 @@ Change::Change(
   ) : changeID(changeID), status(status), anticipatedReleaseID(anticipatedReleaseID), date(date) 
   {
     // set auto-generated change id
-
+    setchangeID();
 
     // Take product name up to its max length
     strncpy(this->productName, productName, MAX_PRODUCT_NAME_LENGTH);
