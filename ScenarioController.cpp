@@ -720,8 +720,6 @@ Product* createNewProduct() {
     string productName = getProductName();
     if (productName == "0") return nullptr; // Abort if the user enters "0"
 
-    clearScreen(); // Clear the screen after getting product name
-
     // Create and return a new Product object with the gathered user input
     Product* newProduct = new Product(productName.c_str());
 
@@ -796,8 +794,9 @@ Product* selectProduct(scenarioState state) {
                 if (state== Create && option  == maxSelection) {
                     // User chose to create a new product
                     selectedProduct = createNewProduct();
+                    if(!selectedProduct) return nullptr; // exit
                     productIO.appendRecord(*selectedProduct);  // Save the new product
-                    cout << "New Product created!" << endl << endl;
+;                    cout << "New Product created!" << endl << endl;
                     return selectedProduct;  // Return the newly created product
                 } else {
                     // Select the product based on user input
@@ -1437,6 +1436,7 @@ namespace ScenarioController {
 
         // loop to get user input selection upon exit 
         string input;
+        clearScreen();
         do {
             cout << "The new product has been successfully added to the system." << endl;
             cout << "ENTER <0> to go back to the main menu: ";
@@ -1445,6 +1445,7 @@ namespace ScenarioController {
             if(input == "0") return;
 
             clearScreenAndShowError("Invalid Input.");
+            cout << endl;
         } while (true);
     }
 
@@ -1653,16 +1654,8 @@ namespace ScenarioController {
     // -------------------------------------------------------------------------------------------------------------------
     void inquireChangeItemControl() {
         cin.ignore();
-        clearScreen();
-
+    
         // select product
-        vector<Product*> products = productIO.readNRecords(productIO.getRecordCount());
-        if (products.empty()) {
-            cout << "No products available for inquiry." << endl;
-            return;
-        }
-
-        // use select product helper function to get the product
         Product* selectedProduct = selectProduct(Blank);
 
         if (!selectedProduct) return;  // Abort if no valid product selected
