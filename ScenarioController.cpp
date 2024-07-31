@@ -1019,7 +1019,7 @@ Change* selectChange(string productName, scenarioState state) {
     // Determine the status filter based on the scenario state
     string statusFilter;
     if (state == Assess) statusFilter = "Open";
-    else if (state == Update) statusFilter = "Assessed";
+    // else if (state == Update) statusFilter = "Assessed";
     else if (state == P2Control) statusFilter = "Done";
     else statusFilter = "";
 
